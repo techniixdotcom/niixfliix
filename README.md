@@ -66,36 +66,6 @@ app.
 - Audio the phone can't decode itself (AC3, E-AC3, DTS, TrueHD, common in MKV
   releases) goes through a bundled FFmpeg decoder.
 
-## Build
-
-```
-./BUILD.sh            # signed release APK in dist/
-./BUILD.sh --debug    # debug APK
-./BUILD.sh --clean --install --verbose
-```
-
-The script installs JDK 17 and the Android SDK into `~/.niixfliix` (checksums
-verified), creates a release signing key there on the first run, runs the unit
-tests and writes `dist/niixfliix<version>.apk` plus a `.sha256` file. Back up
-`~/.niixfliix/keys`: updates must be signed with the same key.
-
-Android Studio works too: open the folder and run the `app` configuration.
-
-## Renaming
-
-The name lives in `gradle.properties` (`appName`, `appId`). Everything else,
-the app label and the APK name included, comes from there.
-
-## Releases and updates
-
-Source code and releases: https://github.com/techniixdotcom/niixfliix
-
-The in-app updater reads the latest release of the repository set in
-`gradle.properties` (`githubRepo`). Attach both files from `dist/` to the
-GitHub release: the APK and its `.apk.sha256`. An update is only installed when
-the checksum matches, the package name is the same, the version is higher and
-the signing certificate is the same as the installed app's.
-
 ## More
 
 - [HOW-IT-WORKS.md](HOW-IT-WORKS.md): which servers the app talks to and why.
