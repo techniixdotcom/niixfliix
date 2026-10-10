@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@android:color/black">
+
+	<LinearLayout
+		android:id="@+id/player_content"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+		<!-- the whole screen in fullscreen, a 16:9 strip at the top in portrait -->
+		<FrameLayout
+			android:id="@+id/video_frame"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<androidx.media3.ui.PlayerView
+				android:id="@+id/player_view"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:keepScreenOn="true"
+				app:animation_enabled="true"
+				app:played_color="@color/red"
+				app:scrubber_color="@color/red"
+				app:show_buffering="when_playing"
+				app:show_shuffle_button="false"
+				app:show_subtitle_button="false"
+				app:use_controller="true" />
+
+			<LinearLayout
+				android:id="@+id/top_bar"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="top"
+				android:background="@drawable/bg_player_top"
+				android:gravity="center_vertical"
+				android:orientation="horizontal"
+				android:paddingHorizontal="4dp"
+				android:paddingBottom="24dp">
+
+				<ImageButton
+					android:id="@+id/player_back"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/action_back"
+					android:src="@drawable/ic_back"
+					app:tint="@android:color/white" />
+
+				<LinearLayout
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="4dp"
+					android:layout_weight="1"
+					android:orientation="vertical">
+
+					<TextView
+						android:id="@+id/player_title"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:ellipsize="end"
+						android:maxLines="1"
+						android:textAppearance="?attr/textAppearanceTitleMedium"
+						android:textColor="@android:color/white" />
+
+					<TextView
+						android:id="@+id/player_subtitle"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:ellipsize="end"
+						android:maxLines="1"
+						android:textAppearance="?attr/textAppearanceBodySmall"
+						android:textColor="#CCFFFFFF" />
+				</LinearLayout>
+
+				<ImageButton
+					android:id="@+id/player_lock"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_lock"
+					android:src="@drawable/ic_lock"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_subtitles"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_subtitles"
+					android:src="@drawable/ic_subtitles"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_audio"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_audio"
+					android:src="@drawable/ic_audio"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_streams"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_switch_stream"
+					android:src="@drawable/ic_quality"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_fullscreen"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_exit_fullscreen"
+					android:src="@drawable/ic_fullscreen_exit"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_pip"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_pip"
+					android:src="@drawable/ic_pip"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_minimize"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_minimize"
+					android:src="@drawable/ic_minimize"
+					app:tint="@android:color/white" />
+			</LinearLayout>
+
+			<TextView
+				android:id="@+id/gesture_indicator"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:background="@drawable/bg_gesture_hint"
+				android:gravity="center_vertical"
+				android:paddingHorizontal="16dp"
+				android:paddingVertical="10dp"
+				android:textAppearance="?attr/textAppearanceTitleMedium"
+				android:textColor="@android:color/white"
+				android:visibility="gone" />
+
+			<LinearLayout
+				android:id="@+id/loading"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:background="@drawable/bg_gesture_hint"
+				android:gravity="center"
+				android:orientation="vertical"
+				android:padding="20dp"
+				android:visibility="gone">
+
+				<com.google.android.material.progressindicator.CircularProgressIndicator
+					android:id="@+id/loading_progress"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:indeterminate="true" />
+
+				<TextView
+					android:id="@+id/loading_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="12dp"
+					android:gravity="center"
+					android:textAppearance="?attr/textAppearanceBodyMedium"
+					android:textColor="@android:color/white" />
+			</LinearLayout>
+
+			<com.google.android.material.card.MaterialCardView
+				android:id="@+id/up_next"
+				android:layout_width="300dp"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom|end"
+				android:layout_marginEnd="24dp"
+				android:layout_marginBottom="96dp"
+				android:visibility="gone">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical">
+
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center_vertical"
+						android:orientation="horizontal"
+						android:paddingVertical="8dp"
+						android:paddingStart="16dp"
+						android:paddingEnd="4dp">
+
+						<ImageView
+							android:layout_width="24dp"
+							android:layout_height="24dp"
+							android:importantForAccessibility="no"
+							android:src="@drawable/ic_skip_next"
+							app:tint="@color/red" />
+
+						<LinearLayout
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_marginStart="12dp"
+							android:layout_weight="1"
+							android:orientation="vertical">
+
+							<TextView
+								android:id="@+id/up_next_label"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:textAllCaps="true"
+								android:textColor="@color/red"
+								android:textSize="11sp"
+								android:textStyle="bold" />
+
+							<TextView
+								android:id="@+id/up_next_title"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:ellipsize="end"
+								android:maxLines="2"
+								android:textAppearance="?attr/textAppearanceTitleSmall" />
+						</LinearLayout>
+
+						<ImageButton
+							android:id="@+id/up_next_close"
+							android:background="?attr/selectableItemBackgroundBorderless"
+							android:layout_width="48dp"
+							android:layout_height="48dp"
+							android:contentDescription="@string/player_up_next_cancel"
+							android:src="@drawable/ic_close" />
+					</LinearLayout>
+
+					<com.google.android.material.progressindicator.LinearProgressIndicator
+						android:id="@+id/up_next_countdown"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:max="1000"
+						app:trackCornerRadius="0dp" />
+				</LinearLayout>
+			</com.google.android.material.card.MaterialCardView>
+
+			<com.google.android.material.card.MaterialCardView
+				android:id="@+id/error_card"
+				android:layout_width="320dp"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:visibility="gone">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical"
+					android:padding="20dp">
+
+					<TextView
+						android:id="@+id/error_text"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:drawablePadding="12dp"
+						android:gravity="center_vertical"
+						android:textAppearance="?attr/textAppearanceBodyLarge"
+						app:drawableStartCompat="@drawable/ic_error" />
+
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="16dp"
+						android:gravity="end"
+						android:orientation="horizontal">
+
+						<Button
+							android:id="@+id/error_close"
+							style="@style/Widget.Material3.Button.TextButton"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:text="@string/action_close" />
+
+						<Button
+							android:id="@+id/error_next"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginStart="8dp"
+							android:text="@string/player_try_next" />
+					</LinearLayout>
+				</LinearLayout>
+			</com.google.android.material.card.MaterialCardView>
+		</FrameLayout>
+
+		<ScrollView
+			android:id="@+id/player_info"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:background="?attr/colorSurface"
+			android:visibility="gone">
+
+			<LinearLayout
+				android:id="@+id/info_list"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:padding="16dp">
+
+				<TextView
+					android:id="@+id/info_title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+				<TextView
+					android:id="@+id/info_episode"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+				<TextView
+					android:id="@+id/info_facts"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:textAppearance="?attr/textAppearanceBodySmall"
+					android:textColor="?attr/colorOnSurfaceVariant" />
+
+				<TextView
+					android:id="@+id/info_description"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="12dp"
+					android:textAppearance="?attr/textAppearanceBodyMedium" />
+			</LinearLayout>
+		</ScrollView>
+	</LinearLayout>
+
+	<!-- on top of everything while locked, so no touch gets through -->
+	<FrameLayout
+		android:id="@+id/lock_shield"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:clickable="true"
+		android:focusable="true"
+		android:soundEffectsEnabled="false"
+		android:visibility="gone">
+
+		<LinearLayout
+			android:id="@+id/unlock_panel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:background="@drawable/bg_gesture_hint"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="20dp"
+			android:visibility="gone">
+
+			<FrameLayout
+				android:id="@+id/unlock_hold"
+				android:layout_width="80dp"
+				android:layout_height="80dp"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:contentDescription="@string/player_unlock">
+
+				<com.google.android.material.progressindicator.CircularProgressIndicator
+					android:id="@+id/unlock_progress"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:max="1000"
+					app:indicatorColor="@color/red"
+					app:indicatorSize="76dp"
+					app:trackColor="#33FFFFFF"
+					app:trackThickness="4dp" />
+
+				<ImageView
+					android:layout_width="36dp"
+					android:layout_height="36dp"
+					android:layout_gravity="center"
+					android:importantForAccessibility="no"
+					android:src="@drawable/ic_lock"
+					app:tint="@android:color/white" />
+			</FrameLayout>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="12dp"
+				android:gravity="center"
+				android:text="@string/player_unlock_hint"
+				android:textAppearance="?attr/textAppearanceBodyMedium"
+				android:textColor="@android:color/white" />
+		</LinearLayout>
+	</FrameLayout>
+</FrameLayout>

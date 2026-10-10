@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:paddingTop="12dp">
+
+	<TextView
+		android:id="@+id/row_title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/screen_padding"
+		android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+	<TextView
+		android:id="@+id/row_subtitle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/screen_padding"
+		android:textAppearance="@style/TextAppearance.Niixfliix.Caption" />
+
+	<com.google.android.material.progressindicator.CircularProgressIndicator
+		android:id="@+id/row_loading"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:layout_marginVertical="48dp"
+		android:indeterminate="true" />
+
+	<TextView
+		android:id="@+id/row_status"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/selectableItemBackground"
+		android:paddingHorizontal="@dimen/screen_padding"
+		android:paddingVertical="24dp"
+		android:textAppearance="@style/TextAppearance.Niixfliix.Caption" />
+
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/row_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:clipToPadding="false"
+		android:nestedScrollingEnabled="false"
+		android:paddingHorizontal="10dp" />
+</LinearLayout>

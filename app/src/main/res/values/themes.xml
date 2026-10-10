@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+	<!-- always dark; every Material role is set so no default purple leaks in -->
+	<style name="Base.Theme.Niixfliix" parent="Theme.Material3.Dark.NoActionBar">
+		<item name="android:colorControlActivated">@color/red</item>
+		<item name="colorPrimary">@color/primary</item>
+		<item name="colorOnPrimary">@color/on_primary</item>
+		<item name="colorPrimaryContainer">@color/surface_variant</item>
+		<item name="colorOnPrimaryContainer">@color/on_surface</item>
+		<item name="colorSecondary">@color/secondary</item>
+		<item name="colorOnSecondary">@color/on_secondary</item>
+		<item name="colorSecondaryContainer">@color/outline</item>
+		<item name="colorOnSecondaryContainer">@color/on_surface</item>
+		<item name="colorTertiary">@color/red</item>
+		<item name="colorOnTertiary">@color/primary</item>
+		<item name="colorTertiaryContainer">@color/surface_variant</item>
+		<item name="colorOnTertiaryContainer">@color/on_surface</item>
+		<item name="colorError">@color/error</item>
+		<item name="android:windowBackground">@color/background</item>
+		<item name="android:colorBackground">@color/background</item>
+		<item name="colorOnBackground">@color/on_background</item>
+		<item name="colorSurface">@color/surface</item>
+		<item name="colorOnSurface">@color/on_surface</item>
+		<item name="colorSurfaceVariant">@color/surface_variant</item>
+		<item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+		<item name="colorOutline">@color/outline</item>
+		<item name="colorOutlineVariant">@color/outline</item>
+		<item name="colorSurfaceContainerLowest">@color/surface</item>
+		<item name="colorSurfaceContainerLow">@color/surface</item>
+		<item name="colorSurfaceContainer">@color/surface</item>
+		<item name="colorSurfaceContainerHigh">@color/surface</item>
+		<item name="colorSurfaceContainerHighest">@color/surface</item>
+		<item name="android:windowLightStatusBar">false</item>
+		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
+
+		<item name="materialCardViewStyle">@style/Widget.Niixfliix.Card</item>
+		<item name="materialAlertDialogTheme">@style/ThemeOverlay.Niixfliix.Dialog</item>
+		<item name="bottomSheetDialogTheme">@style/ThemeOverlay.Niixfliix.BottomSheet</item>
+		<item name="popupMenuStyle">@style/Widget.Niixfliix.PopupMenu</item>
+		<item name="listPopupWindowStyle">@style/Widget.Niixfliix.ListPopup</item>
+		<item name="autoCompleteTextViewStyle">@style/Widget.Niixfliix.Dropdown</item>
+		<item name="bottomNavigationStyle">@style/Widget.Niixfliix.BottomNav</item>
+		<item name="materialSwitchStyle">@style/Widget.Niixfliix.Switch</item>
+		<item name="linearProgressIndicatorStyle">@style/Widget.Niixfliix.Progress</item>
+		<item name="circularProgressIndicatorStyle">@style/Widget.Niixfliix.Progress.Circular</item>
+	</style>
+
+	<style name="Theme.Niixfliix" parent="Base.Theme.Niixfliix" />
+
+	<style name="Theme.Niixfliix.Player" parent="Theme.Niixfliix">
+		<item name="android:windowBackground">@android:color/black</item>
+		<item name="android:colorBackground">@android:color/black</item>
+	</style>
+
+	<!-- Floating things: surface_variant, 1dp outline, 16dp corners. One look for all of them. -->
+	<style name="ShapeAppearance.Niixfliix.Floating" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">@dimen/corner_floating</item>
+	</style>
+
+	<style name="ShapeAppearance.Niixfliix.Sheet" parent="ShapeAppearance.Niixfliix.Floating">
+		<item name="cornerSizeBottomLeft">0dp</item>
+		<item name="cornerSizeBottomRight">0dp</item>
+	</style>
+
+	<!-- posters and episode stills -->
+	<style name="ShapeAppearance.Niixfliix.Thumbnail" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">@dimen/corner_thumbnail</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Card" parent="Widget.Material3.CardView.Outlined">
+		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Floating</item>
+		<item name="cardBackgroundColor">@color/surface_variant</item>
+		<item name="strokeColor">@color/outline</item>
+		<item name="strokeWidth">1dp</item>
+		<item name="cardElevation">0dp</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Card.Thumbnail">
+		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Thumbnail</item>
+		<item name="strokeWidth">0dp</item>
+	</style>
+
+	<style name="ThemeOverlay.Niixfliix.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+		<item name="colorSurface">@color/surface_variant</item>
+		<item name="colorOnSurface">@color/on_surface</item>
+		<item name="elevationOverlayEnabled">false</item>
+		<item name="alertDialogStyle">@style/Widget.Niixfliix.Dialog</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Dialog" parent="MaterialAlertDialog.Material3">
+		<item name="backgroundTint">@color/surface_variant</item>
+		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Floating</item>
+	</style>
+
+	<style name="ThemeOverlay.Niixfliix.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+		<item name="colorSurface">@color/surface_variant</item>
+		<item name="colorOnSurface">@color/on_surface</item>
+		<item name="elevationOverlayEnabled">false</item>
+		<item name="bottomSheetStyle">@style/Widget.Niixfliix.BottomSheet</item>
+	</style>
+
+	<style name="Widget.Niixfliix.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Sheet</item>
+		<item name="backgroundTint">@color/surface_variant</item>
+	</style>
+
+	<style name="Widget.Niixfliix.PopupMenu" parent="Widget.Material3.PopupMenu">
+		<item name="android:popupBackground">@drawable/bg_floating</item>
+	</style>
+
+	<style name="Widget.Niixfliix.ListPopup" parent="Widget.Material3.PopupMenu.ListPopupWindow">
+		<item name="android:popupBackground">@drawable/bg_floating</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Dropdown" parent="Widget.Material3.AutoCompleteTextView.OutlinedBox">
+		<item name="android:popupBackground">@drawable/bg_floating</item>
+	</style>
+
+	<style name="Widget.Niixfliix.TextField.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" />
+
+	<!-- compact: no min height, small padding -->
+	<style name="Widget.Niixfliix.BottomNav" parent="Widget.Material3.BottomNavigationView">
+		<item name="android:minHeight">0dp</item>
+		<item name="itemPaddingTop">1dp</item>
+		<item name="itemPaddingBottom">1dp</item>
+		<item name="itemTextAppearanceActive">@style/TextAppearance.Niixfliix.NavLabel</item>
+		<item name="itemTextAppearanceInactive">@style/TextAppearance.Niixfliix.NavLabel</item>
+		<item name="itemActiveIndicatorStyle">@style/Widget.Niixfliix.BottomNav.Indicator</item>
+	</style>
+
+	<style name="Widget.Niixfliix.BottomNav.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+		<item name="android:width">56dp</item>
+		<item name="android:height">28dp</item>
+	</style>
+
+	<style name="TextAppearance.Niixfliix.NavLabel" parent="TextAppearance.Material3.LabelMedium">
+		<item name="android:textSize">10sp</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+		<item name="thumbTint">@color/switch_thumb</item>
+		<item name="trackTint">@color/switch_track</item>
+		<item name="trackDecorationTint">@android:color/transparent</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Progress" parent="Widget.Material3.LinearProgressIndicator">
+		<item name="indicatorColor">@color/red</item>
+		<item name="trackColor">@color/outline</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Progress.Circular" parent="Widget.Material3.CircularProgressIndicator">
+		<item name="indicatorColor">@color/red</item>
+	</style>
+
+	<!-- section titles, white and bold; red is kept for small highlights like "UP NEXT" -->
+	<style name="TextAppearance.Niixfliix.Section" parent="TextAppearance.Material3.TitleSmall">
+		<item name="android:textColor">?attr/colorOnSurface</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+
+	<style name="TextAppearance.Niixfliix.Caption" parent="TextAppearance.Material3.BodySmall">
+		<item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+	</style>
+</resources>

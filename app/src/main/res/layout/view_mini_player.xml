@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the outer frame takes window insets, the card floats inside it -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/mini_player"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity="bottom"
+	android:visibility="gone">
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/mini_card"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginHorizontal="8dp"
+		android:layout_marginVertical="4dp">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical"
+			android:orientation="horizontal"
+			android:paddingVertical="6dp"
+			android:paddingStart="6dp"
+			android:paddingEnd="4dp">
+
+			<ImageView
+				android:id="@+id/mini_poster"
+				android:layout_width="36dp"
+				android:layout_height="54dp"
+				android:background="@drawable/bg_poster_placeholder"
+				android:importantForAccessibility="no"
+				android:scaleType="centerCrop" />
+
+			<LinearLayout
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="12dp"
+				android:layout_weight="1"
+				android:orientation="vertical">
+
+				<TextView
+					android:id="@+id/mini_title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="end"
+					android:maxLines="1"
+					android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+				<TextView
+					android:id="@+id/mini_subtitle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:ellipsize="end"
+					android:maxLines="1"
+					android:textAppearance="@style/TextAppearance.Niixfliix.Caption" />
+			</LinearLayout>
+
+			<ImageButton
+				android:id="@+id/mini_play"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:contentDescription="@string/player_play_pause"
+				android:src="@drawable/ic_pause" />
+
+			<ImageButton
+				android:id="@+id/mini_next"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:contentDescription="@string/action_next"
+				android:src="@drawable/ic_skip_next"
+				android:visibility="gone" />
+
+			<ImageButton
+				android:id="@+id/mini_close"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:contentDescription="@string/action_close"
+				android:src="@drawable/ic_close" />
+		</LinearLayout>
+	</com.google.android.material.card.MaterialCardView>
+</FrameLayout>

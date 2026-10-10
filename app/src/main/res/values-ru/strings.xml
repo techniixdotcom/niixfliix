@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- app_name is generated from gradle.properties -->
+
+	<!-- Navigation -->
+	<string name="nav_home">Главная</string>
+	<string name="nav_discover">Обзор</string>
+	<string name="nav_library">Библиотека</string>
+	<string name="nav_search">Поиск</string>
+	<string name="nav_settings">Настройки</string>
+
+	<!-- Common actions -->
+	<string name="action_back">Назад</string>
+	<string name="action_cancel">Отмена</string>
+	<string name="action_clear">Очистить</string>
+	<string name="action_close">Закрыть</string>
+	<string name="action_next">Далее</string>
+	<string name="action_delete">Удалить</string>
+	<string name="action_done">Готово</string>
+	<string name="action_install">Установить</string>
+	<string name="action_more">Другие действия</string>
+	<string name="action_ok">ОК</string>
+	<string name="action_remove">Убрать</string>
+	<string name="action_retry">Повторить</string>
+	<string name="action_save">Сохранить</string>
+
+	<string name="disclaimer">Это приложение — плеер и клиент для аддонов. Оно не содержит медиафайлов и не размещает потоки. Torrentio и другие аддоны работают на стороне третьих лиц, и вы сами отвечаете за то, что смотрите.</string>
+
+	<!-- Types and episodes -->
+	<string name="type_movies">Фильмы</string>
+	<string name="type_series">Сериалы</string>
+	<string name="episode_number">С%1$d Э%2$d</string>
+	<string name="episode_with_title">%1$s · %2$s</string>
+	<string name="quality_other">Другое</string>
+	<string name="percent">%1$d%%</string>
+	<string name="speed_per_second">%1$s/с</string>
+
+	<!-- Home -->
+	<string name="row_title">%1$s · %2$s</string>
+	<string name="row_continue_watching">Продолжить просмотр</string>
+	<string name="row_failed">Не удалось загрузить этот ряд. Нажмите, чтобы повторить.</string>
+	<string name="row_empty">Сейчас здесь ничего нет.</string>
+	<string name="home_empty">Каталогов пока нет. Этот экран заполняют аддоны с каталогами, например Cinemeta.</string>
+	<plurals name="addons_down">
+		<item quantity="one">%1$s сейчас не отвечает. Всё остальное работает.</item>
+		<item quantity="few">%1$s сейчас не отвечают. Всё остальное работает.</item>
+		<item quantity="many">%1$s сейчас не отвечают. Всё остальное работает.</item>
+		<item quantity="other">%1$s сейчас не отвечают. Всё остальное работает.</item>
+	</plurals>
+
+	<!-- Discover -->
+	<string name="discover_catalog">Каталог</string>
+	<string name="discover_genre">Жанр</string>
+	<string name="discover_all_genres">Все жанры</string>
+	<string name="discover_empty">В этом каталоге ничего не найдено.</string>
+	<string name="discover_failed">Этот каталог не ответил. Выберите другой или зайдите позже.</string>
+	<string name="discover_no_catalogs">Ни у одного из ваших аддонов нет каталога для просмотра.</string>
+
+	<!-- Search -->
+	<string name="search_hint">Поиск фильмов и сериалов</string>
+	<string name="search_recent">Недавние запросы</string>
+	<string name="search_searching">Поиск…</string>
+	<string name="search_no_results">Ничего не найдено.</string>
+	<string name="search_no_sources">Ни один из ваших аддонов не поддерживает поиск.</string>
+
+	<!-- Library -->
+	<string name="library_saved">Сохранённое</string>
+	<string name="library_history">История</string>
+	<string name="library_downloads">Загрузки</string>
+	<string name="library_queue">Очередь</string>
+	<string name="library_queue_empty">Очередь пуста. Нажмите и удерживайте фильм, сериал или серию, чтобы добавить.</string>
+	<string name="queue_play_all">Смотреть очередь</string>
+	<string name="queue_clear">Очистить</string>
+	<string name="queue_add">Добавить в очередь</string>
+	<string name="queue_play_next">Смотреть следующим</string>
+	<string name="queue_added">Добавлено в очередь</string>
+	<string name="queue_added_next">Будет следующим</string>
+	<string name="queue_already">Уже в очереди</string>
+	<string name="queue_marked_watched">Отмечено как просмотренное</string>
+	<string name="queue_mark_failed">Не удалось загрузить список серий.</string>
+	<string name="queue_finding">Ищем поток…</string>
+	<string name="queue_no_stream">Поток не найден.</string>
+	<string name="library_saved_empty">Пока ничего не сохранено. Нажмите на закладку у названия, чтобы добавить его сюда.</string>
+	<string name="library_history_empty">Здесь появится то, что вы смотрите.</string>
+	<string name="library_downloads_empty">Загрузок нет. Чтобы скачать поток, нажмите на него и удерживайте.</string>
+	<string name="library_remove_saved">Убрать из сохранённого?</string>
+	<string name="library_remove_history">Убрать из истории просмотра?</string>
+
+	<!-- Details -->
+	<string name="details_play">Смотреть</string>
+	<string name="details_play_episode">Смотреть %1$s</string>
+	<string name="details_continue_episode">Продолжить %1$s</string>
+	<string name="details_continue_at">Продолжить с %1$s</string>
+	<string name="details_save">Добавить в библиотеку</string>
+	<string name="details_unsave">Убрать из библиотеки</string>
+	<string name="details_mark_watched">Отметить как просмотренное</string>
+	<string name="details_mark_unwatched">Отметить как непросмотренное</string>
+	<string name="details_trailer">Трейлер</string>
+	<string name="details_rating">★ %1$s</string>
+	<string name="details_cast">В ролях: %1$s</string>
+	<string name="details_season">Сезон</string>
+	<string name="details_season_number">Сезон %1$d</string>
+	<string name="details_specials">Спецвыпуски</string>
+	<string name="details_up_next">Далее</string>
+	<string name="details_watched">Просмотрено</string>
+	<string name="details_no_meta">Ни у одного из ваших аддонов нет сведений об этом названии. Вы всё равно можете попробовать его воспроизвести.</string>
+
+	<!-- Streams -->
+	<plurals name="streams_found">
+		<item quantity="one">Найден %d поток</item>
+		<item quantity="few">Найдено %d потока</item>
+		<item quantity="many">Найдено %d потоков</item>
+		<item quantity="other">Найдено %d потока</item>
+	</plurals>
+	<string name="streams_none_found">Для этого названия потоки не найдены.</string>
+	<string name="streams_no_addons">Ни один из ваших аддонов не предлагает потоков для этого.</string>
+	<string name="streams_unsupported">Этот тип потока здесь не воспроизводится.</string>
+	<string name="streams_copy_link">Копировать ссылку</string>
+	<string name="streams_open_external">Открыть в другом плеере</string>
+	<string name="streams_download">Скачать</string>
+	<string name="streams_copied">Скопировано</string>
+	<string name="streams_quality_wifi">Авто: %1$s по Wi-Fi · Изменить</string>
+	<string name="streams_quality_mobile">Авто: %1$s в мобильной сети · Изменить</string>
+	<string name="streams_autoplay">Воспроизведение %1$s через %2$d…</string>
+	<string name="streams_choose_myself">Выбрать самому</string>
+	<string name="streams_none_in_range">Для этого нет ничего в 2K, 1080p, 720p или 480p.</string>
+	<string name="quality_title">Качество автовоспроизведения</string>
+	<string name="quality_hint">Выберите качество для Wi-Fi и для мобильной сети. Лучший поток в этом качестве запустится сам. Если такого нет, берётся следующее качество ниже.</string>
+
+	<!-- Player -->
+	<string name="player_subtitles">Субтитры</string>
+	<string name="player_subtitles_off">Выкл.</string>
+	<string name="player_subtitles_from_file">Загрузить из файла…</string>
+	<string name="player_subtitle_from_addon">%1$s · %2$s</string>
+	<string name="player_subtitle_file">Файл субтитров</string>
+	<string name="player_audio">Аудио</string>
+	<string name="player_audio_surround">%1$s (%2$s)</string>
+	<string name="player_no_audio_tracks">Нет звуковых дорожек</string>
+	<string name="player_track_label">%1$s · %2$s</string>
+	<string name="player_track_number">Дорожка %1$d</string>
+	<string name="player_track_unknown">Неизвестный язык</string>
+	<string name="player_switch_stream">Сменить поток</string>
+	<string name="player_stream_label">%1$s · %2$s</string>
+	<string name="player_no_other_streams">Нет других потоков для переключения.</string>
+	<string name="player_minimize">Свернуть</string>
+	<string name="player_pip">Картинка в картинке</string>
+	<string name="player_fullscreen">Во весь экран</string>
+	<string name="player_exit_fullscreen">Выйти из полноэкранного режима</string>
+	<string name="player_lock">Заблокировать экран</string>
+	<string name="player_unlock">Разблокировать</string>
+	<string name="player_unlock_hint">Удерживайте 5 секунд, чтобы разблокировать</string>
+	<string name="player_play_pause">Воспроизвести или приостановить</string>
+	<string name="player_seek_back">−%1$d с</string>
+	<string name="player_seek_forward">+%1$d с</string>
+	<string name="player_zoom_fill">Заполнить экран</string>
+	<string name="player_zoom_fit">По размеру экрана</string>
+	<string name="player_up_next_in">Далее через %1$s</string>
+	<string name="player_up_next_cancel">Не включать следующую серию</string>
+	<string name="player_try_next">Попробовать следующий поток</string>
+	<string name="player_trying_next">Этот поток не работает. Пробуем следующий…</string>
+	<string name="player_no_next_stream">Не удалось найти поток для следующей серии.</string>
+	<string name="player_error_generic">Поток перестал работать.</string>
+	<string name="player_error_http">Сервер отклонил поток (HTTP %1$d).</string>
+	<string name="player_error_network">Не удалось подключиться к потоку. Проверьте подключение к сети.</string>
+	<string name="player_error_format">Этот формат видео не поддерживается на устройстве.</string>
+
+	<!-- Torrent engine -->
+	<string name="torrent_connecting">Подключение…</string>
+	<plurals name="torrent_peers">
+		<item quantity="one">%d пир</item>
+		<item quantity="few">%d пира</item>
+		<item quantity="many">%d пиров</item>
+		<item quantity="other">%d пира</item>
+	</plurals>
+	<string name="torrent_finding">Поиск файла…\n%1$s · %2$s</string>
+	<string name="torrent_buffering">Буферизация %1$d%%\n%2$s · %3$s</string>
+	<string name="torrent_playing">%1$s · %2$s</string>
+	<string name="torrent_error_no_video">В этом торренте нет видеофайла, который можно воспроизвести.</string>
+	<string name="torrent_error_too_big">Размер файла — %1$s, это больше кеша торрентов (%2$s). Увеличьте размер кеша в настройках или выберите файл поменьше.</string>
+	<string name="torrent_error_no_space">Недостаточно свободного места для файла размером %1$s.</string>
+	<string name="torrent_error_wifi">Торрент-трансляция остановлена, так как вы отключились от Wi-Fi. Это можно изменить в настройках.</string>
+	<string name="torrent_error_failed">Не удалось запустить этот поток.</string>
+
+	<!-- Magnet links -->
+	<string name="magnet_untitled">Magnet-ссылка</string>
+	<string name="magnet_source">Magnet-ссылка</string>
+
+	<!-- Downloads -->
+	<string name="channel_downloads">Загрузки</string>
+	<string name="channel_updates">Обновления</string>
+	<string name="download_preparing">Подготовка загрузки…</string>
+	<string name="download_running">Загрузка</string>
+	<string name="download_started">Загрузка началась</string>
+	<string name="download_could_not_start">Не удалось начать загрузку.</string>
+	<string name="download_needs_storage">В этой версии Android для загрузок нужен доступ к хранилищу.</string>
+	<string name="download_queued">В очереди</string>
+	<string name="download_paused">Приостановлено · %1$s</string>
+	<string name="download_done">Готово · %1$s</string>
+	<string name="download_failed">Ошибка. Нажмите «Продолжить», чтобы повторить.</string>
+	<string name="download_progress">%1$d%% · %2$s из %3$s</string>
+	<string name="download_pause">Приостановить</string>
+	<string name="download_resume">Продолжить</string>
+	<string name="download_delete_message">Удалить эту загрузку и её файл?</string>
+	<string name="download_source">Скачано</string>
+
+	<!-- Errors -->
+	<string name="error_link_not_allowed">Эту ссылку нельзя открыть.</string>
+	<string name="error_no_app_for_link">На устройстве нет приложения, которое может это открыть.</string>
+	<string name="error_unsupported_link">Эта ссылка не ведёт на аддон.</string>
+	<string name="error_bad_magnet">Эта magnet-ссылка недействительна.</string>
+
+	<!-- Add-ons -->
+	<string name="addon_install_title">Установить аддон?</string>
+	<string name="addon_install_message">Установить аддон по адресу %1$s? Устанавливайте только аддоны, которым доверяете: они видят, что вы ищете.</string>
+	<string name="addon_installed">Аддон %1$s установлен</string>
+	<string name="addon_error_invalid_url">Это не ссылка на аддон. Она должна начинаться с https:// или stremio:// и заканчиваться на /manifest.json.</string>
+	<string name="addon_error_already_installed">Этот аддон уже установлен.</string>
+	<string name="addon_error_invalid_manifest">По этому адресу ответил не аддон.</string>
+	<string name="addon_error_unreachable">Не удалось связаться с аддоном. Проверьте ссылку и подключение к сети.</string>
+	<string name="addon_error_storage">Не удалось сохранить список аддонов на устройстве.</string>
+	<string name="addons_add">Добавить аддон</string>
+	<string name="addons_add_hint">Ссылка на аддон</string>
+	<string name="addons_add_message">Вставьте ссылку на манифест аддона (https:// или stremio://).</string>
+	<string name="addons_installing">Установка…</string>
+	<string name="addons_configure">Настроить</string>
+	<string name="addons_reorder">Перетащите, чтобы изменить порядок</string>
+	<string name="addons_not_answering">Не отвечает</string>
+	<string name="addons_version">версия %1$s</string>
+	<string name="addons_remove_message">Удалить этот аддон?</string>
+	<string name="addons_reset">Сбросить по умолчанию</string>
+	<string name="addons_reset_message">Будут восстановлены Cinemeta, Torrentio, ThePirateBay+ и OpenSubtitles без каких-либо настроек, а всё остальное, включая ваш ключ дебрид-сервиса, будет удалено.</string>
+	<string name="addons_reset_confirm">Сбросить</string>
+	<string name="configure_paste_link">Вставить ссылку</string>
+	<string name="configure_paste_message">Вставьте ссылку для установки, полученную на странице.</string>
+
+	<!-- Debrid -->
+	<string name="debrid_service">Дебрид-сервис</string>
+	<string name="debrid_none">Нет</string>
+	<string name="debrid_key">Ключ API</string>
+	<string name="debrid_key_saved">Сохранён ключ %1$s. Оставьте поле пустым, чтобы сохранить его.</string>
+	<string name="debrid_test">Проверить</string>
+	<string name="debrid_testing">Проверка…</string>
+	<string name="debrid_key_valid">Ключ работает.</string>
+	<string name="debrid_key_invalid">Сервис отклонил этот ключ.</string>
+	<string name="debrid_key_unknown">Сейчас не удаётся проверить. Возможно, ключ в порядке.</string>
+	<string name="debrid_key_invalid_format">Это не похоже на ключ API.</string>
+	<string name="debrid_get_key">Где найти ключ?</string>
+
+	<!-- First start -->
+	<string name="setup_title">Добро пожаловать</string>
+	<string name="setup_mode_debrid">Аккаунт дебрид-сервиса (необязательно)</string>
+	<string name="setup_debrid_hint">С ключом кэшированные потоки запускаются сразу. Без него всё равно воспроизводится на этом телефоне.</string>
+	<string name="setup_use_account">Использовать мой аккаунт Stremio</string>
+	<string name="account_section">Аккаунт Stremio</string>
+	<string name="account_sign_in">Войти в Stremio</string>
+	<string name="account_sign_in_summary">Необязательно. Переносит ваши дополнения и библиотеку Stremio в приложение и синхронизирует библиотеку.</string>
+	<string name="account_signed_in">Вы вошли как %1$s</string>
+	<string name="account_sign_out">Выйти</string>
+	<string name="account_sign_out_confirm">Выйти из Stremio? Дополнения и библиотека останутся на этом телефоне.</string>
+	<string name="account_email">Эл. почта</string>
+	<string name="account_password">Пароль</string>
+	<string name="account_error_login">Неверная почта или пароль.</string>
+	<string name="account_error_network">Не удалось связаться со Stremio. Проверьте подключение.</string>
+	<string name="account_done">Вы вошли. Ваши дополнения и библиотека уже здесь.</string>
+	<string name="setup_quality">Качество для автовоспроизведения</string>
+	<string name="setup_quality_wifi">По Wi-Fi</string>
+	<string name="setup_quality_mobile">По мобильной сети</string>
+	<string name="setup_language">Ваш язык</string>
+	<string name="setup_language_hint">Звук на вашем языке, если он есть в видео. Если нет — субтитры на вашем языке, а если нет и их — английские субтитры с оригинальной озвучкой.</string>
+	<string name="setup_content">Контент</string>
+	<string name="setup_hide_adult">Скрывать контент для взрослых</string>
+
+	<!-- Torrentio settings -->
+	<string name="torrentio_title">Torrentio</string>
+	<string name="torrentio_debrid_section">Дебрид-сервис</string>
+	<string name="torrentio_debrid_explained">С ключом дебрид-сервиса Torrentio выдаёт прямые ссылки, которые воспроизводятся сразу, без торрентов на этом телефоне.</string>
+	<string name="torrentio_results_section">Результаты</string>
+	<string name="torrentio_sort">Сортировка</string>
+	<string name="torrentio_limit">На каждое качество</string>
+	<string name="torrentio_no_limit">Без ограничений</string>
+	<string name="torrentio_hide">Скрывать</string>
+	<string name="torrentio_languages">Предпочитаемые языки</string>
+	<string name="torrentio_languages_explained">Релизы на этих языках показываются первыми, в выбранном вами порядке.</string>
+	<string name="torrentio_providers">Провайдеры</string>
+	<string name="torrentio_providers_explained">Не выбирайте ни одного, чтобы искать у всех провайдеров.</string>
+	<string name="torrentio_advanced_section">Все параметры</string>
+	<string name="torrentio_open_configure">Открыть страницу настройки Torrentio</string>
+	<string name="torrentio_not_a_link">Это не ссылка Torrentio.</string>
+	<string name="torrentio_saved">Настройки Torrentio сохранены</string>
+
+	<!-- Settings -->
+	<string name="settings_addons">Аддоны</string>
+	<string name="settings_manage_addons">Управление аддонами</string>
+	<plurals name="settings_addons_installed">
+		<item quantity="one">Установлен %d аддон</item>
+		<item quantity="few">Установлено %d аддона</item>
+		<item quantity="many">Установлено %d аддонов</item>
+		<item quantity="other">Установлено %d аддона</item>
+	</plurals>
+	<string name="settings_torrents">Воспроизведение торрентов</string>
+	<string name="settings_debrid">Дебрид-сервис и Torrentio</string>
+	<string name="settings_debrid_summary">%1$s · ключ %2$s</string>
+	<string name="settings_torrentio_missing">Torrentio не установлен</string>
+	<string name="settings_playback">Воспроизведение</string>
+	<string name="settings_quality_wifi">Качество по Wi-Fi</string>
+	<string name="settings_quality_mobile">Качество по мобильной сети</string>
+	<string name="settings_subtitle_size">Размер субтитров</string>
+	<string name="settings_subtitle_color">Цвет субтитров</string>
+	<string name="settings_subtitle_background">Фон субтитров</string>
+	<string name="settings_engine">Торрент-движок</string>
+	<string name="settings_cache_size">Размер кеша</string>
+	<string name="settings_wifi_only">Только Wi-Fi</string>
+	<string name="settings_wifi_only_summary">Транслировать торренты только по Wi-Fi.</string>
+	<string name="settings_clear_on_exit">Очищать кеш после воспроизведения</string>
+	<string name="settings_clear_cache">Очистить кеш</string>
+	<string name="settings_cache_cleared">Кеш очищен</string>
+	<string name="settings_appearance">Оформление</string>
+	<string name="settings_language">Язык</string>
+	<string name="settings_language_system">Как в системе</string>
+	<string name="settings_content">Контент</string>
+	<string name="settings_history">История</string>
+	<string name="settings_clear_history">Очистить историю просмотра</string>
+	<string name="settings_clear_history_confirm">Очистить историю просмотра и отметки о просмотре?</string>
+	<string name="settings_clear_searches">Очистить недавние запросы</string>
+	<string name="settings_cleared">Очищено</string>
+	<string name="settings_updates">Обновления</string>
+	<string name="settings_check_updates">Проверить обновления</string>
+	<string name="settings_version">Версия %1$s</string>
+	<string name="settings_check_on_start">Проверять при запуске приложения</string>
+	<string name="settings_check_on_start_summary">При каждом запуске запрашивает у GitHub новый релиз.</string>
+	<string name="settings_about">О приложении</string>
+	<string name="settings_about_app">Об этом приложении</string>
+	<string name="settings_where_traffic_goes">Куда уходит ваш трафик</string>
+	<string name="settings_where_traffic_goes_summary">Все серверы, с которыми связывается приложение, и зачем.</string>
+	<string name="settings_licences">Лицензии открытого ПО</string>
+	<string name="settings_licences_summary">Библиотеки, на которых построено приложение.</string>
+	<string name="settings_source_code">Исходный код</string>
+	<string name="traffic_explained">Это приложение связывается только с этими серверами:\n\n• Ваши аддоны (Cinemeta, Torrentio, ThePirateBay+, OpenSubtitles и добавленные вами) — для каталогов, сведений, потоков и субтитров.\n• Серверы изображений, указанные этими аддонами, — для постеров и фонов.\n• Серверы потоков из воспроизводимых ссылок, например серверы загрузки вашего дебрид-сервиса.\n• API вашего дебрид-сервиса — только когда вы нажимаете «Проверить».\n• Аддон TMDB (tmdb-addon.baby-beamup.club) — только если приложение не на английском, для названий, описаний и названий серий на вашем языке.\n• Wikidata (query.wikidata.org) — только если приложение не на английском, для названий на вашем языке. Передаются только идентификаторы IMDb и ваш язык.\n• Stremio (api.strem.io), только если вы вошли, для ваших дополнений и библиотеки.\n• GitHub — только когда вы проверяете обновления.\n• Другие пиры BitTorrent — только когда вы воспроизводите торрент встроенным движком.\n\nЗдесь нет рекламы, аналитики, отслеживания и отчётов о сбоях. Ваш ключ дебрид-сервиса хранится в зашифрованном виде и отправляется только в Torrentio и вашему дебрид-сервису.</string>
+
+	<!-- Updates -->
+	<string name="update_checking">Проверка обновлений…</string>
+	<string name="update_none">У вас последняя версия.</string>
+	<string name="update_check_failed">Не удалось проверить обновления.</string>
+	<string name="update_available">Доступна версия %1$s</string>
+	<string name="update_no_notes">Нет описания выпуска.</string>
+	<string name="update_install">Скачать и установить</string>
+	<string name="update_later">Позже</string>
+	<string name="update_downloading">Загрузка обновления…</string>
+	<string name="update_permission_title">Разрешите обновления</string>
+	<string name="update_permission_message">Чтобы устанавливать обновления, разрешите этому приложению устанавливать приложения в настройках системы.</string>
+	<string name="update_open_settings">Открыть настройки</string>
+	<string name="update_failed_title">Обновление не установлено</string>
+	<string name="update_failed_download">Не удалось скачать. Повторите попытку позже.</string>
+	<string name="update_failed_too_large">Файл обновления больше допустимого размера.</string>
+	<string name="update_failed_checksum">Скачанный файл не совпал с контрольной суммой и был удалён.</string>
+	<string name="update_failed_untrusted">Скачанное приложение подписано не так, как это, и было удалено.</string>
+	<string name="update_failed_not_newer">Скачанная версия не новее установленной.</string>
+	<string name="update_install_failed">Установщику не удалось установить обновление.</string>
+	<string name="update_ready_title">Обновление готово к установке</string>
+	<string name="update_ready_text">Нажмите, чтобы завершить установку.</string>
+
+	<!-- order must match the Java enums and lists -->
+	<string-array name="subtitle_colors">
+		<item>Белый</item>
+		<item>Жёлтый</item>
+		<item>Голубой</item>
+	</string-array>
+	<string-array name="subtitle_backgrounds">
+		<item>Нет</item>
+		<item>Полупрозрачный</item>
+		<item>Чёрный</item>
+	</string-array>
+	<string-array name="torrentio_sorts">
+		<item>Качество</item>
+		<item>Качество, затем размер</item>
+		<item>Сиды</item>
+		<item>Размер</item>
+	</string-array>
+	<string-array name="torrentio_quality_filters">
+		<item>BluRay REMUX</item>
+		<item>HDR</item>
+		<item>Dolby Vision</item>
+		<item>Dolby Vision и HDR</item>
+		<item>3D</item>
+		<item>4K</item>
+		<item>1080p</item>
+		<item>720p</item>
+		<item>480p</item>
+		<item>Другое</item>
+		<item>Скринеры</item>
+		<item>CAM</item>
+		<item>Неизвестное качество</item>
+	</string-array>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="horizontal">
+
+	<com.google.android.material.navigationrail.NavigationRailView
+		android:id="@+id/nav"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		app:labelVisibilityMode="labeled"
+		app:menu="@menu/bottom_nav"
+		app:menuGravity="center" />
+
+	<LinearLayout
+		android:id="@+id/main_column"
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_weight="1"
+		android:orientation="vertical">
+
+		<FrameLayout
+			android:id="@+id/fragment_container"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1" />
+
+		<include layout="@layout/view_mini_player" />
+	</LinearLayout>
+</LinearLayout>

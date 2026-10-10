@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+
+	<HorizontalScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scrollbars="none">
+
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/type_chips"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="@dimen/screen_padding"
+			android:paddingTop="8dp"
+			app:selectionRequired="true"
+			app:singleLine="true"
+			app:singleSelection="true" />
+	</HorizontalScrollView>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:paddingHorizontal="@dimen/screen_padding"
+		android:paddingVertical="8dp">
+
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/catalog_layout"
+			style="@style/Widget.Niixfliix.TextField.Dropdown"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="8dp"
+			android:layout_weight="1"
+			android:hint="@string/discover_catalog">
+
+			<com.google.android.material.textfield.MaterialAutoCompleteTextView
+				android:id="@+id/catalog_input"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="none" />
+		</com.google.android.material.textfield.TextInputLayout>
+
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/genre_layout"
+			style="@style/Widget.Niixfliix.TextField.Dropdown"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:hint="@string/discover_genre">
+
+			<com.google.android.material.textfield.MaterialAutoCompleteTextView
+				android:id="@+id/genre_input"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="none" />
+		</com.google.android.material.textfield.TextInputLayout>
+	</LinearLayout>
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/grid"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:clipToPadding="false"
+			android:paddingHorizontal="10dp"
+			android:paddingBottom="16dp" />
+
+		<TextView
+			android:id="@+id/empty"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:gravity="center"
+			android:padding="32dp"
+			android:textAppearance="?attr/textAppearanceBodyLarge"
+			android:visibility="gone" />
+
+		<com.google.android.material.progressindicator.LinearProgressIndicator
+			android:id="@+id/loading"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:indeterminate="true"
+			android:visibility="gone" />
+	</FrameLayout>
+</LinearLayout>

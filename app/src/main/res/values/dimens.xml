@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- cards, sheets, dialogs, popups, menus -->
+	<dimen name="corner_floating">16dp</dimen>
+	<!-- menus and dropdowns -->
+	<dimen name="corner_menu">12dp</dimen>
+	<!-- posters and episode stills -->
+	<dimen name="corner_thumbnail">8dp</dimen>
+	<dimen name="screen_padding">16dp</dimen>
+	<dimen name="poster_width">112dp</dimen>
+	<dimen name="episode_thumb_width">128dp</dimen>
+</resources>

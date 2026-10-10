@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="@dimen/poster_width"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="6dp">
+
+	<com.google.android.material.card.MaterialCardView
+		style="@style/Widget.Niixfliix.Card.Thumbnail"
+		android:id="@+id/card"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageView
+				android:id="@+id/poster"
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:importantForAccessibility="no"
+				android:scaleType="centerCrop"
+				app:layout_constraintDimensionRatio="2:3"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
+
+			<com.google.android.material.progressindicator.LinearProgressIndicator
+				android:id="@+id/progress"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:max="100"
+				android:visibility="gone"
+				app:layout_constraintBottom_toBottomOf="@id/poster"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:trackCornerRadius="0dp"
+				app:trackThickness="4dp" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
+	</com.google.android.material.card.MaterialCardView>
+
+	<TextView
+		android:id="@+id/title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="6dp"
+		android:ellipsize="end"
+		android:importantForAccessibility="no"
+		android:maxLines="2"
+		android:textAppearance="?attr/textAppearanceBodySmall" />
+</LinearLayout>

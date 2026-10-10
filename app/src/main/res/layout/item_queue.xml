@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_margin="6dp">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:padding="8dp">
+
+		<ImageView
+			android:id="@+id/queue_poster"
+			android:layout_width="48dp"
+			android:layout_height="72dp"
+			android:background="@drawable/bg_poster_placeholder"
+			android:importantForAccessibility="no"
+			android:scaleType="centerCrop" />
+
+		<TextView
+			android:id="@+id/queue_title"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="12dp"
+			android:layout_weight="1"
+			android:ellipsize="end"
+			android:maxLines="2"
+			android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+		<ImageButton
+			android:id="@+id/queue_remove"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:contentDescription="@string/action_remove"
+			android:src="@drawable/ic_close" />
+	</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

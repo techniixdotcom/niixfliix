@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/episode_root"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="?attr/selectableItemBackground"
+	android:gravity="center_vertical"
+	android:orientation="horizontal"
+	android:padding="8dp">
+
+	<com.google.android.material.card.MaterialCardView
+		style="@style/Widget.Niixfliix.Card.Thumbnail"
+		android:layout_width="@dimen/episode_thumb_width"
+		android:layout_height="wrap_content">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageView
+				android:id="@+id/episode_thumb"
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:importantForAccessibility="no"
+				android:scaleType="centerCrop"
+				app:layout_constraintDimensionRatio="16:9"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
+
+			<com.google.android.material.progressindicator.LinearProgressIndicator
+				android:id="@+id/episode_progress"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:max="100"
+				android:visibility="gone"
+				app:layout_constraintBottom_toBottomOf="@id/episode_thumb"
+				app:layout_constraintEnd_toEndOf="parent"
+				app:layout_constraintStart_toStartOf="parent"
+				app:trackCornerRadius="0dp"
+				app:trackThickness="3dp" />
+		</androidx.constraintlayout.widget.ConstraintLayout>
+	</com.google.android.material.card.MaterialCardView>
+
+	<LinearLayout
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="12dp"
+		android:layout_weight="1"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/episode_title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:maxLines="2"
+			android:textAppearance="?attr/textAppearanceTitleSmall" />
+
+		<TextView
+			android:id="@+id/episode_date"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textAppearance="@style/TextAppearance.Niixfliix.Caption" />
+
+		<TextView
+			android:id="@+id/episode_next"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="4dp"
+			android:text="@string/details_up_next"
+			android:textAllCaps="true"
+			android:textColor="@color/red"
+			android:textSize="11sp"
+			android:textStyle="bold"
+			android:visibility="gone" />
+	</LinearLayout>
+
+	<ImageView
+		android:id="@+id/episode_watched"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:layout_marginStart="8dp"
+		android:contentDescription="@string/details_watched"
+		android:src="@drawable/ic_check_circle"
+		app:tint="?attr/colorOnSurfaceVariant" />
+</LinearLayout>

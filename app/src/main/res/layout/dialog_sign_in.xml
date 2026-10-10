@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:paddingHorizontal="24dp"
+	android:paddingTop="8dp">
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/account_sign_in_summary"
+		android:textAppearance="@style/TextAppearance.Niixfliix.Caption" />
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/email_layout"
+		style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp"
+		android:hint="@string/account_email">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:id="@+id/email"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:autofillHints="emailAddress"
+			android:inputType="textEmailAddress"
+			android:maxLength="320" />
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/password_layout"
+		style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:hint="@string/account_password">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:id="@+id/password"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:autofillHints="password"
+			android:inputType="textPassword"
+			android:maxLength="1024" />
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.progressindicator.LinearProgressIndicator
+		android:id="@+id/progress"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp"
+		android:indeterminate="true"
+		android:visibility="invisible" />
+</LinearLayout>

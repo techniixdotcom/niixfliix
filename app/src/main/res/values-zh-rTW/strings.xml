@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- app_name is generated from gradle.properties -->
+
+	<!-- Navigation -->
+	<string name="nav_home">首頁</string>
+	<string name="nav_discover">探索</string>
+	<string name="nav_library">媒體庫</string>
+	<string name="nav_search">搜尋</string>
+	<string name="nav_settings">設定</string>
+
+	<!-- Common actions -->
+	<string name="action_back">返回</string>
+	<string name="action_cancel">取消</string>
+	<string name="action_clear">清除</string>
+	<string name="action_close">關閉</string>
+	<string name="action_next">下一個</string>
+	<string name="action_delete">刪除</string>
+	<string name="action_done">完成</string>
+	<string name="action_install">安裝</string>
+	<string name="action_more">更多選項</string>
+	<string name="action_ok">確定</string>
+	<string name="action_remove">移除</string>
+	<string name="action_retry">重試</string>
+	<string name="action_save">儲存</string>
+
+	<string name="disclaimer">本應用程式是播放器和附加元件用戶端，不含任何媒體內容，也不託管任何串流。Torrentio 及其他附加元件由第三方營運，你須對自己觀看的內容負責。</string>
+
+	<!-- Types and episodes -->
+	<string name="type_movies">電影</string>
+	<string name="type_series">影集</string>
+	<string name="episode_number">第 %1$d 季 第 %2$d 集</string>
+	<string name="episode_with_title">%1$s · %2$s</string>
+	<string name="quality_other">其他</string>
+	<string name="percent">%1$d%%</string>
+	<string name="speed_per_second">%1$s/秒</string>
+
+	<!-- Home -->
+	<string name="row_title">%1$s · %2$s</string>
+	<string name="row_continue_watching">繼續觀看</string>
+	<string name="row_failed">無法載入這一列。輕觸即可重試。</string>
+	<string name="row_empty">目前沒有內容。</string>
+	<string name="home_empty">還沒有目錄。安裝含目錄的附加元件（例如 Cinemeta）後，內容就會顯示在這裡。</string>
+	<plurals name="addons_down">
+		<item quantity="other">%1$s 目前沒有回應。其他功能仍可正常使用。</item>
+	</plurals>
+
+	<!-- Discover -->
+	<string name="discover_catalog">目錄</string>
+	<string name="discover_genre">類型</string>
+	<string name="discover_all_genres">所有類型</string>
+	<string name="discover_empty">這個目錄中找不到內容。</string>
+	<string name="discover_failed">這個目錄沒有回應。請換一個目錄或稍後再試。</string>
+	<string name="discover_no_catalogs">你的附加元件都沒有可瀏覽的目錄。</string>
+
+	<!-- Search -->
+	<string name="search_hint">搜尋電影和影集</string>
+	<string name="search_recent">最近的搜尋</string>
+	<string name="search_searching">搜尋中…</string>
+	<string name="search_no_results">沒有結果。</string>
+	<string name="search_no_sources">你的附加元件都不支援搜尋。</string>
+
+	<!-- Library -->
+	<string name="library_saved">已收藏</string>
+	<string name="library_history">紀錄</string>
+	<string name="library_downloads">下載</string>
+	<string name="library_queue">佇列</string>
+	<string name="library_queue_empty">佇列是空的。長按電影、影集或單集即可加入。</string>
+	<string name="queue_play_all">播放佇列</string>
+	<string name="queue_clear">清空</string>
+	<string name="queue_add">加入佇列</string>
+	<string name="queue_play_next">下一個播放</string>
+	<string name="queue_added">已加入佇列</string>
+	<string name="queue_added_next">將在下一個播放</string>
+	<string name="queue_already">已在佇列中</string>
+	<string name="queue_marked_watched">已標記為看過</string>
+	<string name="queue_mark_failed">無法載入集數清單。</string>
+	<string name="queue_finding">正在尋找來源…</string>
+	<string name="queue_no_stream">找不到可用的來源。</string>
+	<string name="library_saved_empty">尚未收藏任何內容。輕觸影片上的書籤圖示即可收藏到這裡。</string>
+	<string name="library_history_empty">你看過的內容會顯示在這裡。</string>
+	<string name="library_downloads_empty">沒有下載內容。長按串流即可下載。</string>
+	<string name="library_remove_saved">要從收藏中移除嗎？</string>
+	<string name="library_remove_history">要從觀看紀錄中移除嗎？</string>
+
+	<!-- Details -->
+	<string name="details_play">播放</string>
+	<string name="details_play_episode">播放 %1$s</string>
+	<string name="details_continue_episode">繼續播放 %1$s</string>
+	<string name="details_continue_at">從 %1$s 繼續播放</string>
+	<string name="details_save">加入媒體庫</string>
+	<string name="details_unsave">從媒體庫移除</string>
+	<string name="details_mark_watched">標示為已觀看</string>
+	<string name="details_mark_unwatched">標示為未觀看</string>
+	<string name="details_trailer">預告片</string>
+	<string name="details_rating">★ %1$s</string>
+	<string name="details_cast">演員：%1$s</string>
+	<string name="details_season">季</string>
+	<string name="details_season_number">第 %1$d 季</string>
+	<string name="details_specials">特別篇</string>
+	<string name="details_up_next">接著播放</string>
+	<string name="details_watched">已觀看</string>
+	<string name="details_no_meta">你的附加元件都沒有這部影片的詳細資訊。你仍可嘗試播放。</string>
+
+	<!-- Streams -->
+	<plurals name="streams_found">
+		<item quantity="other">找到 %d 個串流</item>
+	</plurals>
+	<string name="streams_none_found">找不到這部影片的串流。</string>
+	<string name="streams_no_addons">你的附加元件都沒有提供這部影片的串流。</string>
+	<string name="streams_unsupported">無法在這裡播放這類串流。</string>
+	<string name="streams_copy_link">複製連結</string>
+	<string name="streams_open_external">在其他播放器中開啟</string>
+	<string name="streams_download">下載</string>
+	<string name="streams_copied">已複製</string>
+	<string name="streams_quality_wifi">自動：Wi-Fi 下 %1$s · 變更</string>
+	<string name="streams_quality_mobile">自動：行動數據下 %1$s · 變更</string>
+	<string name="streams_autoplay">%2$d 秒後播放 %1$s…</string>
+	<string name="streams_choose_myself">我自己選</string>
+	<string name="streams_none_in_range">沒有 2K、1080p、720p 或 480p 的來源。</string>
+	<string name="quality_title">自動播放畫質</string>
+	<string name="quality_hint">分別為 Wi-Fi 和行動數據選擇畫質。會自動播放該畫質下最好的來源；如果沒有，就改用低一級的畫質。</string>
+
+	<!-- Player -->
+	<string name="player_subtitles">字幕</string>
+	<string name="player_subtitles_off">關閉</string>
+	<string name="player_subtitles_from_file">從檔案載入…</string>
+	<string name="player_subtitle_from_addon">%1$s · %2$s</string>
+	<string name="player_subtitle_file">字幕檔</string>
+	<string name="player_audio">音訊</string>
+	<string name="player_audio_surround">%1$s（%2$s）</string>
+	<string name="player_no_audio_tracks">沒有音軌</string>
+	<string name="player_track_label">%1$s · %2$s</string>
+	<string name="player_track_number">音軌 %1$d</string>
+	<string name="player_track_unknown">未知語言</string>
+	<string name="player_switch_stream">切換串流</string>
+	<string name="player_stream_label">%1$s · %2$s</string>
+	<string name="player_no_other_streams">沒有其他可切換的串流。</string>
+	<string name="player_minimize">最小化</string>
+	<string name="player_pip">子母畫面</string>
+	<string name="player_fullscreen">全螢幕</string>
+	<string name="player_exit_fullscreen">結束全螢幕</string>
+	<string name="player_lock">鎖定螢幕</string>
+	<string name="player_unlock">解鎖</string>
+	<string name="player_unlock_hint">長按 5 秒解鎖</string>
+	<string name="player_play_pause">播放或暫停</string>
+	<string name="player_seek_back">−%1$d 秒</string>
+	<string name="player_seek_forward">+%1$d 秒</string>
+	<string name="player_zoom_fill">縮放至填滿</string>
+	<string name="player_zoom_fit">符合螢幕大小</string>
+	<string name="player_up_next_in">%1$s 後播放下一集</string>
+	<string name="player_up_next_cancel">不要播放下一集</string>
+	<string name="player_try_next">試試下一個串流</string>
+	<string name="player_trying_next">這個串流播放失敗。正在嘗試下一個…</string>
+	<string name="player_no_next_stream">找不到下一集的串流。</string>
+	<string name="player_error_generic">串流已停止運作。</string>
+	<string name="player_error_http">伺服器拒絕了這個串流（HTTP %1$d）。</string>
+	<string name="player_error_network">無法連線到串流。請檢查你的網路連線。</string>
+	<string name="player_error_format">這部裝置不支援此影片格式。</string>
+
+	<!-- Torrent engine -->
+	<string name="torrent_connecting">連線中…</string>
+	<plurals name="torrent_peers">
+		<item quantity="other">%d 個節點</item>
+	</plurals>
+	<string name="torrent_finding">正在尋找檔案…\n%1$s · %2$s</string>
+	<string name="torrent_buffering">緩衝中 %1$d%%\n%2$s · %3$s</string>
+	<string name="torrent_playing">%1$s · %2$s</string>
+	<string name="torrent_error_no_video">這個種子中沒有可播放的影片檔。</string>
+	<string name="torrent_error_too_big">這個檔案大小為 %1$s，超過 %2$s 的種子快取。請在設定中調高快取大小，或選擇較小的檔案。</string>
+	<string name="torrent_error_no_space">可用空間不足，無法存放這個 %1$s 的檔案。</string>
+	<string name="torrent_error_wifi">由於你已離開 Wi-Fi，種子串流已停止。你可以在設定中變更此選項。</string>
+	<string name="torrent_error_failed">無法開始播放此來源。</string>
+
+	<!-- Magnet links -->
+	<string name="magnet_untitled">磁力連結</string>
+	<string name="magnet_source">磁力</string>
+
+	<!-- Downloads -->
+	<string name="channel_downloads">下載</string>
+	<string name="channel_updates">更新</string>
+	<string name="download_preparing">正在準備下載…</string>
+	<string name="download_running">下載中</string>
+	<string name="download_started">已開始下載</string>
+	<string name="download_could_not_start">無法開始下載。</string>
+	<string name="download_needs_storage">在這個 Android 版本上下載需要儲存空間存取權。</string>
+	<string name="download_queued">等待中</string>
+	<string name="download_paused">已暫停 · %1$s</string>
+	<string name="download_done">已完成 · %1$s</string>
+	<string name="download_failed">下載失敗。輕觸「繼續」即可重試。</string>
+	<string name="download_progress">%1$d%% · %2$s / %3$s</string>
+	<string name="download_pause">暫停</string>
+	<string name="download_resume">繼續</string>
+	<string name="download_delete_message">要刪除這個下載項目及其檔案嗎？</string>
+	<string name="download_source">已下載</string>
+
+	<!-- Errors -->
+	<string name="error_link_not_allowed">無法開啟該連結。</string>
+	<string name="error_no_app_for_link">這部裝置上沒有可開啟該連結的應用程式。</string>
+	<string name="error_unsupported_link">該連結不是附加元件。</string>
+	<string name="error_bad_magnet">該磁力連結無效。</string>
+
+	<!-- Add-ons -->
+	<string name="addon_install_title">要安裝附加元件嗎？</string>
+	<string name="addon_install_message">要安裝位於 %1$s 的附加元件嗎？請只安裝你信任的附加元件，它們能看到你查詢的內容。</string>
+	<string name="addon_installed">已安裝 %1$s</string>
+	<string name="addon_error_invalid_url">這不是附加元件連結。連結應以 https:// 或 stremio:// 開頭，並以 /manifest.json 結尾。</string>
+	<string name="addon_error_already_installed">已安裝這個附加元件。</string>
+	<string name="addon_error_invalid_manifest">該位址的回應不像附加元件。</string>
+	<string name="addon_error_unreachable">無法連線到該附加元件。請檢查連結和網路連線。</string>
+	<string name="addon_error_storage">無法在這部裝置上儲存附加元件清單。</string>
+	<string name="addons_add">新增附加元件</string>
+	<string name="addons_add_hint">附加元件連結</string>
+	<string name="addons_add_message">貼上附加元件的資訊清單連結（https:// 或 stremio://）。</string>
+	<string name="addons_installing">安裝中…</string>
+	<string name="addons_configure">設定</string>
+	<string name="addons_reorder">拖曳以調整順序</string>
+	<string name="addons_not_answering">沒有回應</string>
+	<string name="addons_version">版本 %1$s</string>
+	<string name="addons_remove_message">要移除這個附加元件嗎？</string>
+	<string name="addons_reset">還原預設值</string>
+	<string name="addons_reset_message">這會重新加入不含任何設定的 Cinemeta、Torrentio、ThePirateBay+ 和 OpenSubtitles，並移除其他所有內容，包括你的 Debrid 金鑰。</string>
+	<string name="addons_reset_confirm">重設</string>
+	<string name="configure_paste_link">貼上連結</string>
+	<string name="configure_paste_message">貼上網頁提供給你的安裝連結。</string>
+
+	<!-- Debrid -->
+	<string name="debrid_service">Debrid 服務</string>
+	<string name="debrid_none">無</string>
+	<string name="debrid_key">API 金鑰</string>
+	<string name="debrid_key_saved">已儲存金鑰 %1$s。留空即可保留。</string>
+	<string name="debrid_test">測試</string>
+	<string name="debrid_testing">檢查中…</string>
+	<string name="debrid_key_valid">金鑰有效。</string>
+	<string name="debrid_key_invalid">服務拒絕了這個金鑰。</string>
+	<string name="debrid_key_unknown">目前無法檢查。金鑰可能仍然有效。</string>
+	<string name="debrid_key_invalid_format">這看起來不像 API 金鑰。</string>
+	<string name="debrid_get_key">哪裡可以找到我的金鑰？</string>
+
+	<!-- First start -->
+	<string name="setup_title">歡迎使用</string>
+	<string name="setup_mode_debrid">Debrid 帳戶（選用）</string>
+	<string name="setup_debrid_hint">有金鑰時，已快取的來源會立即開始播放。沒有也能在這支手機上正常播放。</string>
+	<string name="setup_use_account">使用我的 Stremio 帳戶</string>
+	<string name="account_section">Stremio 帳戶</string>
+	<string name="account_sign_in">登入 Stremio</string>
+	<string name="account_sign_in_summary">選用。將你的 Stremio 外掛和媒體庫匯入應用程式，並保持媒體庫同步。</string>
+	<string name="account_signed_in">已登入：%1$s</string>
+	<string name="account_sign_out">登出</string>
+	<string name="account_sign_out_confirm">要登出 Stremio 嗎？外掛和媒體庫會保留在這支手機上。</string>
+	<string name="account_email">電子郵件</string>
+	<string name="account_password">密碼</string>
+	<string name="account_error_login">電子郵件或密碼錯誤。</string>
+	<string name="account_error_network">無法連線到 Stremio。請檢查網路連線。</string>
+	<string name="account_done">已登入。你的外掛和媒體庫已匯入。</string>
+	<string name="setup_quality">自動播放畫質</string>
+	<string name="setup_quality_wifi">使用 Wi-Fi 時</string>
+	<string name="setup_quality_mobile">使用行動數據時</string>
+	<string name="setup_language">你的語言</string>
+	<string name="setup_language_hint">影片有你的語言的音軌時就用它播放。沒有的話使用你的語言的字幕；如果也沒有，就用原音加英文字幕。</string>
+	<string name="setup_content">內容</string>
+	<string name="setup_hide_adult">隱藏標示為成人的內容</string>
+
+	<!-- Torrentio settings -->
+	<string name="torrentio_title">Torrentio</string>
+	<string name="torrentio_debrid_section">Debrid 服務</string>
+	<string name="torrentio_debrid_explained">設定 Debrid 金鑰後，Torrentio 會傳回可立即播放的直接連結，手機上不必進行種子下載。</string>
+	<string name="torrentio_results_section">結果</string>
+	<string name="torrentio_sort">排序方式</string>
+	<string name="torrentio_limit">每種畫質數量</string>
+	<string name="torrentio_no_limit">不限</string>
+	<string name="torrentio_hide">隱藏下列項目</string>
+	<string name="torrentio_languages">偏好語言</string>
+	<string name="torrentio_languages_explained">這些語言的版本會依你選擇的順序排在前面。</string>
+	<string name="torrentio_providers">來源</string>
+	<string name="torrentio_providers_explained">全部不選即可搜尋所有來源。</string>
+	<string name="torrentio_advanced_section">所有選項</string>
+	<string name="torrentio_open_configure">開啟 Torrentio 本身的設定頁面</string>
+	<string name="torrentio_not_a_link">這不是 Torrentio 連結。</string>
+	<string name="torrentio_saved">已儲存 Torrentio 設定</string>
+
+	<!-- Settings -->
+	<string name="settings_addons">附加元件</string>
+	<string name="settings_manage_addons">管理附加元件</string>
+	<plurals name="settings_addons_installed">
+		<item quantity="other">已安裝 %d 個附加元件</item>
+	</plurals>
+	<string name="settings_torrents">種子播放</string>
+	<string name="settings_debrid">Debrid 和 Torrentio</string>
+	<string name="settings_debrid_summary">%1$s · 金鑰 %2$s</string>
+	<string name="settings_torrentio_missing">未安裝 Torrentio</string>
+	<string name="settings_playback">播放</string>
+	<string name="settings_quality_wifi">Wi-Fi 畫質</string>
+	<string name="settings_quality_mobile">行動數據畫質</string>
+	<string name="settings_subtitle_size">字幕大小</string>
+	<string name="settings_subtitle_color">字幕顏色</string>
+	<string name="settings_subtitle_background">字幕背景</string>
+	<string name="settings_engine">種子引擎</string>
+	<string name="settings_cache_size">快取大小</string>
+	<string name="settings_wifi_only">僅限 Wi-Fi</string>
+	<string name="settings_wifi_only_summary">只在連上 Wi-Fi 時串流種子。</string>
+	<string name="settings_clear_on_exit">播放結束時清除快取</string>
+	<string name="settings_clear_cache">立即清除快取</string>
+	<string name="settings_cache_cleared">已清除快取</string>
+	<string name="settings_appearance">外觀</string>
+	<string name="settings_language">語言</string>
+	<string name="settings_language_system">系統預設</string>
+	<string name="settings_content">內容</string>
+	<string name="settings_history">紀錄</string>
+	<string name="settings_clear_history">清除觀看紀錄</string>
+	<string name="settings_clear_history_confirm">要清除觀看紀錄和已觀看標示嗎？</string>
+	<string name="settings_clear_searches">清除最近的搜尋</string>
+	<string name="settings_cleared">已清除</string>
+	<string name="settings_updates">更新</string>
+	<string name="settings_check_updates">檢查更新</string>
+	<string name="settings_version">版本 %1$s</string>
+	<string name="settings_check_on_start">啟動應用程式時檢查</string>
+	<string name="settings_check_on_start_summary">每次啟動時向 GitHub 查詢一次新版本。</string>
+	<string name="settings_about">關於</string>
+	<string name="settings_about_app">關於本應用程式</string>
+	<string name="settings_where_traffic_goes">你的流量去向</string>
+	<string name="settings_where_traffic_goes_summary">本應用程式連線的每台伺服器及原因。</string>
+	<string name="settings_licences">開放原始碼授權</string>
+	<string name="settings_licences_summary">本應用程式使用的程式庫。</string>
+	<string name="settings_source_code">原始碼</string>
+	<string name="traffic_explained">本應用程式只會連線到下列伺服器：\n\n• 你的附加元件（Cinemeta、Torrentio、ThePirateBay+、OpenSubtitles 以及你新增的其他附加元件），用於取得目錄、詳細資訊、串流和字幕。\n• 這些附加元件指定的圖片伺服器，用於取得海報和背景圖。\n• 你播放的連結中的串流伺服器，例如你的 Debrid 服務的下載伺服器。\n• 你的 Debrid 服務的 API，僅在你輕觸「測試」時。\n• TMDB 外掛程式（tmdb-addon.baby-beamup.club），僅在應用程式不是英文時使用，用來以你的語言顯示標題、簡介和集數名稱。\n• Wikidata（query.wikidata.org），僅在應用程式不是英文時使用，用來以你的語言顯示標題。只會傳送 IMDb ID 和你的語言。\n• Stremio（api.strem.io）：僅在你登入後，用於外掛和媒體庫。\n• GitHub，僅在你檢查更新時。\n• 其他 BitTorrent 節點，僅在你使用內建引擎播放種子時。\n\n本應用程式沒有廣告、數據分析、追蹤或當機報告。你的 Debrid 金鑰會加密儲存，且只會傳送給 Torrentio 和你的 Debrid 服務。</string>
+
+	<!-- Updates -->
+	<string name="update_checking">正在檢查更新…</string>
+	<string name="update_none">你使用的已是最新版本。</string>
+	<string name="update_check_failed">無法檢查更新。</string>
+	<string name="update_available">有新版本 %1$s 可用</string>
+	<string name="update_no_notes">沒有版本資訊。</string>
+	<string name="update_install">下載並安裝</string>
+	<string name="update_later">稍後</string>
+	<string name="update_downloading">正在下載更新…</string>
+	<string name="update_permission_title">允許更新</string>
+	<string name="update_permission_message">若要安裝更新，請在系統設定中允許本應用程式安裝應用程式。</string>
+	<string name="update_open_settings">開啟設定</string>
+	<string name="update_failed_title">未安裝更新</string>
+	<string name="update_failed_download">下載失敗。請稍後再試。</string>
+	<string name="update_failed_too_large">更新檔案超過允許的大小。</string>
+	<string name="update_failed_checksum">下載的檔案與總和檢查碼不符，已遭捨棄。</string>
+	<string name="update_failed_untrusted">下載的應用程式簽署與目前的應用程式不一致，已遭捨棄。</string>
+	<string name="update_failed_not_newer">下載的版本並未比你目前的版本新。</string>
+	<string name="update_install_failed">安裝程式無法安裝此更新。</string>
+	<string name="update_ready_title">更新已可安裝</string>
+	<string name="update_ready_text">輕觸以完成安裝。</string>
+
+	<!-- order must match the Java enums and lists -->
+	<string-array name="subtitle_colors">
+		<item>白色</item>
+		<item>黃色</item>
+		<item>青色</item>
+	</string-array>
+	<string-array name="subtitle_backgrounds">
+		<item>無</item>
+		<item>半透明</item>
+		<item>黑色</item>
+	</string-array>
+	<string-array name="torrentio_sorts">
+		<item>畫質</item>
+		<item>畫質，再依大小</item>
+		<item>做種數</item>
+		<item>大小</item>
+	</string-array>
+	<string-array name="torrentio_quality_filters">
+		<item>BluRay REMUX</item>
+		<item>HDR</item>
+		<item>Dolby Vision</item>
+		<item>Dolby Vision 與 HDR</item>
+		<item>3D</item>
+		<item>4K</item>
+		<item>1080p</item>
+		<item>720p</item>
+		<item>480p</item>
+		<item>其他</item>
+		<item>試映版（Screener）</item>
+		<item>CAM</item>
+		<item>未知畫質</item>
+	</string-array>
+</resources>

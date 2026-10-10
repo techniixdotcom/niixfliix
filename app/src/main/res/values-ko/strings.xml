@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- app_name is generated from gradle.properties -->
+
+	<!-- Navigation -->
+	<string name="nav_home">홈</string>
+	<string name="nav_discover">둘러보기</string>
+	<string name="nav_library">보관함</string>
+	<string name="nav_search">검색</string>
+	<string name="nav_settings">설정</string>
+
+	<!-- Common actions -->
+	<string name="action_back">뒤로</string>
+	<string name="action_cancel">취소</string>
+	<string name="action_clear">지우기</string>
+	<string name="action_close">닫기</string>
+	<string name="action_next">다음</string>
+	<string name="action_delete">삭제</string>
+	<string name="action_done">완료</string>
+	<string name="action_install">설치</string>
+	<string name="action_more">옵션 더보기</string>
+	<string name="action_ok">확인</string>
+	<string name="action_remove">제거</string>
+	<string name="action_retry">다시 시도</string>
+	<string name="action_save">저장</string>
+
+	<string name="disclaimer">이 앱은 플레이어이자 애드온 클라이언트예요. 미디어를 포함하거나 스트림을 호스팅하지 않아요. Torrentio 및 기타 애드온은 제3자가 운영하며, 무엇을 시청할지는 사용자 본인의 책임이에요.</string>
+
+	<!-- Types and episodes -->
+	<string name="type_movies">영화</string>
+	<string name="type_series">시리즈</string>
+	<string name="episode_number">시즌 %1$d %2$d화</string>
+	<string name="episode_with_title">%1$s · %2$s</string>
+	<string name="quality_other">기타</string>
+	<string name="percent">%1$d%%</string>
+	<string name="speed_per_second">%1$s/초</string>
+
+	<!-- Home -->
+	<string name="row_title">%1$s · %2$s</string>
+	<string name="row_continue_watching">이어서 보기</string>
+	<string name="row_failed">이 줄을 불러오지 못했어요. 탭하여 다시 시도하세요.</string>
+	<string name="row_empty">지금은 아무것도 없어요.</string>
+	<string name="home_empty">아직 카탈로그가 없어요. Cinemeta처럼 카탈로그가 있는 애드온이 이 화면을 채워요.</string>
+	<plurals name="addons_down">
+		<item quantity="other">%1$s 애드온이 지금 응답하지 않아요. 다른 기능은 계속 사용할 수 있어요.</item>
+	</plurals>
+
+	<!-- Discover -->
+	<string name="discover_catalog">카탈로그</string>
+	<string name="discover_genre">장르</string>
+	<string name="discover_all_genres">모든 장르</string>
+	<string name="discover_empty">이 카탈로그에서 찾은 항목이 없어요.</string>
+	<string name="discover_failed">이 카탈로그가 응답하지 않았어요. 다른 카탈로그를 시도하거나 나중에 다시 확인하세요.</string>
+	<string name="discover_no_catalogs">둘러볼 카탈로그가 있는 애드온이 없어요.</string>
+
+	<!-- Search -->
+	<string name="search_hint">영화 및 시리즈 검색</string>
+	<string name="search_recent">최근 검색</string>
+	<string name="search_searching">검색 중…</string>
+	<string name="search_no_results">결과가 없어요.</string>
+	<string name="search_no_sources">검색을 지원하는 애드온이 없어요.</string>
+
+	<!-- Library -->
+	<string name="library_saved">저장됨</string>
+	<string name="library_history">기록</string>
+	<string name="library_downloads">다운로드</string>
+	<string name="library_queue">대기열</string>
+	<string name="library_queue_empty">대기열이 비어 있어요. 영화, 시리즈, 에피소드를 길게 눌러 추가하세요.</string>
+	<string name="queue_play_all">대기열 재생</string>
+	<string name="queue_clear">비우기</string>
+	<string name="queue_add">대기열에 추가</string>
+	<string name="queue_play_next">다음에 재생</string>
+	<string name="queue_added">대기열에 추가했어요</string>
+	<string name="queue_added_next">다음에 재생돼요</string>
+	<string name="queue_already">이미 대기열에 있어요</string>
+	<string name="queue_marked_watched">시청함으로 표시했어요</string>
+	<string name="queue_mark_failed">에피소드 목록을 불러올 수 없어요.</string>
+	<string name="queue_finding">스트림을 찾는 중…</string>
+	<string name="queue_no_stream">스트림을 찾지 못했어요.</string>
+	<string name="library_saved_empty">아직 저장한 항목이 없어요. 작품의 북마크를 사용해 여기에 보관하세요.</string>
+	<string name="library_history_empty">시청한 작품이 여기에 표시돼요.</string>
+	<string name="library_downloads_empty">다운로드가 없어요. 스트림을 길게 눌러 다운로드하세요.</string>
+	<string name="library_remove_saved">저장한 작품에서 제거할까요?</string>
+	<string name="library_remove_history">시청 기록에서 제거할까요?</string>
+
+	<!-- Details -->
+	<string name="details_play">재생</string>
+	<string name="details_play_episode">%1$s 재생</string>
+	<string name="details_continue_episode">%1$s 이어서 보기</string>
+	<string name="details_continue_at">%1$s부터 이어서 보기</string>
+	<string name="details_save">보관함에 저장</string>
+	<string name="details_unsave">보관함에서 제거</string>
+	<string name="details_mark_watched">시청함으로 표시</string>
+	<string name="details_mark_unwatched">시청 안 함으로 표시</string>
+	<string name="details_trailer">예고편</string>
+	<string name="details_rating">★ %1$s</string>
+	<string name="details_cast">출연: %1$s</string>
+	<string name="details_season">시즌</string>
+	<string name="details_season_number">시즌 %1$d</string>
+	<string name="details_specials">스페셜</string>
+	<string name="details_up_next">다음 에피소드</string>
+	<string name="details_watched">시청함</string>
+	<string name="details_no_meta">이 작품의 상세 정보를 제공하는 애드온이 없어요. 그래도 재생은 시도할 수 있어요.</string>
+
+	<!-- Streams -->
+	<plurals name="streams_found">
+		<item quantity="other">스트림 %d개 찾음</item>
+	</plurals>
+	<string name="streams_none_found">이 작품의 스트림을 찾지 못했어요.</string>
+	<string name="streams_no_addons">이 작품의 스트림을 제공하는 애드온이 없어요.</string>
+	<string name="streams_unsupported">이 유형의 스트림은 여기서 재생할 수 없어요.</string>
+	<string name="streams_copy_link">링크 복사</string>
+	<string name="streams_open_external">다른 플레이어에서 열기</string>
+	<string name="streams_download">다운로드</string>
+	<string name="streams_copied">복사됨</string>
+	<string name="streams_quality_wifi">자동: Wi-Fi에서 %1$s · 변경</string>
+	<string name="streams_quality_mobile">자동: 모바일 데이터에서 %1$s · 변경</string>
+	<string name="streams_autoplay">%2$d초 후 %1$s 재생…</string>
+	<string name="streams_choose_myself">직접 고르기</string>
+	<string name="streams_none_in_range">2K, 1080p, 720p, 480p 스트림이 없습니다.</string>
+	<string name="quality_title">자동 재생 화질</string>
+	<string name="quality_hint">Wi-Fi용과 모바일 데이터용을 하나씩 고르세요. 해당 화질에서 가장 좋은 스트림이 자동으로 재생됩니다. 없으면 한 단계 낮은 화질을 사용합니다.</string>
+
+	<!-- Player -->
+	<string name="player_subtitles">자막</string>
+	<string name="player_subtitles_off">끄기</string>
+	<string name="player_subtitles_from_file">파일에서 불러오기…</string>
+	<string name="player_subtitle_from_addon">%1$s · %2$s</string>
+	<string name="player_subtitle_file">자막 파일</string>
+	<string name="player_audio">오디오</string>
+	<string name="player_audio_surround">%1$s (%2$s)</string>
+	<string name="player_no_audio_tracks">오디오 트랙 없음</string>
+	<string name="player_track_label">%1$s · %2$s</string>
+	<string name="player_track_number">트랙 %1$d</string>
+	<string name="player_track_unknown">알 수 없는 언어</string>
+	<string name="player_switch_stream">스트림 전환</string>
+	<string name="player_stream_label">%1$s · %2$s</string>
+	<string name="player_no_other_streams">전환할 다른 스트림이 없어요.</string>
+	<string name="player_minimize">최소화</string>
+	<string name="player_pip">PIP 모드</string>
+	<string name="player_fullscreen">전체 화면</string>
+	<string name="player_exit_fullscreen">전체 화면 종료</string>
+	<string name="player_lock">화면 잠금</string>
+	<string name="player_unlock">잠금 해제</string>
+	<string name="player_unlock_hint">5초 동안 길게 눌러 잠금 해제</string>
+	<string name="player_play_pause">재생 또는 일시정지</string>
+	<string name="player_seek_back">−%1$d초</string>
+	<string name="player_seek_forward">+%1$d초</string>
+	<string name="player_zoom_fill">화면 채우기</string>
+	<string name="player_zoom_fit">화면에 맞추기</string>
+	<string name="player_up_next_in">%1$s 후 다음 에피소드</string>
+	<string name="player_up_next_cancel">다음 에피소드 재생 안 함</string>
+	<string name="player_try_next">다음 스트림 시도</string>
+	<string name="player_trying_next">스트림 재생에 실패했어요. 다음 스트림을 시도하는 중…</string>
+	<string name="player_no_next_stream">다음 에피소드의 스트림을 찾지 못했어요.</string>
+	<string name="player_error_generic">스트림이 중단됐어요.</string>
+	<string name="player_error_http">서버가 스트림을 거부했어요(HTTP %1$d).</string>
+	<string name="player_error_network">스트림에 연결하지 못했어요. 네트워크 연결을 확인하세요.</string>
+	<string name="player_error_format">이 기기에서는 지원하지 않는 동영상 형식이에요.</string>
+
+	<!-- Torrent engine -->
+	<string name="torrent_connecting">연결 중…</string>
+	<plurals name="torrent_peers">
+		<item quantity="other">피어 %d명</item>
+	</plurals>
+	<string name="torrent_finding">파일을 찾는 중…\n%1$s · %2$s</string>
+	<string name="torrent_buffering">버퍼링 %1$d%%\n%2$s · %3$s</string>
+	<string name="torrent_playing">%1$s · %2$s</string>
+	<string name="torrent_error_no_video">이 토렌트에는 재생할 수 있는 동영상 파일이 없어요.</string>
+	<string name="torrent_error_too_big">이 파일은 %1$s로, 토렌트 캐시(%2$s)보다 커요. 설정에서 캐시 크기를 늘리거나 더 작은 파일을 고르세요.</string>
+	<string name="torrent_error_no_space">이 %1$s 파일을 저장할 여유 공간이 부족해요.</string>
+	<string name="torrent_error_wifi">Wi-Fi 연결이 끊겨 토렌트 스트리밍을 중지했어요. 설정에서 변경할 수 있어요.</string>
+	<string name="torrent_error_failed">이 스트림을 시작할 수 없어요.</string>
+
+	<!-- Magnet links -->
+	<string name="magnet_untitled">마그넷 링크</string>
+	<string name="magnet_source">마그넷</string>
+
+	<!-- Downloads -->
+	<string name="channel_downloads">다운로드</string>
+	<string name="channel_updates">업데이트</string>
+	<string name="download_preparing">다운로드 준비 중…</string>
+	<string name="download_running">다운로드 중</string>
+	<string name="download_started">다운로드를 시작했어요</string>
+	<string name="download_could_not_start">다운로드를 시작하지 못했어요.</string>
+	<string name="download_needs_storage">이 Android 버전에서는 다운로드하려면 저장공간 접근 권한이 필요해요.</string>
+	<string name="download_queued">대기 중</string>
+	<string name="download_paused">일시중지됨 · %1$s</string>
+	<string name="download_done">완료 · %1$s</string>
+	<string name="download_failed">실패했어요. 재개를 탭하여 다시 시도하세요.</string>
+	<string name="download_progress">%1$d%% · %2$s / %3$s</string>
+	<string name="download_pause">일시중지</string>
+	<string name="download_resume">재개</string>
+	<string name="download_delete_message">이 다운로드와 파일을 삭제할까요?</string>
+	<string name="download_source">다운로드됨</string>
+
+	<!-- Errors -->
+	<string name="error_link_not_allowed">이 링크는 열 수 없어요.</string>
+	<string name="error_no_app_for_link">이 기기에 이를 열 수 있는 앱이 없어요.</string>
+	<string name="error_unsupported_link">이 링크는 애드온이 아니에요.</string>
+	<string name="error_bad_magnet">올바른 마그넷 링크가 아니에요.</string>
+
+	<!-- Add-ons -->
+	<string name="addon_install_title">애드온을 설치할까요?</string>
+	<string name="addon_install_message">%1$s의 애드온을 설치할까요? 애드온은 검색 내용을 볼 수 있으니 신뢰할 수 있는 애드온만 설치하세요.</string>
+	<string name="addon_installed">%1$s 설치됨</string>
+	<string name="addon_error_invalid_url">애드온 링크가 아니에요. https:// 또는 stremio://로 시작하고 /manifest.json으로 끝나야 해요.</string>
+	<string name="addon_error_already_installed">이미 설치된 애드온이에요.</string>
+	<string name="addon_error_invalid_manifest">이 주소는 애드온처럼 응답하지 않았어요.</string>
+	<string name="addon_error_unreachable">애드온에 연결하지 못했어요. 링크와 네트워크 연결을 확인하세요.</string>
+	<string name="addon_error_storage">이 기기에 애드온 목록을 저장하지 못했어요.</string>
+	<string name="addons_add">애드온 추가</string>
+	<string name="addons_add_hint">애드온 링크</string>
+	<string name="addons_add_message">애드온의 매니페스트 링크(https:// 또는 stremio://)를 붙여넣으세요.</string>
+	<string name="addons_installing">설치 중…</string>
+	<string name="addons_configure">구성</string>
+	<string name="addons_reorder">드래그하여 순서 변경</string>
+	<string name="addons_not_answering">응답 없음</string>
+	<string name="addons_version">버전 %1$s</string>
+	<string name="addons_remove_message">이 애드온을 제거할까요?</string>
+	<string name="addons_reset">기본값으로 재설정</string>
+	<string name="addons_reset_message">Cinemeta, Torrentio, ThePirateBay+, OpenSubtitles를 설정 없이 다시 추가하고, 디브리드 키를 포함한 나머지는 모두 제거해요.</string>
+	<string name="addons_reset_confirm">재설정</string>
+	<string name="configure_paste_link">링크 붙여넣기</string>
+	<string name="configure_paste_message">페이지에서 받은 설치 링크를 붙여넣으세요.</string>
+
+	<!-- Debrid -->
+	<string name="debrid_service">디브리드 서비스</string>
+	<string name="debrid_none">없음</string>
+	<string name="debrid_key">API 키</string>
+	<string name="debrid_key_saved">저장된 키 %1$s. 유지하려면 비워 두세요.</string>
+	<string name="debrid_test">테스트</string>
+	<string name="debrid_testing">확인 중…</string>
+	<string name="debrid_key_valid">키가 정상적으로 작동해요.</string>
+	<string name="debrid_key_invalid">서비스에서 이 키를 거부했어요.</string>
+	<string name="debrid_key_unknown">지금은 확인할 수 없어요. 키에는 문제가 없을 수도 있어요.</string>
+	<string name="debrid_key_invalid_format">API 키 형식이 아닌 것 같아요.</string>
+	<string name="debrid_get_key">키는 어디서 찾을 수 있나요?</string>
+
+	<!-- First start -->
+	<string name="setup_title">환영합니다</string>
+	<string name="setup_mode_debrid">디브리드 계정(선택)</string>
+	<string name="setup_debrid_hint">키가 있으면 캐시된 스트림이 바로 시작돼요. 없어도 이 휴대전화에서 모두 재생돼요.</string>
+	<string name="setup_use_account">내 Stremio 계정 사용</string>
+	<string name="account_section">Stremio 계정</string>
+	<string name="account_sign_in">Stremio에 로그인</string>
+	<string name="account_sign_in_summary">선택 사항이에요. Stremio 애드온과 라이브러리를 앱으로 가져오고 라이브러리를 동기화해요.</string>
+	<string name="account_signed_in">%1$s(으)로 로그인됨</string>
+	<string name="account_sign_out">로그아웃</string>
+	<string name="account_sign_out_confirm">Stremio에서 로그아웃할까요? 애드온과 라이브러리는 이 휴대전화에 남아요.</string>
+	<string name="account_email">이메일</string>
+	<string name="account_password">비밀번호</string>
+	<string name="account_error_login">이메일 또는 비밀번호가 틀렸어요.</string>
+	<string name="account_error_network">Stremio에 연결할 수 없어요. 연결을 확인하세요.</string>
+	<string name="account_done">로그인했어요. 애드온과 라이브러리를 가져왔어요.</string>
+	<string name="setup_quality">자동 재생 화질</string>
+	<string name="setup_quality_wifi">Wi-Fi 사용 시</string>
+	<string name="setup_quality_mobile">모바일 데이터 사용 시</string>
+	<string name="setup_language">내 언어</string>
+	<string name="setup_language_hint">영상에 내 언어 음성이 있으면 그걸로 재생해요. 없으면 내 언어 자막을, 그것도 없으면 원래 음성에 영어 자막을 사용해요.</string>
+	<string name="setup_content">콘텐츠</string>
+	<string name="setup_hide_adult">성인용으로 표시된 콘텐츠 숨기기</string>
+
+	<!-- Torrentio settings -->
+	<string name="torrentio_title">Torrentio</string>
+	<string name="torrentio_debrid_section">디브리드</string>
+	<string name="torrentio_debrid_explained">디브리드 키가 있으면 Torrentio가 바로 재생되는 직접 링크를 제공해요. 이 휴대전화에서는 토렌트를 사용하지 않아요.</string>
+	<string name="torrentio_results_section">결과</string>
+	<string name="torrentio_sort">정렬 기준</string>
+	<string name="torrentio_limit">화질별 개수</string>
+	<string name="torrentio_no_limit">제한 없음</string>
+	<string name="torrentio_hide">숨길 항목</string>
+	<string name="torrentio_languages">선호 언어</string>
+	<string name="torrentio_languages_explained">이 언어로 된 릴리스가 선택한 순서대로 먼저 표시돼요.</string>
+	<string name="torrentio_providers">제공업체</string>
+	<string name="torrentio_providers_explained">모두 끄면 모든 제공업체를 검색해요.</string>
+	<string name="torrentio_advanced_section">모든 옵션</string>
+	<string name="torrentio_open_configure">Torrentio 자체 구성 페이지 열기</string>
+	<string name="torrentio_not_a_link">Torrentio 링크가 아니에요.</string>
+	<string name="torrentio_saved">Torrentio 설정을 저장했어요</string>
+
+	<!-- Settings -->
+	<string name="settings_addons">애드온</string>
+	<string name="settings_manage_addons">애드온 관리</string>
+	<plurals name="settings_addons_installed">
+		<item quantity="other">애드온 %d개 설치됨</item>
+	</plurals>
+	<string name="settings_torrents">토렌트 재생</string>
+	<string name="settings_debrid">디브리드 및 Torrentio</string>
+	<string name="settings_debrid_summary">%1$s · 키 %2$s</string>
+	<string name="settings_torrentio_missing">Torrentio가 설치되지 않았어요</string>
+	<string name="settings_playback">재생</string>
+	<string name="settings_quality_wifi">Wi-Fi 화질</string>
+	<string name="settings_quality_mobile">모바일 데이터 화질</string>
+	<string name="settings_subtitle_size">자막 크기</string>
+	<string name="settings_subtitle_color">자막 색상</string>
+	<string name="settings_subtitle_background">자막 배경</string>
+	<string name="settings_engine">토렌트 엔진</string>
+	<string name="settings_cache_size">캐시 크기</string>
+	<string name="settings_wifi_only">Wi-Fi 전용</string>
+	<string name="settings_wifi_only_summary">Wi-Fi에서만 토렌트를 스트리밍해요.</string>
+	<string name="settings_clear_on_exit">재생이 끝나면 캐시 삭제</string>
+	<string name="settings_clear_cache">지금 캐시 삭제</string>
+	<string name="settings_cache_cleared">캐시를 삭제했어요</string>
+	<string name="settings_appearance">화면 표시</string>
+	<string name="settings_language">언어</string>
+	<string name="settings_language_system">시스템 기본값</string>
+	<string name="settings_content">콘텐츠</string>
+	<string name="settings_history">기록</string>
+	<string name="settings_clear_history">시청 기록 삭제</string>
+	<string name="settings_clear_history_confirm">시청 기록과 시청함 표시를 삭제할까요?</string>
+	<string name="settings_clear_searches">최근 검색 삭제</string>
+	<string name="settings_cleared">삭제됨</string>
+	<string name="settings_updates">업데이트</string>
+	<string name="settings_check_updates">업데이트 확인</string>
+	<string name="settings_version">버전 %1$s</string>
+	<string name="settings_check_on_start">앱 시작 시 확인</string>
+	<string name="settings_check_on_start_summary">시작할 때마다 한 번 GitHub에 새 릴리스를 확인해요.</string>
+	<string name="settings_about">정보</string>
+	<string name="settings_about_app">앱 정보</string>
+	<string name="settings_where_traffic_goes">트래픽 전송 위치</string>
+	<string name="settings_where_traffic_goes_summary">이 앱이 통신하는 모든 서버와 그 이유.</string>
+	<string name="settings_licences">오픈소스 라이선스</string>
+	<string name="settings_licences_summary">이 앱에 사용된 라이브러리.</string>
+	<string name="settings_source_code">소스 코드</string>
+	<string name="traffic_explained">이 앱은 다음 서버하고만 통신해요.\n\n• 내 애드온(Cinemeta, Torrentio, ThePirateBay+, OpenSubtitles 및 추가한 애드온): 카탈로그, 상세 정보, 스트림, 자막을 가져오기 위해.\n• 해당 애드온이 지정한 이미지 서버: 포스터와 배경 이미지를 가져오기 위해.\n• 재생하는 링크의 스트림 서버(예: 디브리드 서비스의 다운로드 서버).\n• 디브리드 서비스의 API: 테스트를 누를 때만.\n• TMDB 애드온 (tmdb-addon.baby-beamup.club): 앱이 영어가 아닐 때만, 제목·설명·에피소드 이름을 사용자 언어로 보여 주기 위해 사용합니다.\n• Wikidata (query.wikidata.org): 앱이 영어가 아닐 때만, 제목을 사용자 언어로 보여 주기 위해 사용합니다. IMDb ID와 언어만 전송됩니다.\n• Stremio(api.strem.io): 로그인한 경우에만, 애드온과 라이브러리를 위해.\n• GitHub: 업데이트를 확인할 때만.\n• 다른 BitTorrent 피어: 내장 엔진으로 토렌트를 재생할 때만.\n\n광고, 분석, 추적, 오류 보고는 전혀 없어요. 디브리드 키는 암호화되어 저장되며 Torrentio와 디브리드 서비스로만 전송돼요.</string>
+
+	<!-- Updates -->
+	<string name="update_checking">업데이트 확인 중…</string>
+	<string name="update_none">최신 버전을 사용하고 있어요.</string>
+	<string name="update_check_failed">업데이트를 확인하지 못했어요.</string>
+	<string name="update_available">버전 %1$s을(를) 사용할 수 있어요</string>
+	<string name="update_no_notes">릴리스 노트가 없어요.</string>
+	<string name="update_install">다운로드 및 설치</string>
+	<string name="update_later">나중에</string>
+	<string name="update_downloading">업데이트 다운로드 중…</string>
+	<string name="update_permission_title">업데이트 허용</string>
+	<string name="update_permission_message">업데이트를 설치하려면 시스템 설정에서 이 앱의 앱 설치를 허용하세요.</string>
+	<string name="update_open_settings">설정 열기</string>
+	<string name="update_failed_title">업데이트가 설치되지 않음</string>
+	<string name="update_failed_download">다운로드에 실패했어요. 나중에 다시 시도하세요.</string>
+	<string name="update_failed_too_large">업데이트 파일이 허용된 크기보다 커요.</string>
+	<string name="update_failed_checksum">다운로드한 파일이 체크섬과 일치하지 않아 삭제했어요.</string>
+	<string name="update_failed_untrusted">다운로드한 앱의 서명이 이 앱과 달라 삭제했어요.</string>
+	<string name="update_failed_not_newer">다운로드한 버전이 현재 버전보다 새롭지 않아요.</string>
+	<string name="update_install_failed">설치 프로그램이 업데이트를 설치하지 못했어요.</string>
+	<string name="update_ready_title">업데이트를 설치할 준비가 되었어요</string>
+	<string name="update_ready_text">탭하여 설치를 완료하세요.</string>
+
+	<!-- order must match the Java enums and lists -->
+	<string-array name="subtitle_colors">
+		<item>흰색</item>
+		<item>노란색</item>
+		<item>청록색</item>
+	</string-array>
+	<string-array name="subtitle_backgrounds">
+		<item>없음</item>
+		<item>반투명</item>
+		<item>검은색</item>
+	</string-array>
+	<string-array name="torrentio_sorts">
+		<item>화질</item>
+		<item>화질, 그다음 크기</item>
+		<item>시더</item>
+		<item>크기</item>
+	</string-array>
+	<string-array name="torrentio_quality_filters">
+		<item>BluRay REMUX</item>
+		<item>HDR</item>
+		<item>Dolby Vision</item>
+		<item>Dolby Vision(HDR 포함)</item>
+		<item>3D</item>
+		<item>4K</item>
+		<item>1080p</item>
+		<item>720p</item>
+		<item>480p</item>
+		<item>기타</item>
+		<item>스크리너</item>
+		<item>CAM</item>
+		<item>알 수 없는 화질</item>
+	</string-array>
+</resources>

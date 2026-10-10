@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- app_name is generated from gradle.properties -->
+
+	<!-- Navigation -->
+	<string name="nav_home">Inicio</string>
+	<string name="nav_discover">Descubrir</string>
+	<string name="nav_library">Biblioteca</string>
+	<string name="nav_search">Buscar</string>
+	<string name="nav_settings">Ajustes</string>
+
+	<!-- Common actions -->
+	<string name="action_back">Atrás</string>
+	<string name="action_cancel">Cancelar</string>
+	<string name="action_clear">Borrar</string>
+	<string name="action_close">Cerrar</string>
+	<string name="action_next">Siguiente</string>
+	<string name="action_delete">Eliminar</string>
+	<string name="action_done">Listo</string>
+	<string name="action_install">Instalar</string>
+	<string name="action_more">Más opciones</string>
+	<string name="action_ok">Aceptar</string>
+	<string name="action_remove">Quitar</string>
+	<string name="action_retry">Reintentar</string>
+	<string name="action_save">Guardar</string>
+
+	<string name="disclaimer">Esta app es un reproductor y cliente de complementos. No contiene contenido multimedia ni aloja transmisiones. Torrentio y otros complementos los gestionan terceros, y tú eres responsable de lo que ves.</string>
+
+	<!-- Types and episodes -->
+	<string name="type_movies">Películas</string>
+	<string name="type_series">Series de TV</string>
+	<string name="episode_number">T%1$d E%2$d</string>
+	<string name="episode_with_title">%1$s · %2$s</string>
+	<string name="quality_other">Otra</string>
+	<string name="percent">%1$d%%</string>
+	<string name="speed_per_second">%1$s/s</string>
+
+	<!-- Home -->
+	<string name="row_title">%1$s · %2$s</string>
+	<string name="row_continue_watching">Seguir viendo</string>
+	<string name="row_failed">No se pudo cargar esta fila. Toca para volver a intentarlo.</string>
+	<string name="row_empty">No hay nada aquí por ahora.</string>
+	<string name="home_empty">Aún no hay catálogos. Los complementos con catálogos, como Cinemeta, llenan esta pantalla.</string>
+	<plurals name="addons_down">
+		<item quantity="one">%1$s no responde ahora mismo. Todo lo demás sigue funcionando.</item>
+		<item quantity="other">%1$s no responden ahora mismo. Todo lo demás sigue funcionando.</item>
+	</plurals>
+
+	<!-- Discover -->
+	<string name="discover_catalog">Catálogo</string>
+	<string name="discover_genre">Género</string>
+	<string name="discover_all_genres">Todos los géneros</string>
+	<string name="discover_empty">No se encontró nada en este catálogo.</string>
+	<string name="discover_failed">Este catálogo no respondió. Prueba con otro o vuelve más tarde.</string>
+	<string name="discover_no_catalogs">Ninguno de tus complementos tiene un catálogo para explorar.</string>
+
+	<!-- Search -->
+	<string name="search_hint">Buscar películas y series</string>
+	<string name="search_recent">Búsquedas recientes</string>
+	<string name="search_searching">Buscando…</string>
+	<string name="search_no_results">No hay resultados.</string>
+	<string name="search_no_sources">Ninguno de tus complementos permite buscar.</string>
+
+	<!-- Library -->
+	<string name="library_saved">Guardados</string>
+	<string name="library_history">Historial</string>
+	<string name="library_downloads">Descargas</string>
+	<string name="library_queue">Cola</string>
+	<string name="library_queue_empty">No hay nada en la cola. Mantén pulsada una película, serie o episodio para añadirlo.</string>
+	<string name="queue_play_all">Reproducir cola</string>
+	<string name="queue_clear">Vaciar</string>
+	<string name="queue_add">Añadir a la cola</string>
+	<string name="queue_play_next">Reproducir a continuación</string>
+	<string name="queue_added">Añadido a la cola</string>
+	<string name="queue_added_next">Se reproduce a continuación</string>
+	<string name="queue_already">Ya está en la cola</string>
+	<string name="queue_marked_watched">Marcado como visto</string>
+	<string name="queue_mark_failed">No se pudo cargar la lista de episodios.</string>
+	<string name="queue_finding">Buscando una fuente…</string>
+	<string name="queue_no_stream">No se encontró ninguna fuente para este título.</string>
+	<string name="library_saved_empty">Aún no has guardado nada. Usa el marcador de un título para guardarlo aquí.</string>
+	<string name="library_history_empty">Lo que veas aparecerá aquí.</string>
+	<string name="library_downloads_empty">No hay descargas. Mantén pulsada una transmisión para descargarla.</string>
+	<string name="library_remove_saved">¿Quitar de tus títulos guardados?</string>
+	<string name="library_remove_history">¿Quitar de tu historial de reproducción?</string>
+
+	<!-- Details -->
+	<string name="details_play">Reproducir</string>
+	<string name="details_play_episode">Reproducir %1$s</string>
+	<string name="details_continue_episode">Continuar %1$s</string>
+	<string name="details_continue_at">Continuar desde %1$s</string>
+	<string name="details_save">Guardar en la biblioteca</string>
+	<string name="details_unsave">Quitar de la biblioteca</string>
+	<string name="details_mark_watched">Marcar como visto</string>
+	<string name="details_mark_unwatched">Marcar como no visto</string>
+	<string name="details_trailer">Tráiler</string>
+	<string name="details_rating">★ %1$s</string>
+	<string name="details_cast">Reparto: %1$s</string>
+	<string name="details_season">Temporada</string>
+	<string name="details_season_number">Temporada %1$d</string>
+	<string name="details_specials">Especiales</string>
+	<string name="details_up_next">A continuación</string>
+	<string name="details_watched">Visto</string>
+	<string name="details_no_meta">Ninguno de tus complementos tiene detalles de este título. Aun así, puedes intentar reproducirlo.</string>
+
+	<!-- Streams -->
+	<plurals name="streams_found">
+		<item quantity="one">%d transmisión encontrada</item>
+		<item quantity="other">%d transmisiones encontradas</item>
+	</plurals>
+	<string name="streams_none_found">No se encontraron transmisiones para este título.</string>
+	<string name="streams_no_addons">Ninguno de tus complementos ofrece transmisiones para esto.</string>
+	<string name="streams_unsupported">Este tipo de transmisión no se puede reproducir aquí.</string>
+	<string name="streams_copy_link">Copiar enlace</string>
+	<string name="streams_open_external">Abrir en otro reproductor</string>
+	<string name="streams_download">Descargar</string>
+	<string name="streams_copied">Copiado</string>
+	<string name="streams_quality_wifi">Auto: %1$s con wifi · Cambiar</string>
+	<string name="streams_quality_mobile">Auto: %1$s con datos móviles · Cambiar</string>
+	<string name="streams_autoplay">Reproduciendo %1$s en %2$d…</string>
+	<string name="streams_choose_myself">Elegir yo</string>
+	<string name="streams_none_in_range">No hay nada en 2K, 1080p, 720p ni 480p para este título.</string>
+	<string name="quality_title">Calidad automática</string>
+	<string name="quality_hint">Elige una para wifi y otra para datos móviles. La mejor fuente en esa calidad se reproduce sola. Si no hay ninguna, se usa la siguiente calidad inferior.</string>
+
+	<!-- Player -->
+	<string name="player_subtitles">Subtítulos</string>
+	<string name="player_subtitles_off">Desactivados</string>
+	<string name="player_subtitles_from_file">Cargar desde un archivo…</string>
+	<string name="player_subtitle_from_addon">%1$s · %2$s</string>
+	<string name="player_subtitle_file">Archivo de subtítulos</string>
+	<string name="player_audio">Pista de audio</string>
+	<string name="player_audio_surround">%1$s (%2$s)</string>
+	<string name="player_no_audio_tracks">No hay pistas de audio</string>
+	<string name="player_track_label">%1$s · %2$s</string>
+	<string name="player_track_number">Pista %1$d</string>
+	<string name="player_track_unknown">Idioma desconocido</string>
+	<string name="player_switch_stream">Cambiar de transmisión</string>
+	<string name="player_stream_label">%1$s · %2$s</string>
+	<string name="player_no_other_streams">No hay otras transmisiones a las que cambiar.</string>
+	<string name="player_minimize">Minimizar</string>
+	<string name="player_pip">Imagen en imagen</string>
+	<string name="player_fullscreen">Pantalla completa</string>
+	<string name="player_exit_fullscreen">Salir de pantalla completa</string>
+	<string name="player_lock">Bloquear pantalla</string>
+	<string name="player_unlock">Desbloquear</string>
+	<string name="player_unlock_hint">Mantén pulsado 5 segundos para desbloquear</string>
+	<string name="player_play_pause">Reproducir o pausar</string>
+	<string name="player_seek_back">−%1$d s</string>
+	<string name="player_seek_forward">+%1$d s</string>
+	<string name="player_zoom_fill">Ampliar para llenar</string>
+	<string name="player_zoom_fit">Ajustar a la pantalla</string>
+	<string name="player_up_next_in">Siguiente en %1$s</string>
+	<string name="player_up_next_cancel">No reproducir el siguiente episodio</string>
+	<string name="player_try_next">Probar la siguiente transmisión</string>
+	<string name="player_trying_next">Esa transmisión falló. Probando la siguiente…</string>
+	<string name="player_no_next_stream">No se encontró una transmisión para el siguiente episodio.</string>
+	<string name="player_error_generic">La transmisión dejó de funcionar.</string>
+	<string name="player_error_http">El servidor rechazó la transmisión (HTTP %1$d).</string>
+	<string name="player_error_network">No se pudo conectar con la transmisión. Revisa tu conexión.</string>
+	<string name="player_error_format">Este formato de vídeo no es compatible con este dispositivo.</string>
+
+	<!-- Torrent engine -->
+	<string name="torrent_connecting">Conectando…</string>
+	<plurals name="torrent_peers">
+		<item quantity="one">%d par</item>
+		<item quantity="other">%d pares</item>
+	</plurals>
+	<string name="torrent_finding">Buscando el archivo…\n%1$s · %2$s</string>
+	<string name="torrent_buffering">Cargando %1$d%%\n%2$s · %3$s</string>
+	<string name="torrent_playing">%1$s · %2$s</string>
+	<string name="torrent_error_no_video">Este torrent no tiene ningún archivo de vídeo que se pueda reproducir.</string>
+	<string name="torrent_error_too_big">Este archivo ocupa %1$s, más que la caché de torrents de %2$s. Aumenta el tamaño de la caché en Ajustes o elige un archivo más pequeño.</string>
+	<string name="torrent_error_no_space">No hay suficiente espacio libre para este archivo de %1$s.</string>
+	<string name="torrent_error_wifi">La transmisión del torrent se detuvo porque te desconectaste del Wi-Fi. Puedes cambiar esto en Ajustes.</string>
+	<string name="torrent_error_failed">No se pudo iniciar esta fuente.</string>
+
+	<!-- Magnet links -->
+	<string name="magnet_untitled">Enlace magnet</string>
+	<string name="magnet_source">Enlace magnet</string>
+
+	<!-- Downloads -->
+	<string name="channel_downloads">Descargas</string>
+	<string name="channel_updates">Actualizaciones</string>
+	<string name="download_preparing">Preparando la descarga…</string>
+	<string name="download_running">Descargando</string>
+	<string name="download_started">Descarga iniciada</string>
+	<string name="download_could_not_start">No se pudo iniciar la descarga.</string>
+	<string name="download_needs_storage">En esta versión de Android, las descargas necesitan acceso al almacenamiento.</string>
+	<string name="download_queued">En espera</string>
+	<string name="download_paused">En pausa · %1$s</string>
+	<string name="download_done">Completada · %1$s</string>
+	<string name="download_failed">Error. Toca Reanudar para volver a intentarlo.</string>
+	<string name="download_progress">%1$d%% · %2$s de %3$s</string>
+	<string name="download_pause">Pausar</string>
+	<string name="download_resume">Reanudar</string>
+	<string name="download_delete_message">¿Eliminar esta descarga y su archivo?</string>
+	<string name="download_source">Descargado</string>
+
+	<!-- Errors -->
+	<string name="error_link_not_allowed">Ese enlace no se puede abrir.</string>
+	<string name="error_no_app_for_link">Ninguna app de este dispositivo puede abrirlo.</string>
+	<string name="error_unsupported_link">Ese enlace no es un complemento.</string>
+	<string name="error_bad_magnet">Ese enlace magnet no es válido.</string>
+
+	<!-- Add-ons -->
+	<string name="addon_install_title">¿Instalar el complemento?</string>
+	<string name="addon_install_message">¿Instalar el complemento de %1$s? Instala solo complementos de confianza; pueden ver lo que buscas.</string>
+	<string name="addon_installed">%1$s instalado</string>
+	<string name="addon_error_invalid_url">Ese no es un enlace de complemento. Debe empezar por https:// o stremio:// y terminar en /manifest.json.</string>
+	<string name="addon_error_already_installed">Ese complemento ya está instalado.</string>
+	<string name="addon_error_invalid_manifest">Esa dirección no respondió como un complemento.</string>
+	<string name="addon_error_unreachable">No se pudo conectar con ese complemento. Revisa el enlace y tu conexión.</string>
+	<string name="addon_error_storage">No se pudo guardar la lista de complementos en este dispositivo.</string>
+	<string name="addons_add">Añadir complemento</string>
+	<string name="addons_add_hint">Enlace del complemento</string>
+	<string name="addons_add_message">Pega el enlace del manifiesto del complemento (https:// o stremio://).</string>
+	<string name="addons_installing">Instalando…</string>
+	<string name="addons_configure">Configurar</string>
+	<string name="addons_reorder">Arrastra para reordenar</string>
+	<string name="addons_not_answering">No responde</string>
+	<string name="addons_version">v. %1$s</string>
+	<string name="addons_remove_message">¿Quitar este complemento?</string>
+	<string name="addons_reset">Restablecer valores predeterminados</string>
+	<string name="addons_reset_message">Esto vuelve a añadir Cinemeta, Torrentio, ThePirateBay+ y OpenSubtitles sin ningún ajuste y quita todo lo demás, incluida tu clave debrid.</string>
+	<string name="addons_reset_confirm">Restablecer</string>
+	<string name="configure_paste_link">Pegar un enlace</string>
+	<string name="configure_paste_message">Pega el enlace de instalación que te dio la página.</string>
+
+	<!-- Debrid -->
+	<string name="debrid_service">Servicio debrid</string>
+	<string name="debrid_none">Ninguno</string>
+	<string name="debrid_key">Clave de API</string>
+	<string name="debrid_key_saved">Clave guardada %1$s. Déjalo vacío para conservarla.</string>
+	<string name="debrid_test">Probar</string>
+	<string name="debrid_testing">Comprobando…</string>
+	<string name="debrid_key_valid">La clave funciona.</string>
+	<string name="debrid_key_invalid">El servicio rechazó esta clave.</string>
+	<string name="debrid_key_unknown">No se pudo comprobar ahora. Es posible que la clave esté bien.</string>
+	<string name="debrid_key_invalid_format">Eso no parece una clave de API.</string>
+	<string name="debrid_get_key">¿Dónde encuentro mi clave?</string>
+
+	<!-- First start -->
+	<string name="setup_title">Te damos la bienvenida</string>
+	<string name="setup_mode_debrid">Cuenta debrid (opcional)</string>
+	<string name="setup_debrid_hint">Con una clave, las fuentes en caché empiezan al instante. Sin ella, todo se reproduce igualmente en este teléfono.</string>
+	<string name="setup_use_account">Usar mi cuenta de Stremio</string>
+	<string name="account_section">Cuenta de Stremio</string>
+	<string name="account_sign_in">Iniciar sesión en Stremio</string>
+	<string name="account_sign_in_summary">Opcional. Trae tus complementos y tu biblioteca de Stremio a la app y mantiene la biblioteca sincronizada.</string>
+	<string name="account_signed_in">Sesión iniciada como %1$s</string>
+	<string name="account_sign_out">Cerrar sesión</string>
+	<string name="account_sign_out_confirm">¿Cerrar sesión en Stremio? Tus complementos y tu biblioteca se quedan en este teléfono.</string>
+	<string name="account_email">Correo electrónico</string>
+	<string name="account_password">Contraseña</string>
+	<string name="account_error_login">Correo o contraseña incorrectos.</string>
+	<string name="account_error_network">No se pudo conectar con Stremio. Revisa tu conexión.</string>
+	<string name="account_done">Sesión iniciada. Tus complementos y tu biblioteca ya están aquí.</string>
+	<string name="setup_quality">Calidad para reproducir automáticamente</string>
+	<string name="setup_quality_wifi">Con Wi-Fi</string>
+	<string name="setup_quality_mobile">Con datos móviles</string>
+	<string name="setup_language">Tu idioma</string>
+	<string name="setup_language_hint">Audio en tu idioma cuando el vídeo lo tiene. Si no, subtítulos en tu idioma y, si no hay, subtítulos en inglés con el audio original.</string>
+	<string name="setup_content">Contenido</string>
+	<string name="setup_hide_adult">Ocultar contenido para adultos</string>
+
+	<!-- Torrentio settings -->
+	<string name="torrentio_title">Torrentio</string>
+	<string name="torrentio_debrid_section">Servicio debrid</string>
+	<string name="torrentio_debrid_explained">Con una clave debrid, Torrentio devuelve enlaces directos que se reproducen al instante, sin usar torrents en este teléfono.</string>
+	<string name="torrentio_results_section">Resultados</string>
+	<string name="torrentio_sort">Ordenar por</string>
+	<string name="torrentio_limit">Por calidad</string>
+	<string name="torrentio_no_limit">Sin límite</string>
+	<string name="torrentio_hide">Ocultar estos</string>
+	<string name="torrentio_languages">Idiomas preferidos</string>
+	<string name="torrentio_languages_explained">Las versiones en estos idiomas aparecen primero, en el orden en que los elijas.</string>
+	<string name="torrentio_providers">Proveedores</string>
+	<string name="torrentio_providers_explained">Déjalos todos desactivados para buscar en todos los proveedores.</string>
+	<string name="torrentio_advanced_section">Todas las opciones</string>
+	<string name="torrentio_open_configure">Abrir la página de configuración de Torrentio</string>
+	<string name="torrentio_not_a_link">Ese no es un enlace de Torrentio.</string>
+	<string name="torrentio_saved">Ajustes de Torrentio guardados</string>
+
+	<!-- Settings -->
+	<string name="settings_addons">Complementos</string>
+	<string name="settings_manage_addons">Gestionar complementos</string>
+	<plurals name="settings_addons_installed">
+		<item quantity="one">%d complemento instalado</item>
+		<item quantity="other">%d complementos instalados</item>
+	</plurals>
+	<string name="settings_torrents">Reproducción de torrents</string>
+	<string name="settings_debrid">Debrid y Torrentio</string>
+	<string name="settings_debrid_summary">%1$s · clave %2$s</string>
+	<string name="settings_torrentio_missing">Torrentio no está instalado</string>
+	<string name="settings_playback">Reproducción</string>
+	<string name="settings_quality_wifi">Calidad con Wi-Fi</string>
+	<string name="settings_quality_mobile">Calidad con datos móviles</string>
+	<string name="settings_subtitle_size">Tamaño de los subtítulos</string>
+	<string name="settings_subtitle_color">Color de los subtítulos</string>
+	<string name="settings_subtitle_background">Fondo de los subtítulos</string>
+	<string name="settings_engine">Motor de torrents</string>
+	<string name="settings_cache_size">Tamaño de la caché</string>
+	<string name="settings_wifi_only">Solo con Wi-Fi</string>
+	<string name="settings_wifi_only_summary">Transmitir torrents solo con Wi-Fi.</string>
+	<string name="settings_clear_on_exit">Borrar la caché al terminar la reproducción</string>
+	<string name="settings_clear_cache">Borrar la caché ahora</string>
+	<string name="settings_cache_cleared">Caché borrada</string>
+	<string name="settings_appearance">Apariencia</string>
+	<string name="settings_language">Idioma</string>
+	<string name="settings_language_system">Predeterminado del sistema</string>
+	<string name="settings_content">Contenido</string>
+	<string name="settings_history">Historial</string>
+	<string name="settings_clear_history">Borrar el historial de reproducción</string>
+	<string name="settings_clear_history_confirm">¿Borrar tu historial de reproducción y las marcas de visto?</string>
+	<string name="settings_clear_searches">Borrar búsquedas recientes</string>
+	<string name="settings_cleared">Borrado</string>
+	<string name="settings_updates">Actualizaciones</string>
+	<string name="settings_check_updates">Buscar actualizaciones</string>
+	<string name="settings_version">Versión %1$s</string>
+	<string name="settings_check_on_start">Comprobar al iniciar la app</string>
+	<string name="settings_check_on_start_summary">Consulta GitHub para ver si hay una nueva versión cada vez que se inicia.</string>
+	<string name="settings_about">Información</string>
+	<string name="settings_about_app">Acerca de esta app</string>
+	<string name="settings_where_traffic_goes">Adónde va tu tráfico</string>
+	<string name="settings_where_traffic_goes_summary">Todos los servidores con los que se comunica esta app, y por qué.</string>
+	<string name="settings_licences">Licencias de código abierto</string>
+	<string name="settings_licences_summary">Las bibliotecas en las que se basa esta app.</string>
+	<string name="settings_source_code">Código fuente</string>
+	<string name="traffic_explained">Esta app solo se comunica con estos servidores:\n\n• Tus complementos (Cinemeta, Torrentio, ThePirateBay+, OpenSubtitles y los que añadas), para catálogos, detalles, transmisiones y subtítulos.\n• Los servidores de imágenes que indican esos complementos, para pósteres y fondos.\n• Los servidores de transmisión de los enlaces que reproduces, como los servidores de descarga de tu servicio debrid.\n• La API de tu servicio debrid, solo cuando pulsas Probar.\n• El complemento de TMDB (tmdb-addon.baby-beamup.club), solo si la app no está en inglés, para títulos, descripciones y nombres de episodios en tu idioma.\n• Wikidata (query.wikidata.org), solo si la app no está en inglés, para los títulos en tu idioma. Solo se envían los ID de IMDb y tu idioma.\n• Stremio (api.strem.io), solo si inicias sesión, para tus complementos y tu biblioteca.\n• GitHub, solo cuando buscas actualizaciones.\n• Otros pares de BitTorrent, solo cuando reproduces un torrent con el motor integrado.\n\nNo hay anuncios, analíticas, seguimiento ni informes de errores. Tu clave debrid se guarda cifrada y solo se envía a Torrentio y a tu servicio debrid.</string>
+
+	<!-- Updates -->
+	<string name="update_checking">Buscando actualizaciones…</string>
+	<string name="update_none">Tienes la versión más reciente.</string>
+	<string name="update_check_failed">No se pudo buscar actualizaciones.</string>
+	<string name="update_available">La versión %1$s está disponible</string>
+	<string name="update_no_notes">No hay notas de la versión.</string>
+	<string name="update_install">Descargar e instalar</string>
+	<string name="update_later">Más tarde</string>
+	<string name="update_downloading">Descargando la actualización…</string>
+	<string name="update_permission_title">Permitir actualizaciones</string>
+	<string name="update_permission_message">Para instalar actualizaciones, permite que esta app instale apps en los ajustes del sistema.</string>
+	<string name="update_open_settings">Abrir ajustes</string>
+	<string name="update_failed_title">Actualización no instalada</string>
+	<string name="update_failed_download">La descarga falló. Inténtalo de nuevo más tarde.</string>
+	<string name="update_failed_too_large">El archivo de actualización es más grande de lo permitido.</string>
+	<string name="update_failed_checksum">El archivo descargado no coincidía con su suma de comprobación, así que se descartó.</string>
+	<string name="update_failed_untrusted">La app descargada no está firmada como esta, así que se descartó.</string>
+	<string name="update_failed_not_newer">La descarga no es más reciente que la versión que tienes.</string>
+	<string name="update_install_failed">El instalador no pudo instalar la actualización.</string>
+	<string name="update_ready_title">Actualización lista para instalar</string>
+	<string name="update_ready_text">Toca para terminar la instalación.</string>
+
+	<!-- order must match the Java enums and lists -->
+	<string-array name="subtitle_colors">
+		<item>Blanco</item>
+		<item>Amarillo</item>
+		<item>Cian</item>
+	</string-array>
+	<string-array name="subtitle_backgrounds">
+		<item>Ninguno</item>
+		<item>Semitransparente</item>
+		<item>Negro</item>
+	</string-array>
+	<string-array name="torrentio_sorts">
+		<item>Calidad</item>
+		<item>Calidad y luego tamaño</item>
+		<item>Semillas</item>
+		<item>Tamaño</item>
+	</string-array>
+	<string-array name="torrentio_quality_filters">
+		<item>BluRay REMUX</item>
+		<item>HDR</item>
+		<item>Dolby Vision</item>
+		<item>Dolby Vision con HDR</item>
+		<item>3D</item>
+		<item>4K</item>
+		<item>1080p</item>
+		<item>720p</item>
+		<item>480p</item>
+		<item>Otra</item>
+		<item>Copias screener</item>
+		<item>CAM</item>
+		<item>Calidad desconocida</item>
+	</string-array>
+</resources>
