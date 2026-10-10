@@ -1,5 +1,8 @@
 # niixfliix
 
+still working on it ... consider this an alpha release 
+
+
 A native Android app for the public Stremio add-on protocol. Browse movies and
 series, open one, pick a stream, watch it. Any Stremio add-on works; Cinemeta,
 Torrentio, ThePirateBay+ and OpenSubtitles come installed.
