@@ -66,6 +66,15 @@ app.
 - Audio the phone can't decode itself (AC3, E-AC3, DTS, TrueHD, common in MKV
   releases) goes through a bundled FFmpeg decoder.
 
+## Screenshots
+
+<p align="center">
+<img src="screens/1.jpeg" alt="" width="200">
+<img src="screens/2.jpeg" alt="" width="200">
+<img src="screens/3.jpeg" alt="" width="200">
+</p>
+
+
 ## More
 
 - [HOW-IT-WORKS.md](HOW-IT-WORKS.md): which servers the app talks to and why.
