@@ -72,9 +72,9 @@ app.
 ## Screenshots
 
 <p align="center">
-<img src="screens/1.jpeg" alt="" width="200">
-<img src="screens/2.jpeg" alt="" width="200">
-<img src="screens/3.jpeg" alt="" width="200">
+<img src="screens/4.jpeg" alt="" width="200">
+<img src="screens/5.jpeg" alt="" width="200">
+<img src="screens/6.jpeg" alt="" width="200">
 </p>
 
 
