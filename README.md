@@ -81,7 +81,6 @@ app.
 
 ## More
 
-- [HOW-IT-WORKS.md](HOW-IT-WORKS.md): which servers the app talks to and why.
 - License: the app's own code is MIT (see [LICENSE](LICENSE)). The APK also
   bundles Jellyfin's prebuilt FFmpeg audio decoder
   (`org.jellyfin.media3:media3-ffmpeg-decoder`), published under GPL-3.0, so an
