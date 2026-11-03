@@ -1,0 +1,29 @@
+:root {
+	--accent-color: #ff4d94;
+	--accent-bg-color: #ff0a6c;
+	--accent-fg-color: #ffffff;
+	--window-bg-color: #000000;
+	--window-fg-color: #f2f2f5;
+	--view-bg-color: #000000;
+	--view-fg-color: #f2f2f5;
+	--headerbar-bg-color: #000000;
+	--headerbar-fg-color: #f2f2f5;
+	--headerbar-backdrop-color: #000000;
+	--headerbar-border-color: alpha(#ff0a6c, 0.35);
+	--card-bg-color: #121218;
+	--card-fg-color: #f2f2f5;
+	--dialog-bg-color: #121218;
+	--dialog-fg-color: #f2f2f5;
+	--popover-bg-color: alpha(#121218, 0.92);
+	--popover-fg-color: #f2f2f5;
+	--sidebar-bg-color: #000000;
+	--sidebar-fg-color: #f2f2f5;
+	--destructive-color: #ff3b6b;
+	--destructive-bg-color: #ff3b6b;
+	--success-color: #0aff9e;
+	--warning-color: #ffd166;
+	--error-color: #ff3b6b;
+	--monospace-font-family: "JetBrains Mono";
+	--document-font-family: "JetBrains Mono";
+	--window-radius: 14px;
+}

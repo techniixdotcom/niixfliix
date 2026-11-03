@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- app_name is generated from gradle.properties -->
 
-	<!-- Navigation -->
 	<string name="nav_home">ホーム</string>
 	<string name="nav_discover">見つける</string>
 	<string name="nav_library">ライブラリ</string>
 	<string name="nav_search">検索</string>
 	<string name="nav_settings">設定</string>
 
-	<!-- Common actions -->
 	<string name="action_back">戻る</string>
 	<string name="action_cancel">キャンセル</string>
 	<string name="action_clear">クリア</string>
@@ -22,11 +19,7 @@
 	<string name="action_ok">OK</string>
 	<string name="action_remove">削除</string>
 	<string name="action_retry">再試行</string>
-	<string name="action_save">保存</string>
 
-	<string name="disclaimer">このアプリはプレーヤー兼アドオンクライアントです。メディアは含まれておらず、ストリームもホストしていません。Torrentio などのアドオンは第三者によって運営されており、何を視聴するかはご自身の責任となります。</string>
-
-	<!-- Types and episodes -->
 	<string name="type_movies">映画</string>
 	<string name="type_series">シリーズ</string>
 	<string name="episode_number">シーズン%1$d 第%2$d話</string>
@@ -35,32 +28,27 @@
 	<string name="percent">%1$d%%</string>
 	<string name="speed_per_second">%1$s/秒</string>
 
-	<!-- Home -->
 	<string name="row_title">%1$s · %2$s</string>
 	<string name="row_continue_watching">視聴を続ける</string>
+	<string name="continue_remove">「視聴を続ける」から削除</string>
 	<string name="row_failed">この行を読み込めませんでした。タップして再試行してください。</string>
 	<string name="row_empty">現在は何もありません。</string>
-	<string name="home_empty">カタログがまだありません。Cinemeta などカタログを持つアドオンを追加すると、この画面に表示されます。</string>
+	<string name="home_empty">まだ何もありません。映画やシリーズは利用できるようになるとここに表示されます。</string>
 	<plurals name="addons_down">
 		<item quantity="other">%1$s が現在応答していません。その他の機能は引き続き使えます。</item>
 	</plurals>
 
-	<!-- Discover -->
-	<string name="discover_catalog">カタログ</string>
-	<string name="discover_genre">ジャンル</string>
 	<string name="discover_all_genres">すべてのジャンル</string>
 	<string name="discover_empty">このカタログには何も見つかりませんでした。</string>
 	<string name="discover_failed">このカタログが応答しませんでした。別のカタログを試すか、後でもう一度お試しください。</string>
-	<string name="discover_no_catalogs">閲覧できるカタログを持つアドオンがありません。</string>
+	<string name="discover_no_catalogs">まだ見られるものがありません。映画やシリーズは利用できるようになるとここに表示されます。</string>
 
-	<!-- Search -->
 	<string name="search_hint">映画やシリーズを検索</string>
 	<string name="search_recent">最近の検索</string>
 	<string name="search_searching">検索しています…</string>
 	<string name="search_no_results">結果がありません。</string>
-	<string name="search_no_sources">検索に対応したアドオンがありません。</string>
+	<string name="search_no_sources">今は検索を利用できません。</string>
 
-	<!-- Library -->
 	<string name="library_saved">保存済み</string>
 	<string name="library_history">履歴</string>
 	<string name="library_downloads">ダウンロード</string>
@@ -83,31 +71,44 @@
 	<string name="library_remove_saved">保存済みタイトルから削除しますか？</string>
 	<string name="library_remove_history">視聴履歴から削除しますか？</string>
 
-	<!-- Details -->
 	<string name="details_play">再生</string>
 	<string name="details_play_episode">%1$s を再生</string>
 	<string name="details_continue_episode">%1$s の続きを再生</string>
 	<string name="details_continue_at">%1$s から続きを再生</string>
 	<string name="details_save">ライブラリに保存</string>
 	<string name="details_unsave">ライブラリから削除</string>
+	<string name="library_added">ライブラリに保存しました</string>
+	<string name="library_removed">ライブラリから削除しました</string>
+	<string name="hero_save">保存</string>
+	<string name="hero_saved">保存済み</string>
+	<string name="hero_show_title">%2$d 件中 %1$d 件目</string>
 	<string name="details_mark_watched">視聴済みにする</string>
 	<string name="details_mark_unwatched">未視聴にする</string>
 	<string name="details_trailer">予告編</string>
 	<string name="details_rating">★ %1$s</string>
-	<string name="details_cast">キャスト: %1$s</string>
+	<string name="details_more_like_this">似ている作品</string>
+	<string name="details_about">作品情報</string>
+	<string name="details_director">監督</string>
+	<string name="details_writers">脚本</string>
+	<string name="details_released">公開日</string>
+	<string name="details_country">制作国</string>
+	<string name="details_awards">受賞歴</string>
+	<string name="details_imdb">IMDbで見る</string>
+	<string name="details_cast_title">キャスト</string>
+	<string name="details_search_person">%1$sを検索</string>
+	<string name="list_separator">、</string>
 	<string name="details_season">シーズン</string>
 	<string name="details_season_number">シーズン %1$d</string>
 	<string name="details_specials">特別編</string>
 	<string name="details_up_next">次のエピソード</string>
 	<string name="details_watched">視聴済み</string>
-	<string name="details_no_meta">このタイトルの詳細を提供しているアドオンがありません。再生を試すことはできます。</string>
+	<string name="details_no_meta">このタイトルの詳細はまだありません。再生を試すことはできます。</string>
 
-	<!-- Streams -->
 	<plurals name="streams_found">
 		<item quantity="other">%d 件のストリームが見つかりました</item>
 	</plurals>
 	<string name="streams_none_found">このタイトルのストリームは見つかりませんでした。</string>
-	<string name="streams_no_addons">このタイトルのストリームを提供しているアドオンがありません。</string>
+	<string name="streams_no_addons">このタイトルで再生できるものはまだありません。</string>
 	<string name="streams_unsupported">この種類のストリームはここでは再生できません。</string>
 	<string name="streams_copy_link">リンクをコピー</string>
 	<string name="streams_open_external">別のプレーヤーで開く</string>
@@ -121,7 +122,6 @@
 	<string name="quality_title">自動再生の画質</string>
 	<string name="quality_hint">Wi-Fi とモバイルデータでそれぞれ選んでください。その画質で最も良いストリームが自動で再生されます。ない場合は一段階低い画質を使います。</string>
 
-	<!-- Player -->
 	<string name="player_subtitles">字幕</string>
 	<string name="player_subtitles_off">オフ</string>
 	<string name="player_subtitles_from_file">ファイルから読み込む…</string>
@@ -148,6 +148,8 @@
 	<string name="player_seek_forward">+%1$d 秒</string>
 	<string name="player_zoom_fill">ズームして全体に表示</string>
 	<string name="player_zoom_fit">画面に合わせる</string>
+	<string name="player_brightness">明るさ</string>
+	<string name="player_volume">音量</string>
 	<string name="player_up_next_in">%1$s 後に次のエピソード</string>
 	<string name="player_up_next_cancel">次のエピソードを再生しない</string>
 	<string name="player_try_next">次のストリームを試す</string>
@@ -158,7 +160,6 @@
 	<string name="player_error_network">ストリームに接続できませんでした。接続を確認してください。</string>
 	<string name="player_error_format">この動画形式はこのデバイスでは対応していません。</string>
 
-	<!-- Torrent engine -->
 	<string name="torrent_connecting">接続しています…</string>
 	<plurals name="torrent_peers">
 		<item quantity="other">ピア %d</item>
@@ -167,16 +168,13 @@
 	<string name="torrent_buffering">バッファリング中 %1$d%%\n%2$s · %3$s</string>
 	<string name="torrent_playing">%1$s · %2$s</string>
 	<string name="torrent_error_no_video">このトレントには再生できる動画ファイルがありません。</string>
-	<string name="torrent_error_too_big">このファイルは %1$s あり、トレントキャッシュ（%2$s）を超えています。設定でキャッシュサイズを増やすか、より小さいファイルを選んでください。</string>
 	<string name="torrent_error_no_space">この %1$s のファイルに必要な空き容量がありません。</string>
 	<string name="torrent_error_wifi">Wi-Fi から切断されたため、トレントのストリーミングを停止しました。この動作は設定で変更できます。</string>
 	<string name="torrent_error_failed">このストリームを開始できませんでした。</string>
 
-	<!-- Magnet links -->
 	<string name="magnet_untitled">マグネットリンク</string>
 	<string name="magnet_source">マグネット</string>
 
-	<!-- Downloads -->
 	<string name="channel_downloads">ダウンロード</string>
 	<string name="channel_updates">アップデート</string>
 	<string name="download_preparing">ダウンロードを準備しています…</string>
@@ -194,138 +192,63 @@
 	<string name="download_delete_message">このダウンロードとファイルを削除しますか？</string>
 	<string name="download_source">ダウンロード済み</string>
 
-	<!-- Errors -->
 	<string name="error_link_not_allowed">このリンクは開けません。</string>
 	<string name="error_no_app_for_link">このデバイスにはこれを開けるアプリがありません。</string>
-	<string name="error_unsupported_link">このリンクはアドオンではありません。</string>
+	<string name="error_unsupported_link">このリンクはここでは開けません。</string>
 	<string name="error_bad_magnet">このマグネットリンクは無効です。</string>
 
-	<!-- Add-ons -->
-	<string name="addon_install_title">アドオンをインストールしますか？</string>
-	<string name="addon_install_message">%1$s のアドオンをインストールしますか？アドオンには検索内容が見えるため、信頼できるものだけをインストールしてください。</string>
-	<string name="addon_installed">%1$s をインストールしました</string>
-	<string name="addon_error_invalid_url">アドオンのリンクではありません。https:// または stremio:// で始まり、/manifest.json で終わる必要があります。</string>
-	<string name="addon_error_already_installed">このアドオンはすでにインストールされています。</string>
-	<string name="addon_error_invalid_manifest">このアドレスはアドオンとして応答しませんでした。</string>
-	<string name="addon_error_unreachable">アドオンに接続できませんでした。リンクと接続を確認してください。</string>
-	<string name="addon_error_storage">このデバイスにアドオンリストを保存できませんでした。</string>
-	<string name="addons_add">アドオンを追加</string>
-	<string name="addons_add_hint">アドオンのリンク</string>
-	<string name="addons_add_message">アドオンのマニフェストリンク（https:// または stremio://）を貼り付けてください。</string>
-	<string name="addons_installing">インストールしています…</string>
-	<string name="addons_configure">設定</string>
-	<string name="addons_reorder">ドラッグして並べ替え</string>
-	<string name="addons_not_answering">応答なし</string>
-	<string name="addons_version">バージョン %1$s</string>
-	<string name="addons_remove_message">このアドオンを削除しますか？</string>
-	<string name="addons_reset">デフォルトに戻す</string>
-	<string name="addons_reset_message">Cinemeta、Torrentio、ThePirateBay+、OpenSubtitles を設定なしの状態で元に戻し、デブリッドキーを含むその他すべてを削除します。</string>
-	<string name="addons_reset_confirm">リセット</string>
-	<string name="configure_paste_link">リンクを貼り付け</string>
-	<string name="configure_paste_message">ページに表示されたインストールリンクを貼り付けてください。</string>
+	<string name="addon_install_title">このソースを追加しますか？</string>
+	<string name="addon_install_message">%1$s のソースを追加しますか？信頼できるソースだけを追加してください。ソースは検索内容を見ることができます。</string>
+	<string name="addon_installed">%1$s を追加しました</string>
+	<string name="addon_error_invalid_url">ソースのリンクではありません。https:// または stremio:// で始まり、/manifest.json で終わる必要があります。</string>
+	<string name="addon_error_already_installed">このソースはすでに追加されています。</string>
+	<string name="addon_error_invalid_manifest">このアドレスはソースとして応答しませんでした。</string>
+	<string name="addon_error_unreachable">このソースに接続できませんでした。リンクと接続を確認してください。</string>
+	<string name="addon_error_storage">このデバイスにソースの一覧を保存できませんでした。</string>
+	<string name="addons_add_hint">ソースのリンク</string>
+	<string name="addons_installing">追加しています…</string>
 
-	<!-- Debrid -->
-	<string name="debrid_service">デブリッドサービス</string>
-	<string name="debrid_none">なし</string>
-	<string name="debrid_key">API キー</string>
-	<string name="debrid_key_saved">保存済みのキー %1$s。そのまま使う場合は空欄にしてください。</string>
-	<string name="debrid_test">テスト</string>
-	<string name="debrid_testing">確認しています…</string>
-	<string name="debrid_key_valid">キーは有効です。</string>
-	<string name="debrid_key_invalid">サービスがこのキーを拒否しました。</string>
-	<string name="debrid_key_unknown">現在確認できません。キーは問題ない可能性があります。</string>
-	<string name="debrid_key_invalid_format">API キーの形式ではないようです。</string>
-	<string name="debrid_get_key">キーはどこで確認できますか？</string>
-
-	<!-- First start -->
-	<string name="setup_title">ようこそ</string>
-	<string name="setup_mode_debrid">デブリッドアカウント（任意）</string>
-	<string name="setup_debrid_hint">キーがあるとキャッシュ済みのストリームがすぐに始まります。なくても、この端末ですべて再生できます。</string>
-	<string name="setup_use_account">Stremio アカウントを使う</string>
 	<string name="account_section">Stremio アカウント</string>
 	<string name="account_sign_in">Stremio にログイン</string>
-	<string name="account_sign_in_summary">任意です。Stremio のアドオンとライブラリをアプリに取り込み、ライブラリを同期します。</string>
+	<string name="account_sign_in_summary">任意です。Stremio のソースとライブラリをアプリに取り込み、ライブラリを同期します。</string>
 	<string name="account_signed_in">%1$s でログイン中</string>
 	<string name="account_sign_out">ログアウト</string>
-	<string name="account_sign_out_confirm">Stremio からログアウトしますか？アドオンとライブラリはこの端末に残ります。</string>
+	<string name="account_sign_out_confirm">Stremio からサインアウトしますか？ソースとライブラリはこのスマートフォンに残ります。</string>
 	<string name="account_email">メールアドレス</string>
 	<string name="account_password">パスワード</string>
 	<string name="account_error_login">メールアドレスまたはパスワードが違います。</string>
 	<string name="account_error_network">Stremio に接続できませんでした。接続を確認してください。</string>
-	<string name="account_done">ログインしました。アドオンとライブラリを取り込みました。</string>
-	<string name="setup_quality">自動再生の画質</string>
+	<string name="account_done">サインインしました。ソースとライブラリを取り込みました。</string>
 	<string name="setup_quality_wifi">Wi-Fi 接続時</string>
 	<string name="setup_quality_mobile">モバイルデータ通信時</string>
 	<string name="setup_language">あなたの言語</string>
-	<string name="setup_language_hint">動画にあればその言語の音声で再生します。なければその言語の字幕、それもなければ元の音声と英語字幕を使います。</string>
-	<string name="setup_content">コンテンツ</string>
 	<string name="setup_hide_adult">成人向けのコンテンツを非表示</string>
 
-	<!-- Torrentio settings -->
-	<string name="torrentio_title">Torrentio</string>
-	<string name="torrentio_debrid_section">デブリッド</string>
-	<string name="torrentio_debrid_explained">デブリッドキーを設定すると、Torrentio はすぐに再生できる直接リンクを返します。このスマートフォンでトレント通信は行われません。</string>
-	<string name="torrentio_results_section">結果</string>
-	<string name="torrentio_sort">並べ替え</string>
-	<string name="torrentio_limit">画質ごとの件数</string>
-	<string name="torrentio_no_limit">制限なし</string>
-	<string name="torrentio_hide">非表示にする項目</string>
-	<string name="torrentio_languages">優先言語</string>
-	<string name="torrentio_languages_explained">これらの言語のリリースが、選んだ順に先頭に表示されます。</string>
-	<string name="torrentio_providers">プロバイダ</string>
-	<string name="torrentio_providers_explained">すべてオフにすると、すべてのプロバイダを検索します。</string>
-	<string name="torrentio_advanced_section">すべてのオプション</string>
-	<string name="torrentio_open_configure">Torrentio 公式の設定ページを開く</string>
-	<string name="torrentio_not_a_link">Torrentio のリンクではありません。</string>
 	<string name="torrentio_saved">Torrentio の設定を保存しました</string>
 
-	<!-- Settings -->
-	<string name="settings_addons">アドオン</string>
-	<string name="settings_manage_addons">アドオンを管理</string>
-	<plurals name="settings_addons_installed">
-		<item quantity="other">%d 個のアドオンをインストール済み</item>
-	</plurals>
-	<string name="settings_torrents">トレントの再生</string>
-	<string name="settings_debrid">デブリッドと Torrentio</string>
-	<string name="settings_debrid_summary">%1$s · キー %2$s</string>
-	<string name="settings_torrentio_missing">Torrentio がインストールされていません</string>
+	<string name="settings_subtitles">字幕</string>
+	<string name="settings_app">アプリ</string>
+	<string name="settings_storage">ストレージと履歴</string>
+	<string name="settings_version_title">バージョン</string>
 	<string name="settings_playback">再生</string>
 	<string name="settings_quality_wifi">Wi-Fi 接続時の画質</string>
 	<string name="settings_quality_mobile">モバイルデータ通信時の画質</string>
 	<string name="settings_subtitle_size">字幕のサイズ</string>
 	<string name="settings_subtitle_color">字幕の色</string>
 	<string name="settings_subtitle_background">字幕の背景</string>
-	<string name="settings_engine">トレントエンジン</string>
-	<string name="settings_cache_size">キャッシュサイズ</string>
-	<string name="settings_wifi_only">Wi-Fi のみ</string>
-	<string name="settings_wifi_only_summary">トレントのストリーミングを Wi-Fi 接続時のみに制限します。</string>
-	<string name="settings_clear_on_exit">再生終了時にキャッシュを消去</string>
-	<string name="settings_clear_cache">今すぐキャッシュを消去</string>
-	<string name="settings_cache_cleared">キャッシュを消去しました</string>
-	<string name="settings_appearance">表示</string>
 	<string name="settings_language">言語</string>
 	<string name="settings_language_system">システムのデフォルト</string>
-	<string name="settings_content">コンテンツ</string>
-	<string name="settings_history">履歴</string>
 	<string name="settings_clear_history">視聴履歴を消去</string>
 	<string name="settings_clear_history_confirm">視聴履歴と視聴済みの印を消去しますか？</string>
 	<string name="settings_clear_searches">最近の検索を消去</string>
 	<string name="settings_cleared">消去しました</string>
-	<string name="settings_updates">アップデート</string>
 	<string name="settings_check_updates">アップデートを確認</string>
-	<string name="settings_version">バージョン %1$s</string>
 	<string name="settings_check_on_start">アプリ起動時に確認</string>
 	<string name="settings_check_on_start_summary">起動ごとに 1 回、GitHub に新しいリリースを問い合わせます。</string>
 	<string name="settings_about">概要</string>
-	<string name="settings_about_app">このアプリについて</string>
-	<string name="settings_where_traffic_goes">通信先について</string>
-	<string name="settings_where_traffic_goes_summary">このアプリが通信するすべてのサーバーとその理由。</string>
 	<string name="settings_licences">オープンソースライセンス</string>
-	<string name="settings_licences_summary">このアプリで使用しているライブラリ。</string>
 	<string name="settings_source_code">ソースコード</string>
-	<string name="traffic_explained">このアプリが通信するのは次のサーバーだけです。\n\n• あなたのアドオン（Cinemeta、Torrentio、ThePirateBay+、OpenSubtitles、および追加したもの）：カタログ、詳細、ストリーム、字幕の取得のため。\n• それらのアドオンが指定する画像サーバー：ポスターと背景画像の取得のため。\n• 再生するリンク先のストリームサーバー（デブリッドサービスのダウンロードサーバーなど）。\n• デブリッドサービスの API：「テスト」を押したときのみ。\n• TMDB アドオン (tmdb-addon.baby-beamup.club)。アプリが英語以外のときだけ、タイトル・説明・エピソード名をあなたの言語で表示するために使います。\n• Wikidata (query.wikidata.org)。アプリが英語以外のときだけ、タイトルをあなたの言語で表示するために使います。送られるのは IMDb ID と言語だけです。\n• Stremio（api.strem.io）：ログインしたときのみ、アドオンとライブラリのため。\n• GitHub：アップデートを確認したときのみ。\n• 他の BitTorrent ピア：内蔵エンジンでトレントを再生したときのみ。\n\n広告、アナリティクス、トラッキング、クラッシュレポートは一切ありません。デブリッドキーは暗号化して保存され、Torrentio とデブリッドサービスにのみ送信されます。</string>
 
-	<!-- Updates -->
 	<string name="update_checking">アップデートを確認しています…</string>
 	<string name="update_none">最新バージョンを使用しています。</string>
 	<string name="update_check_failed">アップデートを確認できませんでした。</string>
@@ -341,13 +264,10 @@
 	<string name="update_failed_download">ダウンロードに失敗しました。後でもう一度お試しください。</string>
 	<string name="update_failed_too_large">アップデートファイルが許容サイズを超えています。</string>
 	<string name="update_failed_checksum">ダウンロードしたファイルがチェックサムと一致しなかったため、破棄しました。</string>
-	<string name="update_failed_untrusted">ダウンロードしたアプリがこのアプリと同じ署名ではないため、破棄しました。</string>
-	<string name="update_failed_not_newer">ダウンロードしたものは現在のバージョンより新しくありません。</string>
 	<string name="update_install_failed">インストーラーがアップデートをインストールできませんでした。</string>
 	<string name="update_ready_title">アップデートをインストールできます</string>
 	<string name="update_ready_text">タップしてインストールを完了します。</string>
 
-	<!-- order must match the Java enums and lists -->
 	<string-array name="subtitle_colors">
 		<item>白</item>
 		<item>黄</item>
@@ -358,25 +278,74 @@
 		<item>半透明</item>
 		<item>黒</item>
 	</string-array>
-	<string-array name="torrentio_sorts">
-		<item>画質</item>
-		<item>画質、次にサイズ</item>
-		<item>シーダー数</item>
-		<item>サイズ</item>
-	</string-array>
-	<string-array name="torrentio_quality_filters">
-		<item>BluRay REMUX</item>
-		<item>HDR</item>
-		<item>Dolby Vision</item>
-		<item>Dolby Vision（HDR 付き）</item>
-		<item>3D</item>
-		<item>4K</item>
-		<item>1080p</item>
-		<item>720p</item>
-		<item>480p</item>
-		<item>その他</item>
-		<item>スクリーナー</item>
-		<item>CAM</item>
-		<item>画質不明</item>
-	</string-array>
+
+	<string name="action_copy">コピー</string>
+	<string name="settings_crash_log">クラッシュログ</string>
+	<string name="settings_crash_log_none">クラッシュの記録はありません</string>
+	<string name="settings_crash_log_summary">最後のクラッシュ: %1$s。コピーするまでスマートフォンの外には出ません。</string>
+	<string name="settings_crash_log_copied">クラッシュログをコピーしました</string>
+	<string name="settings_crash_log_deleted">クラッシュログを削除しました</string>
+	<string name="poster_watched">%1$s、%2$d%% 視聴済み</string>
+	<string name="poster_seen">%1$s、視聴済み</string>
+	<string name="poster_new">新着</string>
+	<string name="poster_new_episode">%1$s、新しいエピソード</string>
+	<string name="library_filter_all">すべて</string>
+	<string name="library_watched">視聴済み</string>
+	<string name="library_filter_empty">ここにはまだありません。</string>
+	<string name="loading">読み込み中…</string>
+	<string name="player_locked">画面ロック中。ロックを5秒間長押しすると解除されます。</string>
+	<string name="update_network">GitHub に接続できませんでした。接続を確認して、もう一度お試しください。</string>
+	<string name="update_repo_not_found">github.com/%1$s が見つかりません。リポジトリが存在して公開されていること、gradle.properties の githubRepo がそれを指していることを確認してください。</string>
+	<string name="update_no_releases">github.com/%1$s にはまだリリースがありません。</string>
+	<string name="update_no_apk">リリース %1$s に APK が添付されていません。dist フォルダの .apk を GitHub のリリースに添付してください。</string>
+	<string name="update_no_checksum">リリース %1$s に .apk.sha256 ファイルが添付されていないため、ダウンロードを確認できません。dist フォルダの 2 つのファイルを GitHub のリリースに添付してください。</string>
+	<string name="update_rate_limited">現在このネットワークからの確認は GitHub によって制限されています。1 時間後にもう一度お試しください。</string>
+	<string name="update_debug_build">これはデバッグ版です。アップデートでは通常版がインストールされ、Android では別のアプリとして扱われます。GitHub の APK を一度インストールすれば、以降は自動で更新できます。</string>
+	<string name="update_failed_wrong_package">ダウンロードしたものは別のアプリだったため、破棄しました。</string>
+	<string name="update_failed_wrong_signer">アップデートはこのアプリと別の鍵で署名されているため、Android は上書きインストールしません。リリースは同じ鍵でビルドしてください（BUILD.sh は ~/.niixfliix/keys に保存します）。鍵を変えるには、このアプリをアンインストールして新しい APK を一度インストールしてください。</string>
+	<string name="update_failed_version_code">アップデートのバージョンコードがこのアプリより大きくないため、Android はインストールしません。リリースをビルドするときに gradle.properties の versionCode を上げてください。</string>
+	<string name="update_install_cancelled">アップデートをキャンセルしました。</string>
+	<string name="update_install_conflict">Android がアップデートを拒否しました。別の鍵で署名されているか、インストール済みのアプリより新しくありません。</string>
+	<string name="update_install_storage">アップデートをインストールするための空き容量が足りません。</string>
+	<string name="update_install_blocked">アップデートはシステムまたはデバイスのポリシーによってブロックされました。</string>
+	<string name="update_install_incompatible">このアップデートはこのデバイスに対応していません。</string>
+
+	<string name="nav_live">ライブ</string>
+	<string name="live_row_nothing">今再生できるものはありません。</string>
+	<string name="stream_software_decoding">この端末では途切れる可能性</string>
+	<string name="settings_downloads_folder">ダウンロードフォルダー</string>
+	<string name="settings_downloads_folder_root">メインストレージ</string>
+	<string name="settings_downloads_choose">フォルダーを選ぶ</string>
+	<string name="settings_downloads_use_default">既定のフォルダーを使う</string>
+	<string name="settings_downloads_not_writable">このフォルダーにはファイルを保存できません。別のフォルダーを選んでください。</string>
+	<string name="settings_downloads_no_picker">このデバイスにはフォルダーを選ぶ機能がありません。</string>
+	<string name="details_download_episodes">エピソードをダウンロード</string>
+	<string name="download_episodes_message">各エピソードには、ダウンロードできるストリーム（debrid サービスなどの直接リンク）の中から自動再生が選ぶものが使われます（トレントは再生のみ）。ファイル名は「%1$s」のようになります。</string>
+	<string name="download_episodes_season">%1$s（%2$s）</string>
+	<string name="download_episodes_all">シリーズ全体（%1$s）</string>
+	<string name="download_episodes_none_out">これらのエピソードはまだ公開されていません。</string>
+	<string name="download_episodes_nothing">ダウンロードできたエピソードはありません。直接リンクのあるものがありませんでした。ダウンロードには debrid サービスなどの直接リンクが必要です（トレントは再生のみ）。</string>
+	<plurals name="episode_count">
+		<item quantity="other">%d 話</item>
+	</plurals>
+	<plurals name="download_episodes_looking">
+		<item quantity="other">%d 話のダウンロード用ストリームを探しています…</item>
+	</plurals>
+	<plurals name="download_episodes_added">
+		<item quantity="other">%d 話をダウンロードに追加しました。</item>
+	</plurals>
+	<plurals name="download_episodes_already">
+		<item quantity="other">%d 話はすでに追加済みです。</item>
+	</plurals>
+	<plurals name="download_episodes_skipped">
+		<item quantity="other">%d 話にはダウンロードできるストリームがありませんでした。</item>
+	</plurals>
+	<string name="live_free_sports">スポーツチャンネル</string>
+	<string name="live_free_sports_summary">誰でも見られる無料チャンネル</string>
+	<string name="live_sport_tv">スポーツ中継</string>
+	<string name="live_sport_tv_summary">blue Sport と SRF。ご自身のアカウントでログインしてください。</string>
+	<string name="web_reload">再読み込み</string>
+	<string name="web_desktop_site">PC 版サイト</string>
+	<string name="web_unavailable">プレーヤーを開けませんでした。Android System WebView を更新してもう一度お試しください。</string>
+	<string name="web_crashed">プレーヤーが停止しました。もう一度開いてください。</string>
 </resources>

@@ -1,18 +1,22 @@
 package app.niixfliix.player;
 
 import android.app.PictureInPictureParams;
+import android.app.UiModeManager;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Rational;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -47,7 +52,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.niixfliix.R;
-import app.niixfliix.addon.Quality;
 import app.niixfliix.addon.StreamInfo;
 import app.niixfliix.addon.StreamRanker;
 import app.niixfliix.addon.model.Meta;
@@ -55,10 +59,6 @@ import app.niixfliix.app.AppGraph;
 import app.niixfliix.app.Constant;
 import app.niixfliix.ui.Formats;
 
-/**
- * The full-size player. It only shows what the {@link PlaybackController} plays: closing it (back, swipe down,
- * the arrow) minimizes to the app's mini bar and playback goes on.
- */
 @OptIn(markerClass = UnstableApi.class)
 public final class PlayerActivity extends AppCompatActivity implements PlaybackController.Screen, Player.Listener,
 		PlayerGestures.Callback {
@@ -66,13 +66,17 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 	private final AppGraph graph = AppGraph.get();
 	private final PlaybackController playback = graph.playback();
 	private static final long INDICATOR_MS = 700;
+	private static final long ROTATE_SETTLE_MS = 300;
+	private static final int COMPACT_BOTTOM_ROW_DP = 400;
 
 	private final Runnable hideIndicator = this::hideIndicator;
+	private final Runnable followRotation = this::followRotation;
 
 	private Player player;
 	private PlayerEngine engine;
 	private PlayerView playerView;
 	private View topBar;
+	private View bottomActions;
 	private TextView titleView;
 	private TextView subtitleView;
 	private TextView indicator;
@@ -90,10 +94,18 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 	private TextView infoDescription;
 	private View upNextCard;
 	private ImageButton fullscreenButton;
+	private View lockButton;
+	private View moreButton;
+	private View[] overflowButtons;
 	private UpNext upNext;
 	private ScreenLock screenLock;
+	private FullscreenLevels levels;
+	@Nullable private OrientationEventListener rotation;
 	private boolean inPip;
 	private boolean fullscreen;
+	private boolean tv;
+	private boolean rotationArmed;
+	@Nullable private Boolean turnedTo;
 
 	private final ActivityResultLauncher<String[]> pickSubtitleFile = registerForActivityResult(
 			new ActivityResultContracts.OpenDocument(), this::onSubtitleFile);
@@ -104,7 +116,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		Player p = playback.player();
 		PlayerEngine e = playback.engine();
 		if (p == null || e == null) {
-			// nothing playing, e.g. the process was killed
 			finish();
 			return;
 		}
@@ -112,11 +123,14 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		engine = e;
 		setContentView(R.layout.activity_player);
 		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-		fullscreen = graph.playerPrefs.fullscreen();
+		tv = isTv();
+		fullscreen = tv || graph.playerPrefs.fullscreen();
+		rotationArmed = !fullscreen;
 		setRequestedOrientation(orientation());
 
 		playerView = findViewById(R.id.player_view);
 		topBar = findViewById(R.id.top_bar);
+		bottomActions = findViewById(R.id.bottom_actions);
 		titleView = findViewById(R.id.player_title);
 		subtitleView = findViewById(R.id.player_subtitle);
 		indicator = findViewById(R.id.gesture_indicator);
@@ -134,10 +148,13 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		infoDescription = findViewById(R.id.info_description);
 		upNextCard = findViewById(R.id.up_next);
 		fullscreenButton = findViewById(R.id.player_fullscreen);
+		lockButton = findViewById(R.id.player_lock);
+		moreButton = findViewById(R.id.player_more);
+		overflowButtons = new View[] {findViewById(R.id.player_audio), findViewById(R.id.player_streams)};
 		View root = findViewById(android.R.id.content);
 		upNext = new UpNext(root, playback::playNextNow, playback::cancelUpNext);
 		screenLock = new ScreenLock(root, this::onUnlocked);
-		// only portrait shows the status and navigation bars, so only portrait gets padded
+		levels = new FullscreenLevels(this, graph.main, root);
 		ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.player_content), (v, insets) -> {
 			Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 			v.setPadding(0, bars.top, 0, bars.bottom);
@@ -146,22 +163,35 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 
 		player.addListener(this);
 		playerView.setPlayer(player);
-		// "next" is the next episode or queue item, see NextPlayer
 		playerView.setShowNextButton(true);
 		playerView.setShowPreviousButton(false);
-		playerView.setControllerVisibilityListener((PlayerView.ControllerVisibilityListener) visibility ->
-				topBar.setVisibility(inPip ? View.GONE : visibility));
+		playerView.setControllerVisibilityListener((PlayerView.ControllerVisibilityListener) visibility -> {
+			topBar.setVisibility(inPip ? View.GONE : visibility);
+			bottomActions.setVisibility(inPip ? View.GONE : visibility);
+			upNext.setControlsVisible(visibility == View.VISIBLE);
+			levels.setControlsVisible(visibility == View.VISIBLE);
+		});
 		engine.applySubtitleStyle(playerView.getSubtitleView());
 		new PlayerGestures(this, playerView, this).attach();
 
 		findViewById(R.id.player_back).setOnClickListener(v -> onMinimize());
-		findViewById(R.id.player_lock).setOnClickListener(v -> lockScreen());
+		lockButton.setOnClickListener(v -> lockScreen());
 		findViewById(R.id.player_subtitles).setOnClickListener(v -> showSubtitles());
-		findViewById(R.id.player_audio).setOnClickListener(v -> TrackPicker.audio(this, player.getCurrentTracks(),
-				engine::selectTrack));
+		findViewById(R.id.player_audio).setOnClickListener(v -> showAudio());
 		findViewById(R.id.player_streams).setOnClickListener(v -> showStreamSwitcher());
 		findViewById(R.id.player_minimize).setOnClickListener(v -> onMinimize());
+		moreButton.setOnClickListener(this::showMore);
 		fullscreenButton.setOnClickListener(v -> toggleFullscreen());
+		lockButton.setVisibility(tv ? View.GONE : View.VISIBLE);
+		fullscreenButton.setVisibility(tv ? View.GONE : View.VISIBLE);
+		if (canFollowRotation()) {
+			rotation = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL) {
+				@Override
+				public void onOrientationChanged(int degrees) {
+					onDeviceTurned(degrees);
+				}
+			};
+		}
 		View pip = findViewById(R.id.player_pip);
 		pip.setVisibility(supportsPip() ? View.VISIBLE : View.GONE);
 		pip.setOnClickListener(v -> enterPip());
@@ -174,18 +204,38 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 					screenLock.showPanel();
 					return;
 				}
-				// the mini bar's X is what stops it
 				onMinimize();
 			}
 		});
 		updatePipParams();
 		applyLayout();
+		if (tv) {
+			playerView.requestFocus();
+		}
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		playback.attach(this);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (rotation != null && rotation.canDetectOrientation()) {
+			rotation.enable();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		if (rotation != null) {
+			rotation.disable();
+		}
+		turnedTo = null;
+		graph.main.removeCallbacks(followRotation);
+		super.onPause();
 	}
 
 	@Override
@@ -197,7 +247,9 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 	@Override
 	protected void onDestroy() {
 		graph.main.removeCallbacks(hideIndicator);
+		graph.main.removeCallbacks(followRotation);
 		if (player != null) {
+			levels.release();
 			screenLock.release();
 			player.removeListener(this);
 			playerView.setPlayer(null);
@@ -205,12 +257,36 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		super.onDestroy();
 	}
 
-	@Override
-	public void onMinimize() {
+	private void onMinimize() {
 		finish();
 	}
 
-	/** keys too: a keyboard, remote or volume rocker changes nothing while locked */
+	@Override
+	public void onSwipeDown() {
+		if (!fullscreen) {
+			onMinimize();
+		}
+	}
+
+	@Override
+	public boolean onLevelSwipeStart(boolean leftHalf) {
+		return levels.startSwipe(leftHalf);
+	}
+
+	@Override
+	public void onLevelSwipe(boolean leftHalf, float delta) {
+		levels.swipeBy(leftHalf, delta);
+	}
+
+	@Override
+	public void onLevelSwipeEnd() {
+		levels.endSwipe();
+	}
+
+	private void updateLevels() {
+		levels.setEnabled(fullscreen && !tv && !inPip && !screenLock.isLocked());
+	}
+
 	@Override
 	public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
 		if (screenLock != null && screenLock.isLocked()) {
@@ -219,16 +295,41 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 			}
 			return true;
 		}
-		return super.dispatchKeyEvent(event);
+		if (playerView != null && seekKey(event)) {
+			return true;
+		}
+		boolean handled = super.dispatchKeyEvent(event);
+		int key = event.getKeyCode();
+		if (levels != null && event.getAction() == KeyEvent.ACTION_UP && (key == KeyEvent.KEYCODE_VOLUME_UP
+				|| key == KeyEvent.KEYCODE_VOLUME_DOWN || key == KeyEvent.KEYCODE_VOLUME_MUTE)) {
+			levels.onVolumeChangedOutside();
+		}
+		return handled;
+	}
+
+	private boolean seekKey(@NonNull KeyEvent event) {
+		int key = event.getKeyCode();
+		if (key != KeyEvent.KEYCODE_DPAD_LEFT && key != KeyEvent.KEYCODE_DPAD_RIGHT) {
+			return false;
+		}
+		if (inPip || playerView.isControllerFullyVisible() || errorCard.getVisibility() == View.VISIBLE) {
+			return false;
+		}
+		if (event.getAction() == KeyEvent.ACTION_DOWN) {
+			onSeekBy(key == KeyEvent.KEYCODE_DPAD_RIGHT);
+		}
+		return true;
 	}
 
 	private void lockScreen() {
 		playerView.hideController();
 		playerView.setUseController(false);
 		screenLock.lock();
+		updateLevels();
 	}
 
 	private void onUnlocked() {
+		updateLevels();
 		playerView.setUseController(!inPip);
 		playerView.showController();
 	}
@@ -255,7 +356,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		view.setVisibility(text == null || text.isEmpty() ? View.GONE : View.VISIBLE);
 	}
 
-	/** "2019 · 58 min · 8.1" */
 	private static String facts(Meta meta) {
 		List<String> parts = new ArrayList<>();
 		for (String part : new String[] {meta.releaseInfo, meta.runtime, meta.imdbRating}) {
@@ -293,10 +393,10 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		inPip = isInPip;
 		playerView.setUseController(!isInPip && !screenLock.isLocked());
 		topBar.setVisibility(View.GONE);
+		bottomActions.setVisibility(View.GONE);
 		upNext.setHiddenForPip(isInPip);
 		applyLayout();
 		if (!isInPip && getLifecycle().getCurrentState() == Lifecycle.State.CREATED) {
-			// the PiP window was closed with its X
 			playback.stop();
 		}
 	}
@@ -316,7 +416,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		if (session == null) {
 			return;
 		}
-		// same choices as the streams sheet, plus whatever is playing now if it isn't one of them
 		List<StreamInfo> choices = StreamRanker.bestPerQuality(session.streams);
 		if (!choices.contains(session.stream)) {
 			choices.add(0, session.stream);
@@ -332,7 +431,7 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 				checked = playable.size();
 			}
 			playable.add(s);
-			String quality = s.quality == Quality.OTHER ? getString(R.string.quality_other) : s.quality.title;
+			String quality = Formats.quality(this, s.quality);
 			labels.add(s.sizeBytes > 0
 					? getString(R.string.player_stream_label, quality, Formats.size(this, s.sizeBytes)) : quality);
 		}
@@ -350,6 +449,28 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 					}
 				})
 				.show();
+	}
+
+	private void showAudio() {
+		TrackPicker.audio(this, player.getCurrentTracks(), engine::selectTrack);
+	}
+
+	private void showMore(@NonNull View anchor) {
+		PopupMenu menu = new PopupMenu(this, anchor);
+		menu.getMenu().add(0, R.id.player_audio, 0, R.string.player_audio);
+		menu.getMenu().add(0, R.id.player_streams, 1, R.string.player_switch_stream);
+		menu.setOnMenuItemClickListener(item -> {
+			int id = item.getItemId();
+			if (id == R.id.player_audio) {
+				showAudio();
+			} else if (id == R.id.player_streams) {
+				showStreamSwitcher();
+			} else {
+				return false;
+			}
+			return true;
+		});
+		menu.show();
 	}
 
 	private void showSubtitles() {
@@ -397,7 +518,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 				}
 			}
 		} catch (SecurityException | IllegalArgumentException ignored) {
-			// fall back to the generic label
 		}
 		return getString(R.string.player_subtitle_file);
 	}
@@ -442,22 +562,87 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 	@Override
 	public void onConfigurationChanged(@NonNull Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		// the rotation asked for in toggleFullscreen has happened, the 16:9 height needs the new width
 		applyLayout();
 	}
 
 	private void toggleFullscreen() {
-		fullscreen = !fullscreen;
+		rotationArmed = false;
+		turnedTo = null;
+		graph.main.removeCallbacks(followRotation);
+		setFullscreen(!fullscreen);
 		graph.playerPrefs.setFullscreen(fullscreen);
+	}
+
+	private void setFullscreen(boolean on) {
+		fullscreen = on;
 		setRequestedOrientation(orientation());
 		applyLayout();
 	}
 
 	private int orientation() {
-		return fullscreen ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+		if (tv) {
+			return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+		}
+		if (fullscreen) {
+			return ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+		}
+		return isLargeScreen() ? ActivityInfo.SCREEN_ORIENTATION_FULL_USER : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 	}
 
-	/** full screen: the video is everything. Portrait: video on top, details and the "Up next" card under it. */
+	private boolean isLargeScreen() {
+		return getResources().getConfiguration().smallestScreenWidthDp >= 600;
+	}
+
+	private boolean isTv() {
+		UiModeManager uiMode = getSystemService(UiModeManager.class);
+		return uiMode != null && uiMode.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION
+				|| !getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN);
+	}
+
+	private boolean canFollowRotation() {
+		return !tv && !isLargeScreen();
+	}
+
+	private boolean autoRotateOn() {
+		return Settings.System.getInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
+	}
+
+	private void onDeviceTurned(int degrees) {
+		if (degrees == OrientationEventListener.ORIENTATION_UNKNOWN) {
+			return;
+		}
+		Boolean wantFullscreen = degrees <= 20 || degrees >= 340 ? Boolean.FALSE
+				: degrees >= 70 && degrees <= 110 || degrees >= 250 && degrees <= 290 ? Boolean.TRUE : null;
+		if (wantFullscreen == null) {
+			return;
+		}
+		boolean allowed = autoRotateOn() && !inPip && !isInMultiWindowMode() && !screenLock.isLocked();
+		if (!rotationArmed) {
+			if (wantFullscreen == fullscreen) {
+				rotationArmed = true;
+			}
+			return;
+		}
+		if (!allowed || wantFullscreen == fullscreen) {
+			turnedTo = null;
+			graph.main.removeCallbacks(followRotation);
+			return;
+		}
+		if (!wantFullscreen.equals(turnedTo)) {
+			turnedTo = wantFullscreen;
+			graph.main.removeCallbacks(followRotation);
+			graph.main.postDelayed(followRotation, ROTATE_SETTLE_MS);
+		}
+	}
+
+	private void followRotation() {
+		Boolean target = turnedTo;
+		turnedTo = null;
+		if (target != null && target != fullscreen && !isFinishing()) {
+			setFullscreen(target);
+		}
+	}
+
 	private void applyLayout() {
 		boolean portrait = !fullscreen && !inPip;
 		WindowInsetsControllerCompat bars = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -474,36 +659,50 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		fullscreenButton.setImageResource(fullscreen ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen);
 		fullscreenButton.setContentDescription(getString(fullscreen
 				? R.string.player_exit_fullscreen : R.string.player_fullscreen));
+		fitBottomRow();
 		moveUpNext(portrait);
+		updateLevels();
 	}
 
-	/** the width of the screen held upright, whichever way it's turned right now */
 	private int videoHeight() {
 		Configuration config = getResources().getConfiguration();
-		float width = Math.min(config.screenWidthDp, config.screenHeightDp) * getResources().getDisplayMetrics().density;
-		return Math.round(width * 9 / 16);
+		float density = getResources().getDisplayMetrics().density;
+		float byWidth = config.screenWidthDp * density * 9 / 16;
+		float byHeight = config.screenHeightDp * density * 0.6f;
+		return Math.round(Math.min(byWidth, byHeight));
 	}
 
-	/** the card would cover the controls in the short portrait video, so there it goes under it instead */
+	private void fitBottomRow() {
+		boolean compact = getResources().getConfiguration().screenWidthDp < COMPACT_BOTTOM_ROW_DP;
+		for (View button : overflowButtons) {
+			button.setVisibility(compact ? View.GONE : View.VISIBLE);
+		}
+		moreButton.setVisibility(compact ? View.VISIBLE : View.GONE);
+	}
+
 	private void moveUpNext(boolean portrait) {
 		ViewGroup target = portrait ? infoList : videoFrame;
-		if (upNextCard.getParent() == target) {
-			return;
+		if (upNextCard.getParent() != target) {
+			placeUpNext(portrait, target);
 		}
+		upNext.setOverlay(!portrait);
+	}
+
+	private void placeUpNext(boolean portrait, @NonNull ViewGroup target) {
 		((ViewGroup) upNextCard.getParent()).removeView(upNextCard);
 		float dp = getResources().getDisplayMetrics().density;
 		if (portrait) {
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 					ViewGroup.LayoutParams.WRAP_CONTENT);
 			lp.bottomMargin = Math.round(16 * dp);
-			infoList.addView(upNextCard, 0, lp);
+			target.addView(upNextCard, 0, lp);
 		} else {
-			FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Math.round(300 * dp),
+			FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+					getResources().getDimensionPixelSize(R.dimen.up_next_width),
 					ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM | Gravity.END);
-			lp.setMarginEnd(Math.round(24 * dp));
-			lp.bottomMargin = Math.round(96 * dp);
-			// under the error card, like in the layout
-			videoFrame.addView(upNextCard, videoFrame.indexOfChild(errorCard), lp);
+			lp.setMarginEnd(Math.round(16 * dp));
+			lp.bottomMargin = Math.round(16 * dp);
+			target.addView(upNextCard, target.indexOfChild(errorCard), lp);
 		}
 	}
 
@@ -515,7 +714,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		try {
 			enterPictureInPictureMode(pipParams());
 		} catch (IllegalStateException e) {
-			// PiP turned off for this app in system settings
 		}
 	}
 
@@ -530,7 +728,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		Rational ratio = size.width > 0 && size.height > 0
 				? new Rational(size.width, size.height)
 				: new Rational(16, 9);
-		// PiP rejects anything outside ~1:2.39 .. 2.39:1
 		float value = ratio.floatValue();
 		if (value > 2.39f) {
 			ratio = new Rational(239, 100);
@@ -539,7 +736,6 @@ public final class PlayerActivity extends AppCompatActivity implements PlaybackC
 		}
 		PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder().setAspectRatio(ratio);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-			// the cross-fade looks wrong on video
 			builder.setSeamlessResizeEnabled(false);
 		}
 		return builder.build();

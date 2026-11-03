@@ -32,7 +32,6 @@ public final class AddonErrors {
 		}
 	}
 
-	/** toasts "installed" or the error */
 	@NonNull
 	public static AddonRepository.AddCallback toastCallback(@NonNull Context context) {
 		return new AddonRepository.AddCallback() {

@@ -1,7 +1,14 @@
 package app.niixfliix.ui.settings;
 
-import android.content.Intent;
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.Fragment;
@@ -25,25 +35,35 @@ import java.util.function.IntConsumer;
 
 import app.niixfliix.BuildConfig;
 import app.niixfliix.R;
-import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.data.Prefs;
-import app.niixfliix.debrid.DebridService;
+import app.niixfliix.download.DownloadFolder;
 import app.niixfliix.player.PlayerPreferences;
-import app.niixfliix.torrentio.TorrentioConfig;
 import app.niixfliix.ui.Formats;
 import app.niixfliix.ui.Links;
 import app.niixfliix.ui.setup.Choices;
 import app.niixfliix.ui.setup.SignInDialog;
 import app.niixfliix.update.UpdatePrompt;
+import app.niixfliix.util.CrashLog;
+import app.niixfliix.util.Texts;
 
 public final class SettingsFragment extends Fragment {
 
-	private static final int[] CACHE_SIZES_MB = {1024, 2048, 4096, 8192, 16384};
 	private static final String[] APP_LANGUAGES = {"", "en", "es", "fr", "ja", "ko", "ru", "tr", "zh-CN", "zh-TW"};
 
 	private final AppGraph graph = AppGraph.get();
 	private LinearLayout list;
+	private final ActivityResultLauncher<Uri> folderPicker = registerForActivityResult(
+			new ActivityResultContracts.OpenDocumentTree(), tree -> {
+				if (tree == null || getView() == null) {
+					return;
+				}
+				if (DownloadFolder.pick(requireContext(), graph.prefs, tree)) {
+					build();
+				} else {
+					toast(R.string.settings_downloads_not_writable);
+				}
+			});
 
 	@NonNull
 	@Override
@@ -92,24 +112,18 @@ public final class SettingsFragment extends Fragment {
 					v -> SignInDialog.show(getChildFragmentManager()));
 		}
 
-		header(R.string.settings_addons);
-		int addonCount = graph.addons.all().size();
-		row(R.string.settings_manage_addons, getResources().getQuantityString(R.plurals.settings_addons_installed,
-				addonCount, addonCount), v -> startActivity(new Intent(requireContext(), AddonsActivity.class)));
-
-		header(R.string.settings_torrents);
-		row(R.string.settings_debrid, debridSummary(), v -> openTorrentio());
-
 		header(R.string.settings_playback);
 		row(R.string.settings_quality_wifi, qualityTitle(player, true), v -> choose(R.string.settings_quality_wifi,
-				Choices.qualityLabels(), Choices.qualityIndex(player.quality(true)),
+				Formats.qualityLabels(requireContext()), Choices.qualityIndex(player.quality(true)),
 				i -> player.setQuality(true, Choices.QUALITIES.get(i))));
 		row(R.string.settings_quality_mobile, qualityTitle(player, false), v -> choose(R.string.settings_quality_mobile,
-				Choices.qualityLabels(), Choices.qualityIndex(player.quality(false)),
+				Formats.qualityLabels(requireContext()), Choices.qualityIndex(player.quality(false)),
 				i -> player.setQuality(false, Choices.QUALITIES.get(i))));
-		row(R.string.setup_language, Formats.language(player.language()), v -> choose(R.string.setup_language,
+		row(R.string.setup_language, Choices.languageName(player.language()), v -> choose(R.string.setup_language,
 				Choices.languageLabels(), Choices.languageIndex(player.language()),
 				i -> player.setLanguage(Choices.LANGUAGES.get(i))));
+
+		header(R.string.settings_subtitles);
 		row(R.string.settings_subtitle_size, getString(R.string.percent, player.subtitleSize()), v -> chooseSubtitleSize());
 		String[] colors = getResources().getStringArray(R.array.subtitle_colors);
 		row(R.string.settings_subtitle_color, colors[player.subtitleColor().ordinal()], v -> choose(
@@ -120,29 +134,19 @@ public final class SettingsFragment extends Fragment {
 				R.string.settings_subtitle_background, backgrounds, player.subtitleBackground().ordinal(),
 				i -> player.setSubtitleBackground(PlayerPreferences.SubtitleBackground.values()[i])));
 
-		header(R.string.settings_engine);
-		row(R.string.settings_cache_size, Formats.size(requireContext(), (long) prefs.torrentCacheMb() << 20),
-				v -> chooseCacheSize());
-		toggle(R.string.settings_wifi_only, R.string.settings_wifi_only_summary, prefs.torrentWifiOnly(),
-				prefs::setTorrentWifiOnly);
-		toggle(R.string.settings_clear_on_exit, 0, prefs.torrentClearOnExit(), prefs::setTorrentClearOnExit);
-		TextView cacheSummary = row(R.string.settings_clear_cache, null, v -> {
-			graph.torrentEngine().clearCache();
-			toast(R.string.settings_cache_cleared);
-			build();
-		});
-		showCacheSize(cacheSummary);
-
-		header(R.string.settings_appearance);
+		header(R.string.settings_app);
 		row(R.string.settings_language, currentLanguageLabel(), v -> chooseLanguage());
-
-		header(R.string.settings_content);
 		toggle(R.string.setup_hide_adult, 0, prefs.hideAdult(), hide -> {
 			prefs.setHideAdult(hide);
 			graph.addons.filtersChanged();
 		});
+		row(R.string.settings_check_updates, null, v -> UpdatePrompt.check(requireActivity()));
+		toggle(R.string.settings_check_on_start, R.string.settings_check_on_start_summary, prefs.updateCheckOnStart(),
+				prefs::setUpdateCheckOnStart);
 
-		header(R.string.settings_history);
+		header(R.string.settings_storage);
+		row(R.string.settings_downloads_folder, DownloadFolder.label(requireContext(), prefs),
+				v -> chooseDownloadsFolder());
 		row(R.string.settings_clear_history, null, v -> confirm(R.string.settings_clear_history_confirm, () -> {
 			graph.history.clear();
 			toast(R.string.settings_cleared);
@@ -152,21 +156,73 @@ public final class SettingsFragment extends Fragment {
 			toast(R.string.settings_cleared);
 		});
 
-		header(R.string.settings_updates);
-		row(R.string.settings_check_updates, getString(R.string.settings_version, BuildConfig.VERSION_NAME),
-				v -> UpdatePrompt.check(requireActivity()));
-		toggle(R.string.settings_check_on_start, R.string.settings_check_on_start_summary, prefs.updateCheckOnStart(),
-				prefs::setUpdateCheckOnStart);
-
 		header(R.string.settings_about);
-		row(R.string.settings_about_app, getString(R.string.disclaimer),
-				v -> info(R.string.settings_about_app, R.string.disclaimer));
-		row(R.string.settings_where_traffic_goes, getString(R.string.settings_where_traffic_goes_summary),
-				v -> info(R.string.settings_where_traffic_goes, R.string.traffic_explained));
-		row(R.string.settings_licences, getString(R.string.settings_licences_summary),
-				v -> info(R.string.settings_licences, R.string.licences_text));
 		String source = "https://github.com/" + BuildConfig.GITHUB_REPO;
 		row(R.string.settings_source_code, source, v -> Links.open(requireContext(), source));
+		TextView crashSummary = row(R.string.settings_crash_log, getString(R.string.settings_crash_log_none),
+				v -> showCrashLog());
+		showCrashSummary(crashSummary);
+		row(R.string.settings_version_title, BuildConfig.VERSION_NAME,
+				v -> info(R.string.settings_licences, R.string.licences_text));
+	}
+
+	private void showCrashSummary(@NonNull TextView summary) {
+		graph.io.execute(() -> {
+			long when = CrashLog.lastCrashMillis();
+			graph.main.post(() -> {
+				if (getView() != null && summary.isAttachedToWindow() && when > 0) {
+					summary.setText(getString(R.string.settings_crash_log_summary, DateUtils.formatDateTime(
+							requireContext(), when, DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME)));
+				}
+			});
+		});
+	}
+
+	private void showCrashLog() {
+		graph.io.execute(() -> {
+			String log = CrashLog.read();
+			graph.main.post(() -> {
+				if (getView() == null) {
+					return;
+				}
+				if (log == null) {
+					toast(R.string.settings_crash_log_none);
+					return;
+				}
+				AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+						.setTitle(R.string.settings_crash_log)
+						.setMessage(log)
+						.setPositiveButton(R.string.action_copy, (d, w) -> copyCrashLog(log))
+						.setNeutralButton(R.string.action_delete, (d, w) -> graph.io.execute(() -> {
+							CrashLog.clear();
+							graph.main.post(() -> {
+								if (getView() != null) {
+									toast(R.string.settings_crash_log_deleted);
+									build();
+								}
+							});
+						}))
+						.setNegativeButton(R.string.action_close, null)
+						.show();
+				TextView message = dialog.findViewById(android.R.id.message);
+				if (message != null) {
+					message.setTextIsSelectable(true);
+					message.setTypeface(Typeface.MONOSPACE);
+					message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+				}
+			});
+		});
+	}
+
+	private void copyCrashLog(@NonNull String log) {
+		ClipboardManager clipboard = requireContext().getSystemService(ClipboardManager.class);
+		if (clipboard == null) {
+			return;
+		}
+		clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.settings_crash_log), log));
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+			toast(R.string.settings_crash_log_copied);
+		}
 	}
 
 	private void header(@StringRes int title) {
@@ -185,19 +241,6 @@ public final class SettingsFragment extends Fragment {
 		view.setOnClickListener(onClick);
 		list.addView(view);
 		return summaryView;
-	}
-
-	/** walks the cache dir, keep it off the main thread */
-	private void showCacheSize(@NonNull TextView summary) {
-		graph.io.execute(() -> {
-			long bytes = graph.torrentEngine().cacheSizeBytes();
-			graph.main.post(() -> {
-				if (getView() != null && summary.isAttachedToWindow()) {
-					summary.setText(Formats.size(requireContext(), bytes));
-					summary.setVisibility(View.VISIBLE);
-				}
-			});
-		});
 	}
 
 	private void toggle(@StringRes int title, @StringRes int summary, boolean on, @NonNull Consumer<Boolean> onToggle) {
@@ -262,28 +305,9 @@ public final class SettingsFragment extends Fragment {
 		Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show();
 	}
 
-	/** what the picker shows for it */
 	@NonNull
 	private String qualityTitle(@NonNull PlayerPreferences player, boolean wifi) {
-		return Choices.QUALITIES.get(Choices.qualityIndex(player.quality(wifi))).title;
-	}
-
-	@NonNull
-	private String debridSummary() {
-		InstalledAddon torrentio = graph.addons.torrentio();
-		if (torrentio == null) {
-			return getString(R.string.settings_torrentio_missing);
-		}
-		TorrentioConfig config = TorrentioConfig.parse(torrentio.transportUrl);
-		if (!config.hasDebrid() || config.debrid == null) {
-			return getString(R.string.debrid_none);
-		}
-		String name = getResources().getStringArray(R.array.debrid_services)[config.debrid.ordinal()];
-		return getString(R.string.settings_debrid_summary, name, DebridService.mask(config.debridKey));
-	}
-
-	private void openTorrentio() {
-		startActivity(new Intent(requireContext(), TorrentioSetupActivity.class));
+		return Formats.quality(requireContext(), Choices.QUALITIES.get(Choices.qualityIndex(player.quality(wifi))));
 	}
 
 	private void chooseSubtitleSize() {
@@ -300,18 +324,29 @@ public final class SettingsFragment extends Fragment {
 		choose(R.string.settings_subtitle_size, labels, checked, i -> player.setSubtitleSize(sizes[i]));
 	}
 
-	private void chooseCacheSize() {
-		Prefs prefs = graph.prefs;
-		String[] labels = new String[CACHE_SIZES_MB.length];
-		// 2 GB unless the saved size is in the list
-		int checked = 1;
-		for (int i = 0; i < CACHE_SIZES_MB.length; i++) {
-			labels[i] = Formats.size(requireContext(), (long) CACHE_SIZES_MB[i] << 20);
-			if (CACHE_SIZES_MB[i] == prefs.torrentCacheMb()) {
-				checked = i;
-			}
+	private void chooseDownloadsFolder() {
+		if (DownloadFolder.picked(requireContext(), graph.prefs) == null) {
+			pickDownloadsFolder();
+			return;
 		}
-		choose(R.string.settings_cache_size, labels, checked, i -> prefs.setTorrentCacheMb(CACHE_SIZES_MB[i]));
+		new MaterialAlertDialogBuilder(requireContext())
+				.setTitle(R.string.settings_downloads_folder)
+				.setMessage(DownloadFolder.label(requireContext(), graph.prefs))
+				.setPositiveButton(R.string.settings_downloads_choose, (d, w) -> pickDownloadsFolder())
+				.setNeutralButton(R.string.settings_downloads_use_default, (d, w) -> {
+					DownloadFolder.useDefault(requireContext(), graph.prefs);
+					build();
+				})
+				.setNegativeButton(R.string.action_cancel, null)
+				.show();
+	}
+
+	private void pickDownloadsFolder() {
+		try {
+			folderPicker.launch(null);
+		} catch (ActivityNotFoundException e) {
+			toast(R.string.settings_downloads_no_picker);
+		}
 	}
 
 	@NonNull
@@ -341,11 +376,10 @@ public final class SettingsFragment extends Fragment {
 				i == 0 ? LocaleListCompat.getEmptyLocaleList() : LocaleListCompat.forLanguageTags(APP_LANGUAGES[i])));
 	}
 
-	/** native names, like most language pickers */
 	@NonNull
 	private static String languageName(@NonNull String tag) {
 		Locale locale = Locale.forLanguageTag(tag);
 		String name = locale.getDisplayName(locale);
-		return name.isEmpty() ? tag : Formats.capitalize(name, locale);
+		return name.isEmpty() ? tag : Texts.capitalize(name, locale);
 	}
 }

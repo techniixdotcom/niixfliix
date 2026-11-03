@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +27,9 @@ import java.util.Map;
 import java.util.Set;
 
 import app.niixfliix.R;
+import app.niixfliix.addon.MetaFinder;
+import app.niixfliix.addon.ReleaseOrder;
+import app.niixfliix.addon.Translations;
 import app.niixfliix.addon.model.Catalog;
 import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.addon.model.Meta;
@@ -38,6 +40,7 @@ import app.niixfliix.ui.common.CatalogSource;
 import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.ui.common.QueueMenu;
 import app.niixfliix.ui.common.RowsAdapter;
+import app.niixfliix.ui.common.TabToolbar;
 import app.niixfliix.ui.details.DetailsActivity;
 
 public final class SearchFragment extends Fragment implements RowsAdapter.Listener {
@@ -47,6 +50,7 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 	private final Map<String, RowsAdapter.Row> rowsByType = new HashMap<>();
 	private final Map<String, Set<String>> idsByType = new HashMap<>();
 	private EditText input;
+	@Nullable private String pendingQuery;
 	private View recentSection;
 	private ChipGroup recentChips;
 	private RecyclerView results;
@@ -64,6 +68,7 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		TabToolbar.setUp(this, view, R.string.nav_search);
 		input = view.findViewById(R.id.search_input);
 		recentSection = view.findViewById(R.id.recent_section);
 		recentChips = view.findViewById(R.id.recent_chips);
@@ -106,12 +111,42 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 			return false;
 		});
 		showRecent();
+		String pending = pendingQuery;
+		pendingQuery = null;
+		if (pending != null) {
+			searchFor(pending);
+		}
 	}
 
 	@Override
 	public void onDestroyView() {
 		graph.main.removeCallbacks(searchNow);
 		super.onDestroyView();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		adapter.refreshWatched();
+	}
+
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (!hidden && getView() != null) {
+			adapter.refreshWatched();
+		}
+	}
+
+	public void searchFor(@NonNull String text) {
+		if (getView() == null || input == null) {
+			pendingQuery = text;
+			return;
+		}
+		input.setText(text);
+		input.setSelection(input.length());
+		graph.main.removeCallbacks(searchNow);
+		search();
 	}
 
 	@NonNull
@@ -144,7 +179,7 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 		int requestGeneration = ++generation;
 		rowsByType.clear();
 		idsByType.clear();
-		adapter.setContent(null, new ArrayList<>());
+		adapter.clear();
 		recentSection.setVisibility(View.GONE);
 		results.setVisibility(View.VISIBLE);
 		pending = 0;
@@ -159,7 +194,63 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 				}
 			}
 		}
+		if (pending > 0 && graph.translations.language() != null) {
+			pending++;
+			searchLocalTitles(q, requestGeneration);
+		}
 		setStatus(pending == 0 ? R.string.search_no_sources : R.string.search_searching);
+	}
+
+	private void searchLocalTitles(String q, int requestGeneration) {
+		graph.io.execute(() -> {
+			List<Translations.Found> found = graph.translations.search(q);
+			graph.main.post(() -> onLocalTitles(requestGeneration, found));
+		});
+	}
+
+	private void onLocalTitles(int requestGeneration, List<Translations.Found> found) {
+		if (getView() == null || requestGeneration != generation) {
+			return;
+		}
+		for (Translations.Found title : found) {
+			if (isShown(title.imdbId)) {
+				continue;
+			}
+			pending++;
+			graph.io.execute(() -> {
+				Meta meta = findMeta(title);
+				List<Meta> result = meta != null ? Collections.singletonList(meta) : Collections.emptyList();
+				graph.main.post(() -> onResults(requestGeneration, result));
+			});
+		}
+		onResults(requestGeneration, Collections.emptyList());
+	}
+
+	@Nullable
+	private Meta findMeta(Translations.Found title) {
+		String other = Meta.TYPE_SERIES.equals(title.type) ? Meta.TYPE_MOVIE : Meta.TYPE_SERIES;
+		for (String type : new String[] {title.type, other}) {
+			Meta meta = MetaFinder.find(graph.addons, graph.addonClient, type, title.imdbId);
+			if (meta != null) {
+				if (meta.id == null) {
+					meta.id = title.imdbId;
+				}
+				if (meta.type == null) {
+					meta.type = type;
+				}
+				return meta;
+			}
+		}
+		return null;
+	}
+
+	private boolean isShown(String id) {
+		for (Set<String> ids : idsByType.values()) {
+			if (ids.contains(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void searchCatalog(InstalledAddon addon, Catalog catalog, String q, int requestGeneration) {
@@ -184,7 +275,6 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 			}
 			RowsAdapter.Row row = rowsByType.get(type);
 			if (row == null) {
-				// generation in the key or the old scroll position comes back
 				row = new RowsAdapter.Row(requestGeneration + "|" + type, Formats.typeLabel(requireContext(), type), null);
 				row.state = RowsAdapter.State.READY;
 				rowsByType.put(type, row);
@@ -193,6 +283,7 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 			row.items.add(PosterItem.of(m));
 		}
 		for (RowsAdapter.Row row : rowsByType.values()) {
+			ReleaseOrder.sortNewestFirst(row.items, item -> item.released);
 			adapter.update(row);
 		}
 		if (!rowsByType.isEmpty()) {
@@ -209,7 +300,6 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 
 	@Override
 	public void onLoadRow(@NonNull RowsAdapter.Row row) {
-		// rows come pre-filled
 	}
 
 	@Override
@@ -220,7 +310,11 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 
 	@Override
 	public boolean onPosterLongClick(@NonNull PosterItem item) {
-		QueueMenu.show(requireContext(), item);
+		QueueMenu.show(requireContext(), item, null, null, () -> {
+			if (getView() != null) {
+				adapter.refreshWatched();
+			}
+		});
 		return true;
 	}
 }

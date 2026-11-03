@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">Stremio oturumu kapatılsın mı? Kaynaklarınız ve kitaplığınız bu bilgisayarda kalır.</string>
+	<string name="action_quit">Çık</string>
+	<string name="download_failed_desktop">Başarısız. Yeniden denemek için devam et\'e tıklayın.</string>
+	<string name="download_show_in_folder">Klasörde göster</string>
+	<string name="hardware_decoding_crash">Ekran kartı bir videonun kodunu çözerken uygulama beklenmedik şekilde kapandı, bu yüzden donanım kod çözme kapatıldı. Ayarlar &gt; Oynatma bölümünden yeniden açabilirsin.</string>
+	<string name="hardware_decoding_crash_title">Donanım kod çözme kapatıldı</string>
+	<string name="hero_info">Daha fazla bilgi</string>
+	<string name="library_downloads_empty_desktop">İndirme yok. İndirmek için bir akışa sağ tıklayın.</string>
+	<string name="library_queue_empty_desktop">Sırada bir şey yok. Eklemek için bir filme, diziye veya bölüme sağ tıklayın.</string>
+	<string name="player_all_files">Tüm dosyalar</string>
+	<string name="player_keeps_screen_on">Video oynatılıyor</string>
+	<string name="player_mute">Sesi kapat</string>
+	<string name="player_open">Videoya dön</string>
+	<string name="player_subtitle_files">Altyazı dosyaları</string>
+	<string name="quality_hint_desktop">Bu kalitedeki en iyi akış kendiliğinden başlar. Yoksa bir alt kalite kullanılır.</string>
+	<string name="quit_downloads_running">İndirmeler hâlâ sürüyor. Yine de çıkılsın mı? Duraklatılırlar ve bir dahaki sefere devam ettirilebilirler.</string>
+	<string name="row_failed_desktop">Bu satır yüklenemedi.</string>
+	<string name="row_scroll_back">Geri kaydır</string>
+	<string name="row_scroll_forward">İleri kaydır</string>
+	<string name="settings_crash_log_summary_desktop">Son çökme: %1$s. Siz kopyalayana kadar bu bilgisayarda kalır.</string>
+	<string name="settings_hardware_decoding">Donanımla video kod çözme</string>
+	<string name="settings_hardware_decoding_summary">Videoların kodunu ekran kartı çözer; oynatma akıcı olur ve işlemciyi neredeyse hiç kullanmaz. Videolarda yanlış renkler veya bozulmalar görürsen kapat.</string>
+	<string name="settings_language_restart">Yeni dil, uygulama bir sonraki açılışında kullanılır.</string>
+	<string name="streams_quality_desktop">Otomatik: %1$s · Değiştir</string>
+	<string name="update_no_bundle">%1$s sürümüne .flatpak eklenmemiş. dist klasöründeki .flatpak dosyasını GitHub sürümüne ekleyin.</string>
+	<string name="update_no_bundle_checksum">%1$s sürümüne .flatpak.sha256 dosyası eklenmemiş, bu yüzden indirme doğrulanamıyor. dist klasöründeki iki dosyayı da GitHub sürümüne ekleyin.</string>
+	<string name="update_ready_desktop">Güncelleme %1$s olarak kaydedildi ve yazılım merkezinizde açıldı. Hiçbir şey açılmadıysa bir terminalden kurun:\n\n%2$s\n\nArdından uygulamayı yeniden başlatın.</string>
+</resources>

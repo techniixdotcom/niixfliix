@@ -1,5 +1,6 @@
 package app.niixfliix.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,14 +29,15 @@ import app.niixfliix.torrentio.TorrentioConfig;
 import app.niixfliix.ui.discover.DiscoverFragment;
 import app.niixfliix.ui.home.HomeFragment;
 import app.niixfliix.ui.library.LibraryFragment;
+import app.niixfliix.ui.live.LiveFragment;
 import app.niixfliix.ui.search.SearchFragment;
-import app.niixfliix.ui.settings.SettingsFragment;
-import app.niixfliix.ui.setup.SetupDialog;
 import app.niixfliix.update.UpdatePrompt;
 
 public final class MainActivity extends BaseActivity {
 
 	public static final String EXTRA_OPEN_LIBRARY = "open_library";
+	private static final String EXTRA_SEARCH = "search";
+	private static final int MAX_SEARCH_LENGTH = 200;
 	private static final String STATE_TAB = "tab";
 	private static boolean refreshedThisProcess;
 
@@ -50,7 +52,6 @@ public final class MainActivity extends BaseActivity {
 		nav = findViewById(R.id.nav);
 		boolean rail = nav instanceof NavigationRailView;
 		if (rail) {
-			// tablet: list and mini bar share a column next to the rail
 			WindowPadding.apply(findViewById(R.id.main_column),
 					WindowPadding.TOP | WindowPadding.RIGHT | WindowPadding.BOTTOM);
 		} else {
@@ -61,26 +62,33 @@ public final class MainActivity extends BaseActivity {
 
 		if (savedInstanceState != null) {
 			currentTab = savedInstanceState.getInt(STATE_TAB, R.id.nav_home);
+			if (nav.getMenu().findItem(currentTab) == null) {
+				currentTab = R.id.nav_home;
+			}
 		}
 		nav.setOnItemSelectedListener(item -> {
 			showTab(item.getItemId());
 			return true;
 		});
-		// triggers the listener -> showTab
 		nav.setSelectedItemId(currentTab);
 
 		if (!refreshedThisProcess) {
 			refreshedThisProcess = true;
-			graph.addons.refreshAll(null);
+			graph.addons.refreshOnStart();
 			graph.account.sync();
 			if (graph.prefs.updateCheckOnStart()) {
 				UpdatePrompt.checkQuietly(this);
 			}
 		}
-		SetupDialog.showIfNeeded(getSupportFragmentManager());
 		if (savedInstanceState == null) {
 			handleIntent(getIntent());
 		}
+	}
+
+	public static void search(@NonNull Context context, @NonNull String query) {
+		context.startActivity(new Intent(context, MainActivity.class)
+				.putExtra(EXTRA_SEARCH, query)
+				.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
 	}
 
 	@Override
@@ -125,19 +133,30 @@ public final class MainActivity extends BaseActivity {
 		if (id == R.id.nav_search) {
 			return new SearchFragment();
 		}
-		if (id == R.id.nav_settings) {
-			return new SettingsFragment();
+		if (id == R.id.nav_live) {
+			return new LiveFragment();
 		}
 		return new HomeFragment();
 	}
 
-	/** untrusted, validated below */
 	private void handleIntent(@Nullable Intent intent) {
 		if (intent == null) {
 			return;
 		}
 		if (intent.getBooleanExtra(EXTRA_OPEN_LIBRARY, false)) {
 			nav.setSelectedItemId(R.id.nav_library);
+			return;
+		}
+		String query = intent.getStringExtra(EXTRA_SEARCH);
+		if (query != null && !query.trim().isEmpty() && query.length() <= MAX_SEARCH_LENGTH) {
+			intent.removeExtra(EXTRA_SEARCH);
+			nav.setSelectedItemId(R.id.nav_search);
+			FragmentManager fm = getSupportFragmentManager();
+			fm.executePendingTransactions();
+			Fragment tab = fm.findFragmentByTag("tab_" + R.id.nav_search);
+			if (tab instanceof SearchFragment) {
+				((SearchFragment) tab).searchFor(query.trim());
+			}
 			return;
 		}
 		if (!Intent.ACTION_VIEW.equals(intent.getAction())) {
@@ -171,7 +190,6 @@ public final class MainActivity extends BaseActivity {
 				.setTitle(R.string.addon_install_title)
 				.setMessage(getString(R.string.addon_install_message, StremioUrl.masked(url)))
 				.setPositiveButton(R.string.action_install, (d, w) -> {
-					// configure page gives a new link each time, replace instead of adding a 2nd Torrentio
 					if (TorrentioConfig.isTorrentio(url) && graph.addons.torrentio() != null) {
 						graph.addons.setTorrentioUrl(url);
 						Toast.makeText(this, R.string.torrentio_saved, Toast.LENGTH_SHORT).show();

@@ -18,7 +18,6 @@ import app.niixfliix.download.model.DownloadItem;
 import app.niixfliix.torrent.Magnet;
 import app.niixfliix.torrentio.TorrentioStreamParser;
 
-/** Every way into the player. */
 public final class PlayerLauncher {
 
 	private PlayerLauncher() {
@@ -29,7 +28,6 @@ public final class PlayerLauncher {
 		activity.startActivity(new Intent(activity, PlayerActivity.class));
 	}
 
-	/** back to the player that's already running (mini bar tap) */
 	public static void resume(@NonNull Activity activity) {
 		activity.startActivity(new Intent(activity, PlayerActivity.class));
 	}

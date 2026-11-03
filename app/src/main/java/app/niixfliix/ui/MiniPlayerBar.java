@@ -16,7 +16,6 @@ import app.niixfliix.app.AppGraph;
 import app.niixfliix.player.PlaybackController;
 import app.niixfliix.player.PlayerLauncher;
 
-/** The bar at the bottom of the app while a video plays in the background: tap to go back, play/pause, next, close. */
 final class MiniPlayerBar implements PlaybackController.Listener, Player.Listener {
 
 	private final PlaybackController playback = AppGraph.get().playback();

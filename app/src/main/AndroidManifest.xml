@@ -10,13 +10,22 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+	<uses-permission android:name="android.permission.HIDE_OVERLAY_WINDOWS" />
 	<uses-permission
 		android:name="android.permission.WRITE_EXTERNAL_STORAGE"
 		android:maxSdkVersion="28" />
 
+	<uses-feature
+		android:name="android.hardware.touchscreen"
+		android:required="false" />
+	<uses-feature
+		android:name="android.software.leanback"
+		android:required="false" />
+
 	<application
 		android:name=".app.App"
 		android:allowBackup="false"
+		android:banner="@drawable/tv_banner"
 		android:dataExtractionRules="@xml/data_extraction_rules"
 		android:fullBackupContent="false"
 		android:icon="@mipmap/ic_launcher"
@@ -35,6 +44,7 @@
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="android.intent.category.LEANBACK_LAUNCHER" />
 			</intent-filter>
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
@@ -55,16 +65,21 @@
 			android:exported="false" />
 
 		<activity
-			android:name=".ui.settings.AddonsActivity"
+			android:name=".ui.settings.SettingsActivity"
 			android:exported="false" />
 
 		<activity
-			android:name=".ui.settings.TorrentioSetupActivity"
-			android:exported="false" />
+			android:name=".ui.web.TrailerActivity"
+			android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density|locale|layoutDirection|fontScale"
+			android:exported="false"
+			android:resizeableActivity="true"
+			android:theme="@style/Theme.Niixfliix.Player" />
 
 		<activity
-			android:name=".ui.settings.ConfigurePageActivity"
-			android:exported="false" />
+			android:name=".ui.web.WebPlayerActivity"
+			android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density|locale|layoutDirection|fontScale"
+			android:exported="false"
+			android:resizeableActivity="true" />
 
 		<activity
 			android:name=".player.PlayerActivity"
@@ -93,7 +108,6 @@
 			android:name=".update.InstallReceiver"
 			android:exported="false" />
 
-		<!-- per-app language on API < 33 -->
 		<service
 			android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
 			android:enabled="false"

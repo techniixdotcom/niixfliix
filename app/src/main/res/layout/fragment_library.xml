@@ -5,6 +5,8 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
+	<include layout="@layout/view_tab_toolbar" />
+
 	<com.google.android.material.tabs.TabLayout
 		android:id="@+id/tabs"
 		android:layout_width="match_parent"
@@ -30,6 +32,39 @@
 			android:layout_height="wrap_content"
 			android:text="@string/library_queue" />
 	</com.google.android.material.tabs.TabLayout>
+
+	<com.google.android.material.chip.ChipGroup
+		android:id="@+id/type_filter"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="16dp"
+		android:paddingTop="8dp"
+		app:selectionRequired="true"
+		app:singleLine="true"
+		app:singleSelection="true">
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/filter_all"
+			style="@style/Widget.Niixfliix.Chip.Filter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:checked="true"
+			android:text="@string/library_filter_all" />
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/filter_movies"
+			style="@style/Widget.Niixfliix.Chip.Filter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/type_movies" />
+
+		<com.google.android.material.chip.Chip
+			android:id="@+id/filter_series"
+			style="@style/Widget.Niixfliix.Chip.Filter"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/type_series" />
+	</com.google.android.material.chip.ChipGroup>
 
 	<LinearLayout
 		android:id="@+id/queue_actions"

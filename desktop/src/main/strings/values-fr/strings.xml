@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">Se déconnecter de Stremio ? Vos sources et votre bibliothèque restent sur cet ordinateur.</string>
+	<string name="action_quit">Quitter</string>
+	<string name="download_failed_desktop">Échec. Cliquez sur reprendre pour réessayer.</string>
+	<string name="download_show_in_folder">Afficher dans le dossier</string>
+	<string name="hardware_decoding_crash">L’app s’est fermée de façon inattendue pendant que la carte graphique décodait une vidéo : le décodage matériel est donc désactivé. Vous pouvez le réactiver dans Paramètres &gt; Lecture.</string>
+	<string name="hardware_decoding_crash_title">Décodage matériel désactivé</string>
+	<string name="hero_info">Plus d\'infos</string>
+	<string name="library_downloads_empty_desktop">Aucun téléchargement. Faites un clic droit sur un flux pour le télécharger.</string>
+	<string name="library_queue_empty_desktop">File d’attente vide. Faites un clic droit sur un film, une série ou un épisode pour l’ajouter.</string>
+	<string name="player_all_files">Tous les fichiers</string>
+	<string name="player_keeps_screen_on">Lecture d’une vidéo</string>
+	<string name="player_mute">Couper le son</string>
+	<string name="player_open">Revenir à la vidéo</string>
+	<string name="player_subtitle_files">Fichiers de sous-titres</string>
+	<string name="quality_hint_desktop">Le meilleur flux dans cette qualité démarre tout seul. S’il n’y en a pas, la qualité inférieure suivante est utilisée.</string>
+	<string name="quit_downloads_running">Des téléchargements sont en cours. Quitter quand même ? Ils sont mis en pause et pourront reprendre la prochaine fois.</string>
+	<string name="row_failed_desktop">Impossible de charger cette rangée.</string>
+	<string name="row_scroll_back">Défiler vers l’arrière</string>
+	<string name="row_scroll_forward">Défiler vers l’avant</string>
+	<string name="settings_crash_log_summary_desktop">Dernier plantage : %1$s. Il reste sur cet ordinateur jusqu’à ce que vous le copiiez.</string>
+	<string name="settings_hardware_decoding">Décodage vidéo matériel</string>
+	<string name="settings_hardware_decoding_summary">La carte graphique décode les vidéos, pour une lecture fluide qui sollicite à peine le processeur. Désactivez-le si les vidéos ont de mauvaises couleurs ou des défauts.</string>
+	<string name="settings_language_restart">La nouvelle langue sera utilisée au prochain démarrage de l’application.</string>
+	<string name="streams_quality_desktop">Auto : %1$s · Modifier</string>
+	<string name="update_no_bundle">La version %1$s n’a pas de .flatpak joint. Joignez le .flatpak du dossier dist à la version GitHub.</string>
+	<string name="update_no_bundle_checksum">La version %1$s n’a pas de fichier .flatpak.sha256 joint, le téléchargement ne peut donc pas être vérifié. Joignez les deux fichiers du dossier dist à la version GitHub.</string>
+	<string name="update_ready_desktop">La mise à jour a été enregistrée sous %1$s et ouverte avec votre logithèque. Si rien ne s’est ouvert, installez-la depuis un terminal :\n\n%2$s\n\nPuis redémarrez l’application.</string>
+</resources>

@@ -13,12 +13,10 @@ import app.niixfliix.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-	/** only on screens whose layout has the mini player slot */
 	@Nullable private MiniPlayerBar miniPlayer;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		// always dark, so light bar icons whatever the system uses
 		SystemBarStyle style = SystemBarStyle.dark(Color.TRANSPARENT);
 		EdgeToEdge.enable(this, style, style);
 		super.onCreate(savedInstanceState);

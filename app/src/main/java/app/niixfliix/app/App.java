@@ -3,6 +3,8 @@ package app.niixfliix.app;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ComponentCallbacks2;
+import android.os.Build;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.util.Log;
@@ -10,10 +12,10 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.tencent.mmkv.MMKV;
 
-import java.io.File;
-
 import app.niixfliix.BuildConfig;
 import app.niixfliix.R;
+import app.niixfliix.util.CrashLog;
+import app.niixfliix.util.Logs;
 
 @OptIn(markerClass = UnstableApi.class)
 public final class App extends Application {
@@ -24,16 +26,27 @@ public final class App extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		String version = BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")"
+				+ (BuildConfig.DEBUG ? " debug" : "");
+		CrashLog.install(getNoBackupFilesDir(), version,
+				"Android " + Build.VERSION.RELEASE + " (API " + Build.VERSION.SDK_INT + ")",
+				Build.MANUFACTURER + " " + Build.MODEL);
+		Logs.setSink(android.util.Log::w);
 		if (!BuildConfig.DEBUG) {
-			// media3 logs stream urls on errors and debrid urls contain the key
 			Log.setLogLevel(Log.LOG_LEVEL_OFF);
 		}
 		MMKV.initialize(this);
 		AppGraph.init(this);
 		createChannels();
-		if (AppGraph.get().prefs.torrentClearOnExit()) {
-			// leftovers from a crash / killed process
-			deleteQuietly(AppGraph.torrentCacheDir(this));
+		AppGraph graph = AppGraph.get();
+		graph.housekeepTorrents(true);
+	}
+
+	@Override
+	public void onTrimMemory(int level) {
+		super.onTrimMemory(level);
+		if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+			AppGraph.get().housekeepTorrents(false);
 		}
 	}
 
@@ -43,16 +56,5 @@ public final class App extends Application {
 				getString(R.string.channel_downloads), NotificationManager.IMPORTANCE_LOW));
 		nm.createNotificationChannel(new NotificationChannel(CHANNEL_UPDATES,
 				getString(R.string.channel_updates), NotificationManager.IMPORTANCE_DEFAULT));
-	}
-
-	private static void deleteQuietly(File f) {
-		File[] children = f.listFiles();
-		if (children != null) {
-			for (File c : children) {
-				deleteQuietly(c);
-			}
-		}
-		//noinspection ResultOfMethodCallIgnored
-		f.delete();
 	}
 }

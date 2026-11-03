@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="licences_text_desktop" translatable="false">OpenJDK\nGPL 2.0 with the Classpath Exception\n\nGTK, libadwaita, GStreamer, GLib, libsecret\nLGPL 2.1 or later\n\nGStreamer GTK 4 sink (gst-plugins-rs)\nMozilla Public License 2.0\n\nOkHttp, Okio, Gson, AndroidX Annotation\nApache License 2.0\n\nTwelveMonkeys ImageIO\nBSD 3-Clause License\n\nlibtorrent4j\nMIT License\n\nlibtorrent\nBSD 3-Clause License\n\nBoost\nBoost Software License 1.0\n\nOpenSSL\nApache License 2.0</string>
+</resources>

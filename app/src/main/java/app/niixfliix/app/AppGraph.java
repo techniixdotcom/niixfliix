@@ -1,100 +1,93 @@
 package app.niixfliix.app;
 
+import android.content.ContentResolver;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
+import android.content.Intent;
+import android.net.Uri;
+import android.webkit.CookieManager;
+import android.webkit.WebStorage;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
-
-import com.google.gson.Gson;
-import com.squareup.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
+import androidx.core.os.LocaleListCompat;
 
 import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Locale;
 
-import app.niixfliix.account.StremioAccount;
-import app.niixfliix.addon.AddonClient;
-import app.niixfliix.addon.AddonJson;
-import app.niixfliix.addon.AddonRepository;
-import app.niixfliix.addon.Translations;
-import app.niixfliix.data.History;
-import app.niixfliix.data.KeyValueStore;
-import app.niixfliix.data.Library;
+import app.niixfliix.addon.StreamRanker;
+import app.niixfliix.data.KeystoreKeys;
 import app.niixfliix.data.MmkvStore;
-import app.niixfliix.data.PlayQueue;
-import app.niixfliix.data.Prefs;
-import app.niixfliix.data.SearchHistory;
-import app.niixfliix.data.SecretStore;
+import app.niixfliix.download.DownloadFolder;
+import app.niixfliix.download.DownloadService;
 import app.niixfliix.download.Downloads;
-import app.niixfliix.net.Http;
+import app.niixfliix.download.model.DownloadItem;
+import app.niixfliix.net.Network;
+import app.niixfliix.player.DeviceDecoders;
 import app.niixfliix.player.PlaybackController;
-import app.niixfliix.player.PlayerPreferences;
 import app.niixfliix.torrent.TorrentEngine;
 import app.niixfliix.update.UpdateManager;
-import okhttp3.OkHttpClient;
+import app.niixfliix.util.AndroidMainQueue;
+import app.niixfliix.util.Logs;
 
-public final class AppGraph {
+public final class AppGraph extends Core {
 
-	private static AppGraph instance;
+	private static final String TAG = "AppGraph";
+	private static final String OLD_PICTURE_CACHE = "images";
 
 	public final Context context;
-	public final Handler main = new Handler(Looper.getMainLooper());
-	public final ExecutorService io = Executors.newFixedThreadPool(6);
-	public final Gson gson = AddonJson.create();
-	public final OkHttpClient http = Http.create();
-	public final Prefs prefs;
-	public final PlayerPreferences playerPrefs;
-	public final SecretStore secrets;
-	public final AddonClient addonClient;
-	public final AddonRepository addons;
-	public final History history;
-	public final Library library;
-	public final PlayQueue queue;
-	public final StremioAccount account;
-	public final SearchHistory searchHistory;
-	public final Translations translations;
 
-	private TorrentEngine torrentEngine;
 	private UpdateManager updateManager;
 	private Downloads downloads;
 	private PlaybackController playback;
 
 	private AppGraph(@NonNull Context context) {
+		super(new AndroidMainQueue(), MmkvStore::new, new KeystoreKeys(), AppGraph::appLocale,
+				torrentCacheDir(context));
 		this.context = context;
-		KeyValueStore settings = new MmkvStore("settings");
-		KeyValueStore data = new MmkvStore("data");
-		prefs = new Prefs(settings);
-		playerPrefs = new PlayerPreferences(settings);
-		secrets = new SecretStore(new MmkvStore("secrets"));
-		addonClient = new AddonClient(http, gson);
-		addons = new AddonRepository(addonClient, secrets, prefs, gson, io, main);
-		history = new History(data, gson);
-		library = new Library(data, gson);
-		queue = new PlayQueue(data, gson);
-		account = new StremioAccount(http, secrets, io, main, addons, library);
-		library.setChanges(account);
-		searchHistory = new SearchHistory(data, gson);
-		translations = new Translations(addonClient, http, data, gson, main);
-
-		Picasso picasso = new Picasso.Builder(context)
-				.downloader(new OkHttp3Downloader(Http.forImages(http, context.getCacheDir())))
-				.build();
-		Picasso.setSingletonInstance(picasso);
+		if (oldLiveSitesRemoved) {
+			main.post(() -> {
+				try {
+					CookieManager.getInstance().removeAllCookies(null);
+					WebStorage.getInstance().deleteAllData();
+				} catch (RuntimeException e) {
+					Logs.w(TAG, "Could not clear the old Live sites' web data", e);
+				}
+			});
+		}
+		StreamRanker.setDecodeCheck(DeviceDecoders::isSmooth);
+		io.execute(DeviceDecoders::warmUp);
+		io.execute(() -> deleteFolder(new File(context.getCacheDir(), OLD_PICTURE_CACHE)));
 	}
 
 	static void init(@NonNull Context context) {
-		instance = new AppGraph(context);
+		new AppGraph(context);
 	}
 
 	@NonNull
 	public static AppGraph get() {
-		return instance;
+		return (AppGraph) Core.get();
 	}
 
-	/** what's playing, app-wide; the player screen and the mini bars show it */
+	@Override
+	protected boolean onUnmeteredNetwork() {
+		return Network.isUnmetered(context);
+	}
+
+	@NonNull
+	@Override
+	protected TorrentEngine.Limits torrentLimits() {
+		return TorrentEngine.Limits.PHONE;
+	}
+
+	@NonNull
+	private static Locale appLocale() {
+		LocaleListCompat app = AppCompatDelegate.getApplicationLocales();
+		Locale first = app.isEmpty() ? null : app.get(0);
+		return first != null ? first : Locale.getDefault();
+	}
+
 	@NonNull
 	@MainThread
 	public PlaybackController playback() {
@@ -102,14 +95,6 @@ public final class AppGraph {
 			playback = new PlaybackController(context);
 		}
 		return playback;
-	}
-
-	@NonNull
-	public synchronized TorrentEngine torrentEngine() {
-		if (torrentEngine == null) {
-			torrentEngine = new TorrentEngine(torrentCacheDir(context), main);
-		}
-		return torrentEngine;
 	}
 
 	@NonNull
@@ -123,13 +108,56 @@ public final class AppGraph {
 	@NonNull
 	public synchronized Downloads downloads() {
 		if (downloads == null) {
-			downloads = new Downloads(context, new MmkvStore("downloads"), secrets, gson);
+			downloads = new Downloads(new MmkvStore("downloads"), secrets, gson, main, new Downloads.Platform() {
+				@Override
+				public void start() {
+					ContextCompat.startForegroundService(context, new Intent(context, DownloadService.class));
+				}
+
+				@Override
+				public void deleteFile(@NonNull DownloadItem item) {
+					deleteDownload(item);
+				}
+			});
 		}
 		return downloads;
 	}
 
+	private void deleteDownload(DownloadItem item) {
+		Uri uri = Uri.parse(item.contentUri);
+		try {
+			if (ContentResolver.SCHEME_FILE.equals(uri.getScheme()) && uri.getPath() != null) {
+				File file = new File(uri.getPath());
+				if (file.exists() && !file.delete()) {
+					Logs.w(TAG, "Could not delete a downloaded file", null);
+				}
+			} else if (DownloadFolder.isDocument(context, uri)) {
+				DownloadFolder.delete(context, uri);
+			} else {
+				context.getContentResolver().delete(uri, null, null);
+			}
+		} catch (SecurityException | IllegalArgumentException e) {
+			Logs.w(TAG, "Could not delete a downloaded file", e);
+		}
+	}
+
 	@NonNull
-	public static File torrentCacheDir(@NonNull Context context) {
+	private static File torrentCacheDir(@NonNull Context context) {
 		return new File(context.getCacheDir(), "torrents");
+	}
+
+	private static void deleteFolder(@NonNull File dir) {
+		File[] files = dir.listFiles();
+		if (files == null) {
+			return;
+		}
+		for (File f : files) {
+			if (!f.delete()) {
+				Logs.w(TAG, "Could not delete " + f.getName(), null);
+			}
+		}
+		if (!dir.delete()) {
+			Logs.w(TAG, "Could not delete " + dir.getName(), null);
+		}
 	}
 }

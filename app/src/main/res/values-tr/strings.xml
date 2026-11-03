@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- app_name is generated from gradle.properties -->
 
-	<!-- Navigation -->
 	<string name="nav_home">Ana sayfa</string>
 	<string name="nav_discover">Keşfet</string>
 	<string name="nav_library">Kitaplık</string>
 	<string name="nav_search">Ara</string>
 	<string name="nav_settings">Ayarlar</string>
 
-	<!-- Common actions -->
 	<string name="action_back">Geri</string>
 	<string name="action_cancel">İptal</string>
 	<string name="action_clear">Temizle</string>
@@ -22,11 +19,7 @@
 	<string name="action_ok">Tamam</string>
 	<string name="action_remove">Kaldır</string>
 	<string name="action_retry">Yeniden dene</string>
-	<string name="action_save">Kaydet</string>
 
-	<string name="disclaimer">Bu uygulama bir oynatıcı ve eklenti istemcisidir. Hiçbir medya içermez ve akış barındırmaz. Torrentio ve diğer eklentiler üçüncü taraflarca işletilir; ne izlediğinizden siz sorumlusunuz.</string>
-
-	<!-- Types and episodes -->
 	<string name="type_movies">Filmler</string>
 	<string name="type_series">Diziler</string>
 	<string name="episode_number">S%1$d B%2$d</string>
@@ -35,33 +28,28 @@
 	<string name="percent">%%%1$d</string>
 	<string name="speed_per_second">%1$s/sn</string>
 
-	<!-- Home -->
 	<string name="row_title">%1$s · %2$s</string>
 	<string name="row_continue_watching">İzlemeye devam et</string>
+	<string name="continue_remove">İzlemeye devam et listesinden kaldır</string>
 	<string name="row_failed">Bu satır yüklenemedi. Yeniden denemek için dokunun.</string>
 	<string name="row_empty">Şu anda burada bir şey yok.</string>
-	<string name="home_empty">Henüz katalog yok. Bu ekranı Cinemeta gibi kataloglu eklentiler doldurur.</string>
+	<string name="home_empty">Henüz bir şey yok. Filmler ve diziler kullanılabilir olduğunda burada görünecek.</string>
 	<plurals name="addons_down">
 		<item quantity="one">%1$s şu anda yanıt vermiyor. Geri kalan her şey çalışıyor.</item>
 		<item quantity="other">%1$s şu anda yanıt vermiyor. Geri kalan her şey çalışıyor.</item>
 	</plurals>
 
-	<!-- Discover -->
-	<string name="discover_catalog">Katalog</string>
-	<string name="discover_genre">Tür</string>
 	<string name="discover_all_genres">Tüm türler</string>
 	<string name="discover_empty">Bu katalogda bir şey bulunamadı.</string>
 	<string name="discover_failed">Bu katalog yanıt vermedi. Başka birini deneyin veya daha sonra tekrar gelin.</string>
-	<string name="discover_no_catalogs">Eklentilerinizin hiçbirinde göz atılacak bir katalog yok.</string>
+	<string name="discover_no_catalogs">Henüz göz atacak bir şey yok. Filmler ve diziler kullanılabilir olduğunda burada görünecek.</string>
 
-	<!-- Search -->
 	<string name="search_hint">Film ve dizi ara</string>
 	<string name="search_recent">Son aramalar</string>
 	<string name="search_searching">Aranıyor…</string>
 	<string name="search_no_results">Sonuç yok.</string>
-	<string name="search_no_sources">Eklentilerinizin hiçbiri arama yapamıyor.</string>
+	<string name="search_no_sources">Arama şu anda kullanılamıyor.</string>
 
-	<!-- Library -->
 	<string name="library_saved">Kaydedilenler</string>
 	<string name="library_history">Geçmiş</string>
 	<string name="library_downloads">İndirilenler</string>
@@ -84,32 +72,45 @@
 	<string name="library_remove_saved">Kaydedilenlerden kaldırılsın mı?</string>
 	<string name="library_remove_history">İzleme geçmişinden kaldırılsın mı?</string>
 
-	<!-- Details -->
 	<string name="details_play">Oynat</string>
 	<string name="details_play_episode">%1$s oynat</string>
 	<string name="details_continue_episode">%1$s devam et</string>
 	<string name="details_continue_at">%1$s itibarıyla devam et</string>
 	<string name="details_save">Kitaplığa kaydet</string>
 	<string name="details_unsave">Kitaplıktan kaldır</string>
+	<string name="library_added">Kitaplığınıza kaydedildi</string>
+	<string name="library_removed">Kitaplığınızdan kaldırıldı</string>
+	<string name="hero_save">Kaydet</string>
+	<string name="hero_saved">Kaydedildi</string>
+	<string name="hero_show_title">%2$d başlıktan %1$d.</string>
 	<string name="details_mark_watched">İzlendi olarak işaretle</string>
 	<string name="details_mark_unwatched">İzlenmedi olarak işaretle</string>
 	<string name="details_trailer">Fragman</string>
 	<string name="details_rating">★ %1$s</string>
-	<string name="details_cast">Oyuncular: %1$s</string>
+	<string name="details_more_like_this">Benzer içerikler</string>
+	<string name="details_about">Hakkında</string>
+	<string name="details_director">Yönetmen</string>
+	<string name="details_writers">Senaristler</string>
+	<string name="details_released">Yayın tarihi</string>
+	<string name="details_country">Ülke</string>
+	<string name="details_awards">Ödüller</string>
+	<string name="details_imdb">IMDb\'de görüntüle</string>
+	<string name="details_cast_title">Oyuncular</string>
+	<string name="details_search_person">%1$s için ara</string>
+	<string name="list_separator">", "</string>
 	<string name="details_season">Sezon</string>
 	<string name="details_season_number">Sezon %1$d</string>
 	<string name="details_specials">Özel bölümler</string>
 	<string name="details_up_next">Sıradaki</string>
 	<string name="details_watched">İzlendi</string>
-	<string name="details_no_meta">Eklentilerinizin hiçbirinde bu içeriğin ayrıntıları yok. Yine de oynatmayı deneyebilirsiniz.</string>
+	<string name="details_no_meta">Bu içerik için henüz ayrıntı yok. Yine de oynatmayı deneyebilirsiniz.</string>
 
-	<!-- Streams -->
 	<plurals name="streams_found">
 		<item quantity="one">%d akış bulundu</item>
 		<item quantity="other">%d akış bulundu</item>
 	</plurals>
 	<string name="streams_none_found">Bunun için akış bulunamadı.</string>
-	<string name="streams_no_addons">Eklentilerinizin hiçbiri bunun için akış sunmuyor.</string>
+	<string name="streams_no_addons">Bunun için henüz oynatılacak bir şey yok.</string>
 	<string name="streams_unsupported">Bu tür bir akış burada oynatılamaz.</string>
 	<string name="streams_copy_link">Bağlantıyı kopyala</string>
 	<string name="streams_open_external">Başka bir oynatıcıda aç</string>
@@ -123,7 +124,6 @@
 	<string name="quality_title">Otomatik oynatma kalitesi</string>
 	<string name="quality_hint">Wi-Fi ve mobil veri için birer kalite seçin. O kalitedeki en iyi yayın kendiliğinden başlar. Yoksa bir alt kalite kullanılır.</string>
 
-	<!-- Player -->
 	<string name="player_subtitles">Altyazılar</string>
 	<string name="player_subtitles_off">Kapalı</string>
 	<string name="player_subtitles_from_file">Dosyadan yükle…</string>
@@ -150,6 +150,8 @@
 	<string name="player_seek_forward">+%1$d sn</string>
 	<string name="player_zoom_fill">Doldurmak için yakınlaştır</string>
 	<string name="player_zoom_fit">Ekrana sığdır</string>
+	<string name="player_brightness">Parlaklık</string>
+	<string name="player_volume">Ses düzeyi</string>
 	<string name="player_up_next_in">Sıradaki %1$s içinde</string>
 	<string name="player_up_next_cancel">Sonraki bölümü oynatma</string>
 	<string name="player_try_next">Sonraki akışı dene</string>
@@ -160,7 +162,6 @@
 	<string name="player_error_network">Akışa bağlanılamadı. Bağlantınızı kontrol edin.</string>
 	<string name="player_error_format">Bu video biçimi bu cihazda desteklenmiyor.</string>
 
-	<!-- Torrent engine -->
 	<string name="torrent_connecting">Bağlanıyor…</string>
 	<plurals name="torrent_peers">
 		<item quantity="one">%d eş</item>
@@ -170,16 +171,13 @@
 	<string name="torrent_buffering">Arabelleğe alınıyor %%%1$d\n%2$s · %3$s</string>
 	<string name="torrent_playing">%1$s · %2$s</string>
 	<string name="torrent_error_no_video">Bu torrentte oynatılabilecek bir video dosyası yok.</string>
-	<string name="torrent_error_too_big">Bu dosya %1$s boyutunda ve %2$s torrent önbelleğinden büyük. Ayarlar\'dan önbellek boyutunu artırın veya daha küçük bir dosya seçin.</string>
 	<string name="torrent_error_no_space">Bu %1$s boyutundaki dosya için yeterli boş alan yok.</string>
 	<string name="torrent_error_wifi">Wi-Fi bağlantısından çıktığınız için torrent akışı durduruldu. Bunu Ayarlar\'dan değiştirebilirsiniz.</string>
 	<string name="torrent_error_failed">Bu yayın başlatılamadı.</string>
 
-	<!-- Magnet links -->
 	<string name="magnet_untitled">Magnet bağlantısı</string>
 	<string name="magnet_source">Magnet bağlantısı</string>
 
-	<!-- Downloads -->
 	<string name="channel_downloads">İndirmeler</string>
 	<string name="channel_updates">Güncellemeler</string>
 	<string name="download_preparing">İndirme hazırlanıyor…</string>
@@ -197,139 +195,63 @@
 	<string name="download_delete_message">Bu indirme ve dosyası silinsin mi?</string>
 	<string name="download_source">İndirildi</string>
 
-	<!-- Errors -->
 	<string name="error_link_not_allowed">Bu bağlantı açılamaz.</string>
 	<string name="error_no_app_for_link">Bu cihazda bunu açabilecek bir uygulama yok.</string>
-	<string name="error_unsupported_link">Bu bağlantı bir eklenti değil.</string>
+	<string name="error_unsupported_link">Bu bağlantı burada açılamaz.</string>
 	<string name="error_bad_magnet">Bu magnet bağlantısı geçerli değil.</string>
 
-	<!-- Add-ons -->
-	<string name="addon_install_title">Eklenti yüklensin mi?</string>
-	<string name="addon_install_message">%1$s adresindeki eklenti yüklensin mi? Yalnızca güvendiğiniz eklentileri yükleyin; aradıklarınızı görürler.</string>
-	<string name="addon_installed">%1$s yüklendi</string>
-	<string name="addon_error_invalid_url">Bu bir eklenti bağlantısı değil. https:// veya stremio:// ile başlamalı ve /manifest.json ile bitmelidir.</string>
-	<string name="addon_error_already_installed">Bu eklenti zaten yüklü.</string>
-	<string name="addon_error_invalid_manifest">Bu adres bir eklenti gibi yanıt vermedi.</string>
-	<string name="addon_error_unreachable">Eklentiye ulaşılamadı. Bağlantıyı ve internet bağlantınızı kontrol edin.</string>
-	<string name="addon_error_storage">Eklenti listesi bu cihaza kaydedilemedi.</string>
-	<string name="addons_add">Eklenti ekle</string>
-	<string name="addons_add_hint">Eklenti bağlantısı</string>
-	<string name="addons_add_message">Eklentinin manifest bağlantısını yapıştırın (https:// veya stremio://).</string>
-	<string name="addons_installing">Yükleniyor…</string>
-	<string name="addons_configure">Yapılandır</string>
-	<string name="addons_reorder">Sıralamak için sürükleyin</string>
-	<string name="addons_not_answering">Yanıt vermiyor</string>
-	<string name="addons_version">sürüm %1$s</string>
-	<string name="addons_remove_message">Bu eklenti kaldırılsın mı?</string>
-	<string name="addons_reset">Varsayılanlara sıfırla</string>
-	<string name="addons_reset_message">Bu işlem Cinemeta, Torrentio, ThePirateBay+ ve OpenSubtitles\'ı ayarsız olarak geri getirir ve debrid anahtarınız dahil diğer her şeyi kaldırır.</string>
-	<string name="addons_reset_confirm">Sıfırla</string>
-	<string name="configure_paste_link">Bağlantı yapıştır</string>
-	<string name="configure_paste_message">Sayfanın size verdiği yükleme bağlantısını yapıştırın.</string>
+	<string name="addon_install_title">Bu kaynak eklensin mi?</string>
+	<string name="addon_install_message">%1$s adresindeki kaynak eklensin mi? Yalnızca güvendiğiniz kaynakları ekleyin; aradıklarınızı görebilirler.</string>
+	<string name="addon_installed">%1$s eklendi</string>
+	<string name="addon_error_invalid_url">Bu bir kaynak bağlantısı değil. https:// veya stremio:// ile başlamalı ve /manifest.json ile bitmelidir.</string>
+	<string name="addon_error_already_installed">Bu kaynak zaten ekli.</string>
+	<string name="addon_error_invalid_manifest">Bu adres bir kaynak gibi yanıt vermedi.</string>
+	<string name="addon_error_unreachable">Bu kaynağa ulaşılamadı. Bağlantıyı ve internet bağlantınızı kontrol edin.</string>
+	<string name="addon_error_storage">Kaynak listesi bu cihaza kaydedilemedi.</string>
+	<string name="addons_add_hint">Kaynak bağlantısı</string>
+	<string name="addons_installing">Ekleniyor…</string>
 
-	<!-- Debrid -->
-	<string name="debrid_service">Debrid hizmeti</string>
-	<string name="debrid_none">Yok</string>
-	<string name="debrid_key">API anahtarı</string>
-	<string name="debrid_key_saved">Kayıtlı anahtar: %1$s. Korumak için boş bırakın.</string>
-	<string name="debrid_test">Test et</string>
-	<string name="debrid_testing">Kontrol ediliyor…</string>
-	<string name="debrid_key_valid">Anahtar çalışıyor.</string>
-	<string name="debrid_key_invalid">Hizmet bu anahtarı reddetti.</string>
-	<string name="debrid_key_unknown">Şu anda kontrol edilemedi. Anahtar yine de geçerli olabilir.</string>
-	<string name="debrid_key_invalid_format">Bu bir API anahtarına benzemiyor.</string>
-	<string name="debrid_get_key">Anahtarımı nerede bulurum?</string>
-
-	<!-- First start -->
-	<string name="setup_title">Hoş geldiniz</string>
-	<string name="setup_mode_debrid">Debrid hesabı (isteğe bağlı)</string>
-	<string name="setup_debrid_hint">Anahtarla önbellekteki yayınlar hemen başlar. Anahtar olmadan da her şey bu telefonda oynatılır.</string>
-	<string name="setup_use_account">Stremio hesabımı kullan</string>
 	<string name="account_section">Stremio hesabı</string>
 	<string name="account_sign_in">Stremio\'ya giriş yap</string>
-	<string name="account_sign_in_summary">İsteğe bağlı. Stremio eklentilerinizi ve kitaplığınızı uygulamaya getirir ve kitaplığı eşitler.</string>
+	<string name="account_sign_in_summary">İsteğe bağlı. Stremio kaynaklarınızı ve kitaplığınızı uygulamaya getirir ve kitaplığı eşitler.</string>
 	<string name="account_signed_in">%1$s olarak giriş yapıldı</string>
 	<string name="account_sign_out">Çıkış yap</string>
-	<string name="account_sign_out_confirm">Stremio\'dan çıkılsın mı? Eklentileriniz ve kitaplığınız bu telefonda kalır.</string>
+	<string name="account_sign_out_confirm">Stremio oturumu kapatılsın mı? Kaynaklarınız ve kitaplığınız bu telefonda kalır.</string>
 	<string name="account_email">E-posta</string>
 	<string name="account_password">Şifre</string>
 	<string name="account_error_login">E-posta veya şifre yanlış.</string>
 	<string name="account_error_network">Stremio\'ya ulaşılamadı. Bağlantınızı kontrol edin.</string>
-	<string name="account_done">Giriş yapıldı. Eklentileriniz ve kitaplığınız artık burada.</string>
-	<string name="setup_quality">Otomatik oynatma kalitesi</string>
+	<string name="account_done">Oturum açıldı. Kaynaklarınız ve kitaplığınız artık burada.</string>
 	<string name="setup_quality_wifi">Wi-Fi\'da</string>
 	<string name="setup_quality_mobile">Mobil veride</string>
 	<string name="setup_language">Diliniz</string>
-	<string name="setup_language_hint">Videoda varsa sesi sizin dilinizde oynatır. Yoksa sizin dilinizde altyazı, o da yoksa orijinal sesle İngilizce altyazı kullanılır.</string>
-	<string name="setup_content">İçerik</string>
 	<string name="setup_hide_adult">Yetişkin olarak işaretlenen içeriği gizle</string>
 
-	<!-- Torrentio settings -->
-	<string name="torrentio_title">Torrentio</string>
-	<string name="torrentio_debrid_section">Debrid hizmeti</string>
-	<string name="torrentio_debrid_explained">Debrid anahtarıyla Torrentio, bu telefonda torrent kullanmadan hemen oynatılan doğrudan bağlantılar döndürür.</string>
-	<string name="torrentio_results_section">Sonuçlar</string>
-	<string name="torrentio_sort">Sıralama</string>
-	<string name="torrentio_limit">Kalite başına</string>
-	<string name="torrentio_no_limit">Sınır yok</string>
-	<string name="torrentio_hide">Bunları gizle</string>
-	<string name="torrentio_languages">Tercih edilen diller</string>
-	<string name="torrentio_languages_explained">Bu dillerdeki sürümler, seçtiğiniz sırayla en üstte listelenir.</string>
-	<string name="torrentio_providers">Sağlayıcılar</string>
-	<string name="torrentio_providers_explained">Tüm sağlayıcılarda aramak için hepsini kapalı bırakın.</string>
-	<string name="torrentio_advanced_section">Tüm seçenekler</string>
-	<string name="torrentio_open_configure">Torrentio\'nun kendi yapılandırma sayfasını aç</string>
-	<string name="torrentio_not_a_link">Bu bir Torrentio bağlantısı değil.</string>
 	<string name="torrentio_saved">Torrentio ayarları kaydedildi</string>
 
-	<!-- Settings -->
-	<string name="settings_addons">Eklentiler</string>
-	<string name="settings_manage_addons">Eklentileri yönet</string>
-	<plurals name="settings_addons_installed">
-		<item quantity="one">%d eklenti yüklü</item>
-		<item quantity="other">%d eklenti yüklü</item>
-	</plurals>
-	<string name="settings_torrents">Torrent oynatma</string>
-	<string name="settings_debrid">Debrid hizmeti ve Torrentio</string>
-	<string name="settings_debrid_summary">%1$s · anahtar %2$s</string>
-	<string name="settings_torrentio_missing">Torrentio yüklü değil</string>
+	<string name="settings_subtitles">Altyazılar</string>
+	<string name="settings_app">Uygulama</string>
+	<string name="settings_storage">Depolama ve geçmiş</string>
+	<string name="settings_version_title">Sürüm</string>
 	<string name="settings_playback">Oynatma</string>
 	<string name="settings_quality_wifi">Wi-Fi\'da kalite</string>
 	<string name="settings_quality_mobile">Mobil veride kalite</string>
 	<string name="settings_subtitle_size">Altyazı boyutu</string>
 	<string name="settings_subtitle_color">Altyazı rengi</string>
 	<string name="settings_subtitle_background">Altyazı arka planı</string>
-	<string name="settings_engine">Torrent motoru</string>
-	<string name="settings_cache_size">Önbellek boyutu</string>
-	<string name="settings_wifi_only">Yalnızca Wi-Fi</string>
-	<string name="settings_wifi_only_summary">Torrent akışı yalnızca Wi-Fi\'da yapılır.</string>
-	<string name="settings_clear_on_exit">Oynatma bitince önbelleği temizle</string>
-	<string name="settings_clear_cache">Önbelleği şimdi temizle</string>
-	<string name="settings_cache_cleared">Önbellek temizlendi</string>
-	<string name="settings_appearance">Görünüm</string>
 	<string name="settings_language">Dil</string>
 	<string name="settings_language_system">Sistem varsayılanı</string>
-	<string name="settings_content">İçerik</string>
-	<string name="settings_history">Geçmiş</string>
 	<string name="settings_clear_history">İzleme geçmişini temizle</string>
 	<string name="settings_clear_history_confirm">İzleme geçmişiniz ve izlendi işaretleriniz temizlensin mi?</string>
 	<string name="settings_clear_searches">Son aramaları temizle</string>
 	<string name="settings_cleared">Temizlendi</string>
-	<string name="settings_updates">Güncellemeler</string>
 	<string name="settings_check_updates">Güncellemeleri kontrol et</string>
-	<string name="settings_version">Sürüm %1$s</string>
 	<string name="settings_check_on_start">Uygulama açılırken kontrol et</string>
 	<string name="settings_check_on_start_summary">Her açılışta bir kez GitHub\'dan yeni sürüm olup olmadığını sorar.</string>
 	<string name="settings_about">Hakkında</string>
-	<string name="settings_about_app">Bu uygulama hakkında</string>
-	<string name="settings_where_traffic_goes">Trafiğiniz nereye gidiyor</string>
-	<string name="settings_where_traffic_goes_summary">Bu uygulamanın iletişim kurduğu tüm sunucular ve nedenleri.</string>
 	<string name="settings_licences">Açık kaynak lisansları</string>
-	<string name="settings_licences_summary">Bu uygulamanın üzerine kurulduğu kitaplıklar.</string>
 	<string name="settings_source_code">Kaynak kodu</string>
-	<string name="traffic_explained">Bu uygulama yalnızca şu sunucularla iletişim kurar:\n\n• Eklentileriniz (Cinemeta, Torrentio, ThePirateBay+, OpenSubtitles ve eklediğiniz diğerleri): kataloglar, ayrıntılar, akışlar ve altyazılar için.\n• Bu eklentilerin belirttiği görsel sunucuları: posterler ve arka planlar için.\n• Oynattığınız bağlantılardaki akış sunucuları, örneğin debrid hizmetinizin indirme sunucuları.\n• Debrid hizmetinizin API\'si: yalnızca Test et\'e bastığınızda.\n• TMDB eklentisi (tmdb-addon.baby-beamup.club), yalnızca uygulama İngilizce değilken, başlıklar, açıklamalar ve bölüm adları sizin dilinizde görünsün diye.\n• Wikidata (query.wikidata.org), yalnızca uygulama İngilizce değilken, başlıklar sizin dilinizde görünsün diye. Yalnızca IMDb kimlikleri ve diliniz gönderilir.\n• Stremio (api.strem.io), yalnızca giriş yaparsanız, eklentileriniz ve kitaplığınız için.\n• GitHub: yalnızca güncellemeleri kontrol ettiğinizde.\n• Diğer BitTorrent eşleri: yalnızca yerleşik motorla bir torrent oynattığınızda.\n\nReklam, analiz, izleme veya çökme raporu yoktur. Debrid anahtarınız şifrelenmiş olarak saklanır ve yalnızca Torrentio\'ya ve debrid hizmetinize gönderilir.</string>
 
-	<!-- Updates -->
 	<string name="update_checking">Güncellemeler kontrol ediliyor…</string>
 	<string name="update_none">En son sürümü kullanıyorsunuz.</string>
 	<string name="update_check_failed">Güncellemeler kontrol edilemedi.</string>
@@ -345,13 +267,10 @@
 	<string name="update_failed_download">İndirme başarısız oldu. Daha sonra tekrar deneyin.</string>
 	<string name="update_failed_too_large">Güncelleme dosyası izin verilenden büyük.</string>
 	<string name="update_failed_checksum">İndirilen dosya sağlama toplamıyla eşleşmediği için silindi.</string>
-	<string name="update_failed_untrusted">İndirilen uygulama bununla aynı şekilde imzalanmadığı için silindi.</string>
-	<string name="update_failed_not_newer">İndirilen sürüm, sizdekinden daha yeni değil.</string>
 	<string name="update_install_failed">Yükleyici güncellemeyi yükleyemedi.</string>
 	<string name="update_ready_title">Güncelleme yüklenmeye hazır</string>
 	<string name="update_ready_text">Kurulumu tamamlamak için dokunun.</string>
 
-	<!-- order must match the Java enums and lists -->
 	<string-array name="subtitle_colors">
 		<item>Beyaz</item>
 		<item>Sarı</item>
@@ -362,25 +281,79 @@
 		<item>Yarı saydam</item>
 		<item>Siyah</item>
 	</string-array>
-	<string-array name="torrentio_sorts">
-		<item>Kalite</item>
-		<item>Kalite, sonra boyut</item>
-		<item>Paylaşımcılar</item>
-		<item>Boyut</item>
-	</string-array>
-	<string-array name="torrentio_quality_filters">
-		<item>BluRay REMUX</item>
-		<item>HDR</item>
-		<item>Dolby Vision</item>
-		<item>HDR ile Dolby Vision</item>
-		<item>3D</item>
-		<item>4K</item>
-		<item>1080p</item>
-		<item>720p</item>
-		<item>480p</item>
-		<item>Diğer</item>
-		<item>Screener kopyalar</item>
-		<item>CAM</item>
-		<item>Bilinmeyen kalite</item>
-	</string-array>
+
+	<string name="action_copy">Kopyala</string>
+	<string name="settings_crash_log">Çökme günlüğü</string>
+	<string name="settings_crash_log_none">Kayıtlı çökme yok</string>
+	<string name="settings_crash_log_summary">Son çökme: %1$s. Siz kopyalayana kadar telefonunuzda kalır.</string>
+	<string name="settings_crash_log_copied">Çökme günlüğü kopyalandı</string>
+	<string name="settings_crash_log_deleted">Çökme günlüğü silindi</string>
+	<string name="poster_watched">%1$s, %%%2$d izlendi</string>
+	<string name="poster_seen">%1$s, izlendi</string>
+	<string name="poster_new">YENİ</string>
+	<string name="poster_new_episode">%1$s, yeni bölüm</string>
+	<string name="library_filter_all">Tümü</string>
+	<string name="library_watched">İzlenenler</string>
+	<string name="library_filter_empty">Burada henüz yok.</string>
+	<string name="loading">Yükleniyor…</string>
+	<string name="player_locked">Ekran kilitli. Kilidi açmak için kilit simgesini 5 saniye basılı tutun.</string>
+	<string name="update_network">GitHub\'a ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
+	<string name="update_repo_not_found">github.com/%1$s bulunamadı. Depo var olmalı ve herkese açık olmalı, gradle.properties içindeki githubRepo da onu göstermeli.</string>
+	<string name="update_no_releases">github.com/%1$s henüz hiç sürüm yayınlamadı.</string>
+	<string name="update_no_apk">%1$s sürümüne eklenmiş APK yok. dist klasöründeki .apk dosyasını GitHub sürümüne ekleyin.</string>
+	<string name="update_no_checksum">%1$s sürümüne .apk.sha256 dosyası eklenmemiş, bu yüzden indirme doğrulanamıyor. dist klasöründeki iki dosyayı da GitHub sürümüne ekleyin.</string>
+	<string name="update_rate_limited">GitHub şu anda bu ağdan yapılan kontrolleri sınırlıyor. Bir saat sonra tekrar deneyin.</string>
+	<string name="update_debug_build">Bu bir hata ayıklama sürümü. Güncellemeler normal sürümü yükler ve Android onu ayrı bir uygulama sayar. GitHub\'daki APK\'yı bir kez yükleyin; sonrasında kendini günceller.</string>
+	<string name="update_failed_wrong_package">İndirilen dosya başka bir uygulama olduğu için silindi.</string>
+	<string name="update_failed_wrong_signer">Güncelleme bu uygulamadan farklı bir anahtarla imzalanmış, bu yüzden Android üzerine yüklemez. Sürümleri aynı anahtarla derleyin (BUILD.sh onu ~/.niixfliix/keys içinde saklar). Yeni anahtara geçmek için bu uygulamayı kaldırıp yeni APK\'yı bir kez yükleyin.</string>
+	<string name="update_failed_version_code">Güncellemenin sürüm kodu bu uygulamanınkinden büyük değil, bu yüzden Android yüklemez. Sürüm derlerken gradle.properties içindeki versionCode değerini artırın.</string>
+	<string name="update_install_cancelled">Güncelleme iptal edildi.</string>
+	<string name="update_install_conflict">Android güncellemeyi reddetti: farklı bir anahtarla imzalanmış ya da yüklü uygulamadan yeni değil.</string>
+	<string name="update_install_storage">Güncellemeyi yüklemek için yeterli boş alan yok.</string>
+	<string name="update_install_blocked">Güncelleme sistem veya bir cihaz politikası tarafından engellendi.</string>
+	<string name="update_install_incompatible">Güncelleme bu cihazla uyumlu değil.</string>
+
+	<string name="nav_live">Canlı</string>
+	<string name="live_row_nothing">Şu anda oynatılabilen bir şey yok.</string>
+	<string name="stream_software_decoding">Burada takılabilir</string>
+	<string name="settings_downloads_folder">İndirmeler klasörü</string>
+	<string name="settings_downloads_folder_root">Ana depolama</string>
+	<string name="settings_downloads_choose">Klasör seç</string>
+	<string name="settings_downloads_use_default">Varsayılan klasörü kullan</string>
+	<string name="settings_downloads_not_writable">Bu klasöre dosya kaydedilemiyor. Başka bir klasör seçin.</string>
+	<string name="settings_downloads_no_picker">Bu cihazda klasör seçici yok.</string>
+	<string name="details_download_episodes">Bölümleri indir</string>
+	<string name="download_episodes_message">Her bölüm için, indirilebilen akışlar arasından otomatik oynatmanın seçeceği akış kullanılır: debrid hizmeti gibi kaynaklardan gelen doğrudan bağlantılar (torrentler yalnızca oynatılabilir). Dosyalar “%1$s” gibi adlandırılır.</string>
+	<string name="download_episodes_season">%1$s (%2$s)</string>
+	<string name="download_episodes_all">Tüm dizi (%1$s)</string>
+	<string name="download_episodes_none_out">Bu bölümlerin hiçbiri henüz yayınlanmadı.</string>
+	<string name="download_episodes_nothing">Hiçbir bölüm indirilemedi: hiçbirinin doğrudan bağlantısı yok. İndirmek için debrid hizmeti gibi bir kaynaktan doğrudan bağlantı gerekir; torrentler yalnızca oynatılabilir.</string>
+	<plurals name="episode_count">
+		<item quantity="one">%d bölüm</item>
+		<item quantity="other">%d bölüm</item>
+	</plurals>
+	<plurals name="download_episodes_looking">
+		<item quantity="one">%d bölüm için indirilecek akış aranıyor…</item>
+		<item quantity="other">%d bölüm için indirilecek akışlar aranıyor…</item>
+	</plurals>
+	<plurals name="download_episodes_added">
+		<item quantity="one">İndirmelere %d bölüm eklendi.</item>
+		<item quantity="other">İndirmelere %d bölüm eklendi.</item>
+	</plurals>
+	<plurals name="download_episodes_already">
+		<item quantity="one">%d bölüm zaten vardı.</item>
+		<item quantity="other">%d bölüm zaten vardı.</item>
+	</plurals>
+	<plurals name="download_episodes_skipped">
+		<item quantity="one">%d bölümün indirilebilir akışı yoktu.</item>
+		<item quantity="other">%d bölümün indirilebilir akışı yoktu.</item>
+	</plurals>
+	<string name="live_free_sports">Spor kanalları</string>
+	<string name="live_free_sports_summary">Herkese açık ücretsiz kanallar</string>
+	<string name="live_sport_tv">Spor yayınları</string>
+	<string name="live_sport_tv_summary">blue Sport ve SRF. Kendi hesabınızla giriş yapın.</string>
+	<string name="web_reload">Yeniden yükle</string>
+	<string name="web_desktop_site">Masaüstü sitesi</string>
+	<string name="web_unavailable">Oynatıcı açılamadı. Android System WebView\'i güncelleyip tekrar deneyin.</string>
+	<string name="web_crashed">Oynatıcı durdu. Yeniden açın.</string>
 </resources>

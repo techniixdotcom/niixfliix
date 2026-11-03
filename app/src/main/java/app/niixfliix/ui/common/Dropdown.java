@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
-/** Reads the choice back from the visible text, which survives rotation (an index field wouldn't). */
 public final class Dropdown {
 
 	public interface Listener {

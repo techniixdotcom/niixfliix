@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import app.niixfliix.R;
@@ -32,11 +31,14 @@ import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.ui.Formats;
+import app.niixfliix.ui.Images;
 import app.niixfliix.ui.common.CatalogSource;
+import app.niixfliix.ui.common.DiscoverGenres;
 import app.niixfliix.ui.common.Grids;
 import app.niixfliix.ui.common.PosterAdapter;
 import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.ui.common.QueueMenu;
+import app.niixfliix.ui.common.TabToolbar;
 import app.niixfliix.ui.details.DetailsActivity;
 
 public final class DiscoverFragment extends Fragment implements PosterAdapter.Listener, AddonRepository.Listener {
@@ -45,12 +47,10 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 
 	private final AppGraph graph = AppGraph.get();
 	private final List<CatalogSource> sources = new ArrayList<>();
-	private final List<CatalogSource> shown = new ArrayList<>();
 	private final Set<String> seenIds = new HashSet<>();
 	private ChipGroup typeChips;
-	private TextInputLayout genreLayout;
-	private MaterialAutoCompleteTextView catalogInput;
-	private MaterialAutoCompleteTextView genreInput;
+	private ChipGroup genreChips;
+	private View genreScroll;
 	private TextView empty;
 	private View loading;
 	private PosterAdapter adapter;
@@ -58,9 +58,9 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 	@Nullable private String type;
 	@Nullable private CatalogSource source;
 	@Nullable private String genre;
+	@NonNull private DiscoverGenres genres = new DiscoverGenres(new ArrayList<>());
 	private boolean busy;
 	private boolean reachedEnd;
-	/** raw count incl. duplicates, that's what skip expects */
 	private int fetched;
 	private int generation;
 
@@ -73,13 +73,10 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		TabToolbar.setUp(this, view, R.string.nav_discover);
 		typeChips = view.findViewById(R.id.type_chips);
-		genreLayout = view.findViewById(R.id.genre_layout);
-		catalogInput = view.findViewById(R.id.catalog_input);
-		genreInput = view.findViewById(R.id.genre_input);
-		// filled from code, restored text wouldn't match
-		catalogInput.setSaveEnabled(false);
-		genreInput.setSaveEnabled(false);
+		genreChips = view.findViewById(R.id.genre_chips);
+		genreScroll = view.findViewById(R.id.genre_scroll);
 		empty = view.findViewById(R.id.empty);
 		loading = view.findViewById(R.id.loading);
 		RecyclerView grid = view.findViewById(R.id.grid);
@@ -87,6 +84,7 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 		grid.setLayoutManager(layout);
 		adapter = new PosterAdapter(true, this);
 		grid.setAdapter(adapter);
+		Images.pauseWhileFlinging(grid);
 		grid.addOnScrollListener(new RecyclerView.OnScrollListener() {
 			@Override
 			public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
@@ -105,16 +103,18 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 				selectType(picked);
 			}
 		});
-		catalogInput.setOnItemClickListener((parent, v, position, id) -> {
-			if (position < shown.size()) {
-				selectSource(shown.get(position));
+		genreChips.setOnCheckedStateChangeListener((group, ids) -> {
+			if (ids.isEmpty()) {
+				return;
 			}
-		});
-		genreInput.setOnItemClickListener((parent, v, position, id) -> {
-			List<String> genres = genreOptions();
-			boolean hasAll = source != null && !source.catalog.isExtraRequired(Catalog.EXTRA_GENRE);
-			genre = position >= genres.size() || hasAll && position == 0 ? null : genres.get(position);
-			restart();
+			Chip chip = group.findViewById(ids.get(0));
+			if (chip == null) {
+				return;
+			}
+			String picked = (String) chip.getTag();
+			if (!Objects.equals(picked, genre)) {
+				selectGenre(picked);
+			}
 		});
 		graph.addons.addListener(this);
 		rebuild();
@@ -124,6 +124,20 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 	public void onDestroyView() {
 		graph.addons.removeListener(this);
 		super.onDestroyView();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		adapter.refreshWatched();
+	}
+
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (!hidden && getView() != null) {
+			adapter.refreshWatched();
+		}
 	}
 
 	@Override
@@ -169,11 +183,10 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 		if (keep == null) {
 			type = null;
 			source = null;
-			adapter.submit(new ArrayList<>());
+			adapter.replace(new ArrayList<>());
 			showEmpty(getString(R.string.discover_no_catalogs));
 			return;
 		}
-		// set first so the listener ignores the check below
 		type = keep;
 		for (int i = 0; i < typeChips.getChildCount(); i++) {
 			Chip chip = (Chip) typeChips.getChildAt(i);
@@ -186,45 +199,43 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 
 	private void selectType(@NonNull String newType) {
 		type = newType;
-		shown.clear();
-		List<String> labels = new ArrayList<>();
+		List<CatalogSource> ofType = new ArrayList<>();
 		for (CatalogSource s : sources) {
 			if (newType.equals(s.catalog.type)) {
-				shown.add(s);
-				labels.add(s.label());
+				ofType.add(s);
 			}
 		}
-		catalogInput.setSimpleItems(labels.toArray(new String[0]));
-		if (!shown.isEmpty()) {
-			selectSource(shown.get(0));
+		genres = new DiscoverGenres(ofType);
+		genreChips.removeAllViews();
+		if (genres.hasAll()) {
+			addGenreChip(getString(R.string.discover_all_genres), null);
 		}
+		for (String g : genres.genres()) {
+			addGenreChip(g, g);
+		}
+		genreScroll.setVisibility(genreChips.getChildCount() > 1 ? View.VISIBLE : View.GONE);
+		genreScroll.scrollTo(0, 0);
+		selectGenre(genres.firstChoice());
 	}
 
-	private void selectSource(@NonNull CatalogSource picked) {
-		source = picked;
-		catalogInput.setText(picked.label(), false);
-		List<String> genres = genreOptions();
-		boolean required = picked.catalog.isExtraRequired(Catalog.EXTRA_GENRE);
-		genreLayout.setVisibility(genres.size() > 1 || required ? View.VISIBLE : View.GONE);
-		genreInput.setSimpleItems(genres.toArray(new String[0]));
-		genre = required && !picked.catalog.genres().isEmpty() ? picked.catalog.genres().get(0) : null;
-		genreInput.setText(genre != null ? genre : getString(R.string.discover_all_genres), false);
+	private void addGenreChip(@NonNull String label, @Nullable String value) {
+		Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_filter_chip, genreChips, false);
+		chip.setId(View.generateViewId());
+		chip.setText(label);
+		chip.setTag(value);
+		genreChips.addView(chip);
+	}
+
+	private void selectGenre(@Nullable String picked) {
+		genre = picked;
+		source = genres.sourceFor(picked);
+		for (int i = 0; i < genreChips.getChildCount(); i++) {
+			Chip chip = (Chip) genreChips.getChildAt(i);
+			if (Objects.equals(chip.getTag(), picked) && !chip.isChecked()) {
+				chip.setChecked(true);
+			}
+		}
 		restart();
-	}
-
-	@NonNull
-	private List<String> genreOptions() {
-		List<String> out = new ArrayList<>();
-		if (source == null) {
-			return out;
-		}
-		if (!source.catalog.isExtraRequired(Catalog.EXTRA_GENRE)) {
-			out.add(getString(R.string.discover_all_genres));
-		}
-		if (source.catalog.supportsExtra(Catalog.EXTRA_GENRE)) {
-			out.addAll(source.catalog.genres());
-		}
-		return out;
 	}
 
 	private void restart() {
@@ -233,8 +244,12 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 		reachedEnd = false;
 		fetched = 0;
 		seenIds.clear();
-		adapter.submit(new ArrayList<>());
+		adapter.replace(new ArrayList<>());
 		empty.setVisibility(View.GONE);
+		if (source == null) {
+			showEmpty(getString(R.string.discover_empty));
+			return;
+		}
 		loadPage();
 	}
 
@@ -287,7 +302,6 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 				fresh.add(PosterItem.of(m));
 			}
 		}
-		// add-on ignored skip
 		if (fresh.isEmpty()) {
 			reachedEnd = true;
 		}
@@ -309,7 +323,11 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 
 	@Override
 	public boolean onPosterLongClick(@NonNull PosterItem item) {
-		QueueMenu.show(requireContext(), item);
+		QueueMenu.show(requireContext(), item, null, null, () -> {
+			if (getView() != null) {
+				adapter.refreshWatched();
+			}
+		});
 		return true;
 	}
 }

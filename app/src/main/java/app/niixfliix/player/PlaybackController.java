@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.widget.Toast;
 
 import androidx.annotation.MainThread;
@@ -30,62 +31,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 
 import app.niixfliix.R;
 import app.niixfliix.addon.StreamInfo;
 import app.niixfliix.addon.StreamRanker;
 import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.addon.model.Manifest;
+import app.niixfliix.addon.model.Meta;
 import app.niixfliix.addon.model.Subtitle;
 import app.niixfliix.addon.model.Video;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.app.Constant;
+import app.niixfliix.app.Core;
+import app.niixfliix.data.Prefs;
 import app.niixfliix.data.model.HistoryEntry;
 import app.niixfliix.data.model.QueueItem;
 import app.niixfliix.net.Network;
-import app.niixfliix.torrent.Magnet;
 import app.niixfliix.torrent.TorrentEngine;
 import app.niixfliix.ui.Formats;
+import app.niixfliix.util.Logs;
 
-/**
- * Plays things for the whole app, independent of the player screen: the screen can close (minimize) and the
- * video keeps going with the mini bar and the notification, the screen can come back and pick up where it is.
- * Owns the player, the torrent, retries, progress saving and what plays next.
- */
 @MainThread
 @OptIn(markerClass = UnstableApi.class)
 public final class PlaybackController implements Player.Listener {
 
-	/** the player screen while it's showing */
 	public interface Screen {
 		void onTitle(@NonNull String title, @NonNull String subtitle);
 
-		/** loading text over the video, null hides it */
 		void onLoading(@Nullable String text);
 
-		/** null hides it */
 		void onError(@Nullable String message, boolean offerNext);
 
-		/** null hides the card */
 		void onUpNext(@Nullable String title, long remainingMs);
 
 		void onClosed();
 	}
 
-	/** the mini bars */
 	public interface Listener {
 		void onNowPlayingChanged();
 	}
 
+	private static final String TAG = "PlaybackController";
 	private static final long TICK_MS = 1000;
+	private static final long SESSION_CHECK_MS = 5000;
 	private static final long SAVE_EVERY_MS = 10_000;
-	/** below this the card would cover half the video or more */
 	private static final long MIN_DURATION_FOR_UP_NEXT_MS = 10 * 60 * 1000;
 	private static final int MAX_ADDON_SUBTITLES = 200;
-	/** a torrent with no peers or no metadata by then is dead, the next stream gets a go */
 	private static final long TORRENT_START_TIMEOUT_MS = 45_000;
 	private static final long END_SLACK_MS = 1500;
-	/** some files never report their end; this many seconds stuck right before it counts as the end */
 	private static final int STUCK_AT_END_TICKS = 3;
 
 	private final Context context;
@@ -116,40 +110,34 @@ public final class PlaybackController implements Player.Listener {
 	private long pendingStartMs;
 	private boolean autoTriedNext;
 	private long lastSave;
-	/** of the playing item, kept so its progress can be saved after the player has moved on */
 	private long lastDurationMs;
 	private long lastPositionMs;
 	private int stuckAtEndTicks;
 	private boolean ended;
 	private int subtitleGeneration;
-	/** add-ons still looking for subtitles for this video */
 	private int subtitleRequests;
 	private boolean subtitlesDecided;
 
-	/** what plays after this: the head of the queue, else the next episode */
 	@Nullable private QueueItem upcoming;
 	private boolean upcomingFromQueue;
 	@Nullable private QueueResolver upcomingResolver;
 	@Nullable private PlaySession upcomingSession;
-	/** already in the player's playlist (direct link, or torrent once its start is in), so the switch has no pause */
 	private boolean upcomingQueuedInPlayer;
 	private boolean upcomingDone;
 	private boolean waitingForUpcoming;
+	private long lastSessionCheck;
 
 	public PlaybackController(@NonNull Context context) {
 		this.context = context.getApplicationContext();
 	}
 
-	/** starts playing, or replaces what's playing */
 	public void play(@NonNull PlaySession next) {
 		if (engine == null) {
 			engine = new PlayerEngine(context, graph.http, graph.playerPrefs);
 			engine.player().addListener(this);
 			nextPlayer = new NextPlayer(engine.player(), this::playNextNow);
 			PlaybackService.attach(nextPlayer);
-			// binding keeps the media session service (notification, lock screen) running while it plays
-			serviceConnection = new MediaController.Builder(context,
-					new SessionToken(context, new ComponentName(context, PlaybackService.class))).buildAsync();
+			connectService();
 			graph.main.postDelayed(tick, TICK_MS);
 		} else if (session != null) {
 			saveProgress();
@@ -164,7 +152,6 @@ public final class PlaybackController implements Player.Listener {
 		notifyListeners();
 	}
 
-	/** the mini bar's X, the error card's X, or nothing left to play */
 	public void stop() {
 		if (engine == null) {
 			return;
@@ -194,7 +181,6 @@ public final class PlaybackController implements Player.Listener {
 		notifyListeners();
 	}
 
-	/** what the screen, the mini bar and the media session use; its "next" is the next episode */
 	@Nullable
 	public Player player() {
 		return nextPlayer;
@@ -220,7 +206,6 @@ public final class PlaybackController implements Player.Listener {
 		return addonSubtitles;
 	}
 
-	/** the screen shows the current state right away */
 	public void attach(@NonNull Screen s) {
 		screen = s;
 		s.onTitle(title, subtitle);
@@ -237,7 +222,6 @@ public final class PlaybackController implements Player.Listener {
 		}
 	}
 
-	/** the playing player when the player screen isn't showing, for the mini bar */
 	@Nullable
 	public Player inBackground() {
 		return screen == null ? nextPlayer : null;
@@ -263,8 +247,11 @@ public final class PlaybackController implements Player.Listener {
 		startCurrent(position);
 	}
 
-	/** the user picked one in the stream switcher */
 	public void pick(@NonNull StreamInfo s) {
+		PlaySession current = session;
+		if (current != null && Meta.TYPE_SERIES.equals(current.type)) {
+			graph.playerPrefs.setSeriesQuality(current.metaId, s.quality);
+		}
 		autoTriedNext = false;
 		switchTo(s);
 	}
@@ -276,7 +263,6 @@ public final class PlaybackController implements Player.Listener {
 		}
 	}
 
-	/** the X on the "Up next" card, only for this video */
 	public void cancelUpNext() {
 		upNextCancelled = true;
 		showUpNext(null, 0);
@@ -284,11 +270,9 @@ public final class PlaybackController implements Player.Listener {
 		graph.torrentEngine().dropPrefetch();
 	}
 
-	/** tap on the "Up next" card */
 	public void playNextNow() {
 		ExoPlayer p = exo();
 		if (upcomingQueuedInPlayer && p != null) {
-			// already buffered in the player, just move to it
 			p.seekToNextMediaItem();
 			return;
 		}
@@ -298,7 +282,6 @@ public final class PlaybackController implements Player.Listener {
 		}
 	}
 
-	/** something was queued or removed: the next button may have something to do now */
 	public void queueChanged() {
 		if (nextPlayer != null) {
 			nextPlayer.setHasNext(upcoming != null || findUpcoming() != null);
@@ -316,14 +299,12 @@ public final class PlaybackController implements Player.Listener {
 		if (stream.kind == StreamInfo.Kind.TORRENT && stream.stream.infoHash != null) {
 			startTorrent(stream, startMs);
 		} else if (stream.stream.url != null) {
-			// TorrentEngine.play drops it for a torrent
 			graph.torrentEngine().dropPrefetch();
 			showLoading(null);
 			e.play(stream.stream.url, stream.stream.requestHeaders(), startMs, metadata);
 		}
 	}
 
-	/** everything about a new current item except loading it */
 	private void showSession(PlaySession s) {
 		subtitlesDecided = false;
 		if (engine != null && !engine.userPicked()) {
@@ -341,7 +322,7 @@ public final class PlaybackController implements Player.Listener {
 		Video video = s.video;
 		String episode = video != null ? Formats.episode(context, video) : null;
 		title = s.title;
-		subtitle = episode != null ? episode : s.stream.quality.title;
+		subtitle = episode != null ? episode : Formats.quality(context, s.stream.quality);
 		if (screen != null) {
 			screen.onTitle(title, subtitle);
 		}
@@ -350,7 +331,6 @@ public final class PlaybackController implements Player.Listener {
 		queueChanged();
 	}
 
-	/** what the notification, lock screen and mini bar show */
 	private MediaMetadata metadataFor(PlaySession s) {
 		return new MediaMetadata.Builder()
 				.setTitle(s.title)
@@ -371,20 +351,10 @@ public final class PlaybackController implements Player.Listener {
 		showLoading(context.getString(R.string.torrent_connecting));
 		graph.main.removeCallbacks(torrentStartCheck);
 		graph.main.postDelayed(torrentStartCheck, TORRENT_START_TIMEOUT_MS);
-		graph.torrentEngine().play(magnetFor(s), s.stream.fileIdx, torrentCacheBytes(),
-				graph.prefs.torrentClearOnExit(), torrentListener());
+		graph.torrentEngine().play(Core.magnetFor(s), s.stream.fileIdx,
+				Prefs.CLEAR_TORRENTS_AFTER_PLAYBACK, torrentListener());
 	}
 
-	private static Magnet magnetFor(StreamInfo s) {
-		return new Magnet(s.stream.infoHash, s.fileName != null ? s.fileName : s.releaseName,
-				Magnet.trackersFromSources(s.stream.sources));
-	}
-
-	private long torrentCacheBytes() {
-		return (long) graph.prefs.torrentCacheMb() << 20;
-	}
-
-	/** for the torrent that's playing */
 	private TorrentEngine.Listener torrentListener() {
 		return new TorrentEngine.Listener() {
 			@Override
@@ -402,7 +372,6 @@ public final class PlaybackController implements Player.Listener {
 			@Override
 			public void onError(@NonNull TorrentEngine.Error error, long fileSize) {
 				showLoading(null);
-				// settings problems (cache, space, Wi-Fi) would fail the next stream too
 				boolean streamProblem = error == TorrentEngine.Error.FAILED
 						|| error == TorrentEngine.Error.NO_VIDEO_FILE;
 				if (!streamProblem || !skipToNextStream()) {
@@ -412,12 +381,10 @@ public final class PlaybackController implements Player.Listener {
 		};
 	}
 
-	/** for the one downloading behind it: once its start is in, it goes into the playlist like a direct link */
 	private TorrentEngine.Listener prefetchListener(PlaySession next) {
 		return new TorrentEngine.Listener() {
 			@Override
 			public void onStatus(@NonNull TorrentEngine.Status status) {
-				// nobody's watching this one yet
 			}
 
 			@Override
@@ -432,7 +399,6 @@ public final class PlaybackController implements Player.Listener {
 
 			@Override
 			public void onError(@NonNull TorrentEngine.Error error, long fileSize) {
-				// it gets a fresh start when its turn comes, and reports the problem then
 			}
 		};
 	}
@@ -442,7 +408,7 @@ public final class PlaybackController implements Player.Listener {
 		torrentStatus = null;
 		if (usingTorrent) {
 			usingTorrent = false;
-			graph.torrentEngine().stop(graph.prefs.torrentClearOnExit());
+			graph.torrentEngine().stop(Prefs.CLEAR_TORRENTS_AFTER_PLAYBACK);
 		}
 	}
 
@@ -471,7 +437,6 @@ public final class PlaybackController implements Player.Listener {
 		}
 	}
 
-	/** still nothing to play: no peers, or no metadata yet. Slow but moving torrents get more time. */
 	private void checkTorrentStarted() {
 		ExoPlayer p = exo();
 		if (!usingTorrent || p == null || p.getPlaybackState() == Player.STATE_READY) {
@@ -491,9 +456,6 @@ public final class PlaybackController implements Player.Listener {
 		switch (error) {
 			case NO_VIDEO_FILE:
 				return context.getString(R.string.torrent_error_no_video);
-			case TOO_BIG_FOR_CACHE:
-				return context.getString(R.string.torrent_error_too_big, Formats.size(context, fileSize),
-						Formats.size(context, torrentCacheBytes()));
 			case NO_SPACE:
 				return context.getString(R.string.torrent_error_no_space, Formats.size(context, fileSize));
 			case NOT_ON_WIFI:
@@ -513,7 +475,6 @@ public final class PlaybackController implements Player.Listener {
 		saveProgress();
 		StreamInfo next = StreamRanker.nextSameQuality(s.streams, s.stream);
 		if (!autoTriedNext && next != null) {
-			// one silent retry at the same quality, after that it's up to the user
 			autoTriedNext = true;
 			Toast.makeText(context, R.string.player_trying_next, Toast.LENGTH_SHORT).show();
 			switchTo(next);
@@ -540,11 +501,6 @@ public final class PlaybackController implements Player.Listener {
 		}
 	}
 
-	/**
-	 * Once per video, from the language chosen at first start: audio in it if there is some (the track
-	 * selector already took it), else subtitles in it, else English subtitles over the original audio.
-	 * Add-on subtitles count, so it waits for them before falling back to English.
-	 */
 	private void decideSubtitles(Tracks tracks) {
 		PlayerEngine e = engine;
 		if (subtitlesDecided || e == null || tracks.isEmpty()) {
@@ -552,14 +508,12 @@ public final class PlaybackController implements Player.Listener {
 		}
 		String wanted = graph.playerPrefs.language();
 		boolean audioFits = Languages.hasAudio(tracks, wanted)
-				// an untagged track is most likely English, so leave English speakers alone
 				|| Languages.audioUntagged(tracks) && wanted.equals("en");
 		if (e.userPicked() || audioFits || useSubtitles(tracks, wanted)) {
 			subtitlesDecided = true;
 			return;
 		}
 		if (subtitleRequests > 0) {
-			// an add-on may still come back with some in that language
 			return;
 		}
 		subtitlesDecided = true;
@@ -607,7 +561,6 @@ public final class PlaybackController implements Player.Listener {
 		return null;
 	}
 
-	/** quietly moves on to the next candidate; false if there's none left */
 	private boolean skipToNextStream() {
 		StreamInfo next = nextCandidate();
 		if (next == null) {
@@ -644,9 +597,7 @@ public final class PlaybackController implements Player.Listener {
 		if (p == null) {
 			return;
 		}
-		if (usingTorrent && graph.prefs.torrentWifiOnly() && !Network.isUnmetered(context)) {
-			graph.torrentEngine().onWifiLost();
-		}
+		ensureMediaSession();
 		long now = System.currentTimeMillis();
 		if (p.isPlaying() && now - lastSave >= SAVE_EVERY_MS) {
 			lastSave = now;
@@ -664,6 +615,50 @@ public final class PlaybackController implements Player.Listener {
 			}
 		}
 		checkUpNext(p);
+	}
+
+	private void connectService() {
+		serviceConnection = new MediaController.Builder(context,
+				new SessionToken(context, new ComponentName(context, PlaybackService.class))).buildAsync();
+	}
+
+	private void ensureMediaSession() {
+		Player shown = nextPlayer;
+		long now = SystemClock.elapsedRealtime();
+		if (shown == null || now - lastSessionCheck < SESSION_CHECK_MS) {
+			return;
+		}
+		lastSessionCheck = now;
+		boolean connected = controllerConnected();
+		if (connected && PlaybackService.isServing(shown)) {
+			return;
+		}
+		PlaybackService.attach(shown);
+		if (!connected) {
+			Logs.w(TAG, "Media session connection lost, reconnecting", null);
+			if (serviceConnection != null) {
+				MediaController.releaseFuture(serviceConnection);
+			}
+			connectService();
+		}
+	}
+
+	private boolean controllerConnected() {
+		ListenableFuture<MediaController> connection = serviceConnection;
+		if (connection == null || connection.isCancelled()) {
+			return false;
+		}
+		if (!connection.isDone()) {
+			return true;
+		}
+		try {
+			return connection.get().isConnected();
+		} catch (ExecutionException e) {
+			return false;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
 	}
 
 	private void saveProgress() {
@@ -699,7 +694,10 @@ public final class PlaybackController implements Player.Listener {
 			return;
 		}
 		long remaining = Math.max(0, duration - p.getCurrentPosition());
-		if (remaining > Constant.UP_NEXT_SECONDS * 1000L) {
+		QueueItem coming = upcoming != null ? upcoming : findUpcoming();
+		boolean fromQueue = upcoming != null ? upcomingFromQueue : coming != null && coming == graph.queue.peek();
+		long lead = (fromQueue ? Constant.UP_NEXT_QUEUE_SECONDS : Constant.UP_NEXT_EPISODE_SECONDS) * 1000L;
+		if (coming == null || remaining > lead) {
 			return;
 		}
 		QueueItem next = prefetchUpcoming();
@@ -725,7 +723,6 @@ public final class PlaybackController implements Player.Listener {
 		return episode;
 	}
 
-	/** starts looking for streams once, returns what will play next */
 	@Nullable
 	private QueueItem prefetchUpcoming() {
 		if (upcoming != null) {
@@ -738,7 +735,7 @@ public final class PlaybackController implements Player.Listener {
 		}
 		upcoming = next;
 		upcomingFromQueue = next == graph.queue.peek();
-		upcomingResolver = QueueResolver.start(context, next, upcomingFromQueue ? null : s.meta,
+		upcomingResolver = QueueResolver.start(Network.isUnmetered(context), next, upcomingFromQueue ? null : s.meta,
 				upcomingFromQueue ? null : s.stream.stream.bingeGroup(), new QueueResolver.Callback() {
 					@Override
 					public void onReady(@NonNull PlaySession ready) {
@@ -790,7 +787,6 @@ public final class PlaybackController implements Player.Listener {
 		ended = true;
 		saveProgress();
 		if (upcoming == null && findUpcoming() == null) {
-			// not from inside the player's own callback
 			graph.main.post(this::stop);
 			return;
 		}
@@ -801,23 +797,14 @@ public final class PlaybackController implements Player.Listener {
 		playUpcoming();
 	}
 
-	/**
-	 * Starts on the next one while this one is still playing. A direct link goes straight into the player's
-	 * playlist; a torrent downloads in the background and joins the playlist once its start is in. Either way the
-	 * player moves on without a pause.
-	 */
 	private void preload(PlaySession next) {
 		PlayerEngine e = engine;
 		if (e == null || upNextCancelled || waitingForUpcoming) {
-			// if it's already waiting, playUpcoming loads it right away anyway
 			return;
 		}
 		StreamInfo s = next.stream;
 		if (s.kind == StreamInfo.Kind.TORRENT && s.stream.infoHash != null) {
-			if (graph.prefs.torrentWifiOnly() && !Network.isUnmetered(context)) {
-				return;
-			}
-			graph.torrentEngine().prefetch(magnetFor(s), s.stream.fileIdx, torrentCacheBytes(), prefetchListener(next));
+			graph.torrentEngine().prefetch(Core.magnetFor(s), s.stream.fileIdx, prefetchListener(next));
 		} else if (s.kind == StreamInfo.Kind.DIRECT && s.stream.url != null) {
 			e.queueNext(s.stream.url, s.stream.requestHeaders(), metadataFor(next));
 			upcomingQueuedInPlayer = true;
@@ -833,7 +820,6 @@ public final class PlaybackController implements Player.Listener {
 		}
 	}
 
-	/** the player already moved on to the queued item: catch up with it. finished is false when the user skipped */
 	private void adoptUpcoming(boolean finished) {
 		PlaySession next = upcomingSession;
 		PlaySession previous = session;
@@ -853,8 +839,7 @@ public final class PlaybackController implements Player.Listener {
 		upcomingQueuedInPlayer = false;
 		StreamInfo stream = next.stream;
 		if (stream.kind == StreamInfo.Kind.TORRENT && stream.stream.infoHash != null && graph.torrentEngine()
-				.promote(stream.stream.infoHash, graph.prefs.torrentClearOnExit(), torrentListener())) {
-			// the old torrent is stopped, the new one carries on where the prefetch got to
+				.promote(stream.stream.infoHash, Prefs.CLEAR_TORRENTS_AFTER_PLAYBACK, torrentListener())) {
 			graph.main.removeCallbacks(torrentStartCheck);
 			torrentStatus = null;
 			usingTorrent = true;
@@ -875,7 +860,6 @@ public final class PlaybackController implements Player.Listener {
 		notifyListeners();
 	}
 
-	/** saveProgress can't, the player is already on the next item */
 	private void markFinished(PlaySession s) {
 		if (s.meta == null) {
 			return;
@@ -889,7 +873,6 @@ public final class PlaybackController implements Player.Listener {
 		graph.history.setWatched(s.videoId, true);
 	}
 
-	/** where it was left at the last tick, the player is already on the next item */
 	private void saveSkipped(PlaySession s) {
 		if (s.meta == null || lastDurationMs <= 0) {
 			return;
@@ -909,7 +892,6 @@ public final class PlaybackController implements Player.Listener {
 		PlaySession next = upcomingSession;
 		QueueItem item = upcoming;
 		if (upcomingFromQueue && item != null) {
-			// tried once, a title nothing can play shouldn't block the rest of the queue
 			graph.queue.remove(item.key());
 		}
 		if (next == null) {

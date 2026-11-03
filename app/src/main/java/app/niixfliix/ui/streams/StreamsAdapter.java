@@ -14,17 +14,15 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import app.niixfliix.R;
 import app.niixfliix.addon.StreamInfo;
+import app.niixfliix.addon.StreamRanker;
 import app.niixfliix.ui.Formats;
+import app.niixfliix.ui.common.DiffAdapter;
 
-/**
- * One row per quality: the quality, the title of what's playing, and size/language chips.
- * Where a stream comes from (add-on, release name, seeders) stays out of the list on purpose.
- */
-final class StreamsAdapter extends RecyclerView.Adapter<StreamsAdapter.Holder> {
+final class StreamsAdapter extends DiffAdapter<StreamInfo, StreamsAdapter.Holder> {
 
 	interface Listener {
 		void onStreamClick(@NonNull StreamInfo stream);
@@ -34,23 +32,23 @@ final class StreamsAdapter extends RecyclerView.Adapter<StreamsAdapter.Holder> {
 
 	private final Listener listener;
 	private final String title;
-	private final List<StreamInfo> rows = new ArrayList<>();
 
-	/** @param title movie name, or "Show · S1E2" for an episode */
 	StreamsAdapter(@NonNull Listener listener, @NonNull String title) {
 		this.listener = listener;
 		this.title = title;
 	}
 
-	void submit(@NonNull List<StreamInfo> best) {
-		rows.clear();
-		rows.addAll(best);
-		notifyDataSetChanged();
+	@NonNull
+	@Override
+	protected Object keyOf(@NonNull StreamInfo stream) {
+		return stream.quality;
 	}
 
+	@NonNull
 	@Override
-	public int getItemCount() {
-		return rows.size();
+	protected Object contentOf(@NonNull StreamInfo stream) {
+		return Arrays.asList(stream.key(), stream.sizeBytes, new ArrayList<>(stream.languages),
+				new ArrayList<>(stream.tags));
 	}
 
 	@NonNull
@@ -61,7 +59,7 @@ final class StreamsAdapter extends RecyclerView.Adapter<StreamsAdapter.Holder> {
 
 	@Override
 	public void onBindViewHolder(@NonNull Holder holder, int position) {
-		holder.bind(rows.get(position));
+		holder.bind(getItem(position));
 	}
 
 	final class Holder extends RecyclerView.ViewHolder {
@@ -91,10 +89,13 @@ final class StreamsAdapter extends RecyclerView.Adapter<StreamsAdapter.Holder> {
 		void bind(StreamInfo s) {
 			stream = s;
 			Context context = itemView.getContext();
-			quality.setText(s.quality.title);
+			quality.setText(Formats.quality(quality.getContext(), s.quality));
 			name.setText(title);
 
 			chips.removeAllViews();
+			if (!StreamRanker.isSmooth(s)) {
+				addChip(context.getString(R.string.stream_software_decoding));
+			}
 			if (s.sizeBytes > 0) {
 				addChip(Formats.size(context, s.sizeBytes));
 			}

@@ -26,4 +26,6 @@
 		android:text="@string/home_empty"
 		android:textAppearance="?attr/textAppearanceBodyLarge"
 		android:visibility="gone" />
+
+	<include layout="@layout/view_tab_toolbar" />
 </FrameLayout>

@@ -9,8 +9,11 @@ import androidx.annotation.Nullable;
 import java.util.Locale;
 
 import app.niixfliix.R;
+import app.niixfliix.addon.Quality;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.addon.model.Video;
+import app.niixfliix.ui.setup.Choices;
+import app.niixfliix.util.Texts;
 
 public final class Formats {
 
@@ -38,12 +41,21 @@ public final class Formats {
 		if (type == null || type.isEmpty()) {
 			return "";
 		}
-		return capitalize(type, Locale.getDefault());
+		return Texts.capitalize(type, Locale.getDefault());
 	}
 
 	@NonNull
-	public static String capitalize(@NonNull String text, @NonNull Locale locale) {
-		return text.isEmpty() ? text : text.substring(0, 1).toUpperCase(locale) + text.substring(1);
+	public static String quality(@NonNull Context context, @NonNull Quality quality) {
+		return quality == Quality.OTHER ? context.getString(R.string.quality_other) : quality.shortName();
+	}
+
+	@NonNull
+	public static String[] qualityLabels(@NonNull Context context) {
+		String[] out = new String[Choices.QUALITIES.size()];
+		for (int i = 0; i < out.length; i++) {
+			out[i] = quality(context, Choices.QUALITIES.get(i));
+		}
+		return out;
 	}
 
 	@NonNull
@@ -59,14 +71,5 @@ public final class Formats {
 			return "";
 		}
 		return released.length() >= 10 ? released.substring(0, 10) : released;
-	}
-
-	@NonNull
-	public static String language(@NonNull String code) {
-		if (code.isEmpty()) {
-			return "";
-		}
-		String name = Locale.forLanguageTag(code).getDisplayLanguage();
-		return name.isEmpty() ? code : capitalize(name, Locale.getDefault());
 	}
 }

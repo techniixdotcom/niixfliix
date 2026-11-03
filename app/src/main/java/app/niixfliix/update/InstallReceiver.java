@@ -7,14 +7,15 @@ import android.content.Intent;
 import android.content.pm.PackageInstaller;
 import android.widget.Toast;
 
+import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.IntentCompat;
 
 import app.niixfliix.R;
 import app.niixfliix.app.App;
+import app.niixfliix.util.Logs;
 
-/** not exported, only our own PendingIntent reaches it */
 public final class InstallReceiver extends BroadcastReceiver {
 
 	private static final int NOTIFICATION_ID = 4102;
@@ -27,11 +28,30 @@ public final class InstallReceiver extends BroadcastReceiver {
 			if (confirm != null) {
 				confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(confirm);
-				// blocked if we're in the background by now, so post a notification too
 				notifyConfirm(context, confirm);
 			}
 		} else if (status != PackageInstaller.STATUS_SUCCESS) {
-			Toast.makeText(context, R.string.update_install_failed, Toast.LENGTH_LONG).show();
+			Logs.w("InstallReceiver", "Install failed, status " + status + ": "
+					+ intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE), null);
+			Toast.makeText(context, failureMessage(status), Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@StringRes
+	static int failureMessage(int status) {
+		switch (status) {
+			case PackageInstaller.STATUS_FAILURE_ABORTED:
+				return R.string.update_install_cancelled;
+			case PackageInstaller.STATUS_FAILURE_CONFLICT:
+				return R.string.update_install_conflict;
+			case PackageInstaller.STATUS_FAILURE_STORAGE:
+				return R.string.update_install_storage;
+			case PackageInstaller.STATUS_FAILURE_BLOCKED:
+				return R.string.update_install_blocked;
+			case PackageInstaller.STATUS_FAILURE_INCOMPATIBLE:
+				return R.string.update_install_incompatible;
+			default:
+				return R.string.update_install_failed;
 		}
 	}
 
@@ -51,7 +71,6 @@ public final class InstallReceiver extends BroadcastReceiver {
 					.setAutoCancel(true)
 					.build());
 		} catch (SecurityException ignored) {
-			// no permission
 		}
 	}
 }

@@ -5,16 +5,16 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import app.niixfliix.R;
 
-/** The player's lock: a see-through layer eats every touch until the lock on it is held for 5 s. */
 final class ScreenLock {
 
 	private static final long HOLD_MS = 5000;
-	/** how long the lock stays on screen after a tap */
 	private static final long PANEL_MS = 3000;
 
 	private final View shield;
@@ -33,7 +33,15 @@ final class ScreenLock {
 		this.onUnlocked = onUnlocked;
 		hidePanel = () -> panel.setVisibility(View.GONE);
 		shield.setOnClickListener(v -> showPanel());
-		root.findViewById(R.id.unlock_hold).setOnTouchListener(this::onHoldTouch);
+		View hold = root.findViewById(R.id.unlock_hold);
+		hold.setOnTouchListener(this::onHoldTouch);
+		ViewCompat.replaceAccessibilityAction(hold, AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
+				root.getContext().getString(R.string.player_unlock), (view, arguments) -> {
+					if (locked) {
+						unlock();
+					}
+					return true;
+				});
 	}
 
 	boolean isLocked() {
@@ -43,11 +51,9 @@ final class ScreenLock {
 	void lock() {
 		locked = true;
 		shield.setVisibility(View.VISIBLE);
-		// show once how to get out again
 		showPanel();
 	}
 
-	/** a tap anywhere, back or a key while locked: show where the lock is */
 	void showPanel() {
 		panel.setVisibility(View.VISIBLE);
 		shield.removeCallbacks(hidePanel);
@@ -66,7 +72,6 @@ final class ScreenLock {
 			if (action == MotionEvent.ACTION_UP) {
 				v.performClick();
 			}
-			// let go too early
 			stopHold();
 			if (locked) {
 				showPanel();

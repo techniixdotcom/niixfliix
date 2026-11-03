@@ -8,6 +8,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
@@ -15,8 +16,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.function.Consumer;
 
 import app.niixfliix.R;
+import app.niixfliix.ui.SecureScreens;
 
-/** the "paste an add-on link" dialog */
 public final class TextPrompt {
 
 	private TextPrompt() {
@@ -29,12 +30,14 @@ public final class TextPrompt {
 		TextInputLayout layout = view.findViewById(R.id.input_layout);
 		layout.setHint(R.string.addons_add_hint);
 		EditText input = view.findViewById(R.id.input);
-		new MaterialAlertDialogBuilder(context)
+		AlertDialog dialog = new MaterialAlertDialogBuilder(context)
 				.setTitle(title)
 				.setMessage(message)
 				.setView(view)
 				.setPositiveButton(positive, (d, w) -> onText.accept(input.getText().toString()))
 				.setNegativeButton(R.string.action_cancel, null)
-				.show();
+				.create();
+		SecureScreens.protect(dialog, context);
+		dialog.show();
 	}
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">退出 Stremio？你的来源和媒体库会保留在此电脑上。</string>
+	<string name="action_quit">退出</string>
+	<string name="download_failed_desktop">失败。点击继续可重试。</string>
+	<string name="download_show_in_folder">在文件夹中显示</string>
+	<string name="hardware_decoding_crash">显卡解码视频时应用意外关闭，因此已关闭硬件解码。你可以在“设置 &gt; 播放”中重新开启。</string>
+	<string name="hardware_decoding_crash_title">已关闭硬件解码</string>
+	<string name="hero_info">更多信息</string>
+	<string name="library_downloads_empty_desktop">没有下载。右键点击某个片源即可下载。</string>
+	<string name="library_queue_empty_desktop">队列为空。右键点击电影、剧集或单集即可添加。</string>
+	<string name="player_all_files">所有文件</string>
+	<string name="player_keeps_screen_on">正在播放视频</string>
+	<string name="player_mute">静音</string>
+	<string name="player_open">返回视频</string>
+	<string name="player_subtitle_files">字幕文件</string>
+	<string name="quality_hint_desktop">会自动播放此画质中最好的片源。如果没有，则使用低一级的画质。</string>
+	<string name="quit_downloads_running">仍有下载在进行。仍要退出吗？下载会暂停，下次可以继续。</string>
+	<string name="row_failed_desktop">无法加载这一行。</string>
+	<string name="row_scroll_back">向后滚动</string>
+	<string name="row_scroll_forward">向前滚动</string>
+	<string name="settings_crash_log_summary_desktop">上次崩溃：%1$s。在你复制之前，它只保存在这台电脑上。</string>
+	<string name="settings_hardware_decoding">硬件视频解码</string>
+	<string name="settings_hardware_decoding_summary">由显卡解码视频，播放流畅且几乎不占用处理器。如果视频颜色异常或出现花屏，请关闭。</string>
+	<string name="settings_language_restart">新语言将在下次启动应用时生效。</string>
+	<string name="streams_quality_desktop">自动：%1$s · 更改</string>
+	<string name="update_no_bundle">版本 %1$s 没有附带 .flatpak。请把 dist 文件夹中的 .flatpak 附加到 GitHub 版本。</string>
+	<string name="update_no_bundle_checksum">版本 %1$s 没有附带 .flatpak.sha256 文件，因此无法校验下载。请把 dist 文件夹中的两个文件都附加到 GitHub 版本。</string>
+	<string name="update_ready_desktop">更新已保存为 %1$s，并已交给软件中心打开。如果没有打开任何内容，请在终端中安装：\n\n%2$s\n\n然后重新启动应用。</string>
+</resources>

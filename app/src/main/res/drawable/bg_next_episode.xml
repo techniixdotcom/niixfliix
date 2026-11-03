@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- marks the episode that plays next -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
 	<solid android:color="@color/surface_variant" />
 	<stroke

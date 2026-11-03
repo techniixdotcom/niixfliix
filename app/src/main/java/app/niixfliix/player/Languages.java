@@ -8,7 +8,6 @@ import androidx.media3.common.Tracks;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.common.util.Util;
 
-/** Language checks on a video's tracks. "en", "eng" and "en-US" are all English here. */
 @OptIn(markerClass = UnstableApi.class)
 final class Languages {
 
@@ -32,7 +31,6 @@ final class Languages {
 		return has(tracks, C.TRACK_TYPE_TEXT, language);
 	}
 
-	/** lots of releases don't tag their only audio track with a language */
 	static boolean audioUntagged(@NonNull Tracks tracks) {
 		for (Tracks.Group group : tracks.getGroups()) {
 			if (group.getType() != C.TRACK_TYPE_AUDIO) {

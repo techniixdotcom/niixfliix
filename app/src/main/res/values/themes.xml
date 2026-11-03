@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-	<!-- always dark; every Material role is set so no default purple leaks in -->
 	<style name="Base.Theme.Niixfliix" parent="Theme.Material3.Dark.NoActionBar">
 		<item name="android:colorControlActivated">@color/red</item>
 		<item name="colorPrimary">@color/primary</item>
@@ -10,8 +9,8 @@
 		<item name="colorOnPrimaryContainer">@color/on_surface</item>
 		<item name="colorSecondary">@color/secondary</item>
 		<item name="colorOnSecondary">@color/on_secondary</item>
-		<item name="colorSecondaryContainer">@color/outline</item>
-		<item name="colorOnSecondaryContainer">@color/on_surface</item>
+		<item name="colorSecondaryContainer">@color/surface_raised</item>
+		<item name="colorOnSecondaryContainer">@android:color/white</item>
 		<item name="colorTertiary">@color/red</item>
 		<item name="colorOnTertiary">@color/primary</item>
 		<item name="colorTertiaryContainer">@color/surface_variant</item>
@@ -25,13 +24,34 @@
 		<item name="colorSurfaceVariant">@color/surface_variant</item>
 		<item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
 		<item name="colorOutline">@color/outline</item>
-		<item name="colorOutlineVariant">@color/outline</item>
+		<item name="colorOutlineVariant">@color/line</item>
 		<item name="colorSurfaceContainerLowest">@color/surface</item>
 		<item name="colorSurfaceContainerLow">@color/surface</item>
 		<item name="colorSurfaceContainer">@color/surface</item>
-		<item name="colorSurfaceContainerHigh">@color/surface</item>
-		<item name="colorSurfaceContainerHighest">@color/surface</item>
+		<item name="colorSurfaceContainerHigh">@color/surface_variant</item>
+		<item name="colorSurfaceContainerHighest">@color/surface_variant</item>
 		<item name="android:windowLightStatusBar">false</item>
+		<item name="android:colorAccent">@color/red</item>
+		<item name="android:textColorHighlight">@color/red_track</item>
+
+		<!-- JetBrains Mono everywhere, as on niixa.org -->
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="textAppearanceDisplayLarge">@style/TextAppearance.Niixfliix.DisplayLarge</item>
+		<item name="textAppearanceDisplayMedium">@style/TextAppearance.Niixfliix.DisplayMedium</item>
+		<item name="textAppearanceDisplaySmall">@style/TextAppearance.Niixfliix.DisplaySmall</item>
+		<item name="textAppearanceHeadlineLarge">@style/TextAppearance.Niixfliix.HeadlineLarge</item>
+		<item name="textAppearanceHeadlineMedium">@style/TextAppearance.Niixfliix.HeadlineMedium</item>
+		<item name="textAppearanceHeadlineSmall">@style/TextAppearance.Niixfliix.HeadlineSmall</item>
+		<item name="textAppearanceTitleLarge">@style/TextAppearance.Niixfliix.TitleLarge</item>
+		<item name="textAppearanceTitleMedium">@style/TextAppearance.Niixfliix.TitleMedium</item>
+		<item name="textAppearanceTitleSmall">@style/TextAppearance.Niixfliix.TitleSmall</item>
+		<item name="textAppearanceBodyLarge">@style/TextAppearance.Niixfliix.BodyLarge</item>
+		<item name="textAppearanceBodyMedium">@style/TextAppearance.Niixfliix.BodyMedium</item>
+		<item name="textAppearanceBodySmall">@style/TextAppearance.Niixfliix.BodySmall</item>
+		<item name="textAppearanceLabelLarge">@style/TextAppearance.Niixfliix.LabelLarge</item>
+		<item name="textAppearanceLabelMedium">@style/TextAppearance.Niixfliix.LabelMedium</item>
+		<item name="textAppearanceLabelSmall">@style/TextAppearance.Niixfliix.LabelSmall</item>
 		<item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
 
 		<item name="materialCardViewStyle">@style/Widget.Niixfliix.Card</item>
@@ -44,16 +64,82 @@
 		<item name="materialSwitchStyle">@style/Widget.Niixfliix.Switch</item>
 		<item name="linearProgressIndicatorStyle">@style/Widget.Niixfliix.Progress</item>
 		<item name="circularProgressIndicatorStyle">@style/Widget.Niixfliix.Progress.Circular</item>
+		<item name="toolbarStyle">@style/Widget.Niixfliix.Toolbar</item>
+		<item name="navigationRailStyle">@style/Widget.Niixfliix.NavRail</item>
+		<item name="swipeRefreshLayoutProgressSpinnerBackgroundColor">@color/surface_variant</item>
+		<item name="textInputStyle">@style/Widget.Niixfliix.TextField</item>
+		<item name="tabStyle">@style/Widget.Niixfliix.Tabs</item>
 	</style>
 
 	<style name="Theme.Niixfliix" parent="Base.Theme.Niixfliix" />
+
+	<!-- Material 3 type scale in JetBrains Mono -->
+	<style name="TextAppearance.Niixfliix.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.BodySmall" parent="TextAppearance.Material3.BodySmall">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
+	<style name="TextAppearance.Niixfliix.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+		<item name="fontFamily">@font/jetbrains_mono</item>
+		<item name="android:fontFamily">@font/jetbrains_mono</item>
+	</style>
 
 	<style name="Theme.Niixfliix.Player" parent="Theme.Niixfliix">
 		<item name="android:windowBackground">@android:color/black</item>
 		<item name="android:colorBackground">@android:color/black</item>
 	</style>
 
-	<!-- Floating things: surface_variant, 1dp outline, 16dp corners. One look for all of them. -->
 	<style name="ShapeAppearance.Niixfliix.Floating" parent="">
 		<item name="cornerFamily">rounded</item>
 		<item name="cornerSize">@dimen/corner_floating</item>
@@ -64,7 +150,6 @@
 		<item name="cornerSizeBottomRight">0dp</item>
 	</style>
 
-	<!-- posters and episode stills -->
 	<style name="ShapeAppearance.Niixfliix.Thumbnail" parent="">
 		<item name="cornerFamily">rounded</item>
 		<item name="cornerSize">@dimen/corner_thumbnail</item>
@@ -78,9 +163,19 @@
 		<item name="cardElevation">0dp</item>
 	</style>
 
+	<style name="Widget.Niixfliix.Card.Overlay">
+		<item name="cardBackgroundColor">@color/overlay_card</item>
+		<item name="strokeColor">@color/overlay_outline</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Card.Floating">
+		<item name="cardBackgroundColor">@color/surface_floating</item>
+	</style>
+
 	<style name="Widget.Niixfliix.Card.Thumbnail">
 		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Thumbnail</item>
-		<item name="strokeWidth">0dp</item>
+		<item name="strokeWidth">2dp</item>
+		<item name="strokeColor">@color/card_focus_stroke</item>
 	</style>
 
 	<style name="ThemeOverlay.Niixfliix.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
@@ -91,7 +186,7 @@
 	</style>
 
 	<style name="Widget.Niixfliix.Dialog" parent="MaterialAlertDialog.Material3">
-		<item name="backgroundTint">@color/surface_variant</item>
+		<item name="backgroundTint">@color/dialog_background</item>
 		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Floating</item>
 	</style>
 
@@ -104,7 +199,7 @@
 
 	<style name="Widget.Niixfliix.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
 		<item name="shapeAppearance">@style/ShapeAppearance.Niixfliix.Sheet</item>
-		<item name="backgroundTint">@color/surface_variant</item>
+		<item name="backgroundTint">@color/surface_floating</item>
 	</style>
 
 	<style name="Widget.Niixfliix.PopupMenu" parent="Widget.Material3.PopupMenu">
@@ -119,11 +214,94 @@
 		<item name="android:popupBackground">@drawable/bg_floating</item>
 	</style>
 
-	<style name="Widget.Niixfliix.TextField.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" />
+	<style name="Widget.Niixfliix.TextField" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+		<item name="boxStrokeColor">@color/red</item>
+		<item name="hintTextColor">@color/red</item>
+		<item name="cursorColor">@color/red</item>
+	</style>
 
-	<!-- compact: no min height, small padding -->
+	<style name="Widget.Niixfliix.TextField.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+		<item name="boxStrokeColor">@color/red</item>
+		<item name="hintTextColor">@color/red</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Tabs" parent="Widget.Material3.TabLayout">
+		<item name="tabIndicatorColor">@color/red</item>
+		<item name="tabSelectedTextColor">@android:color/white</item>
+		<item name="tabTextColor">@color/on_surface_variant</item>
+		<item name="tabRippleColor">@color/red_soft</item>
+		<item name="android:background">@color/background</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Toolbar" parent="Widget.Material3.Toolbar">
+		<item name="titleTextAppearance">@style/TextAppearance.Niixfliix.ToolbarTitle</item>
+	</style>
+
+	<style name="TextAppearance.Niixfliix.ToolbarTitle" parent="TextAppearance.Niixfliix.TitleLarge">
+		<item name="android:fontFamily">@font/jetbrains_mono_extrabold</item>
+		<item name="fontFamily">@font/jetbrains_mono_extrabold</item>
+		<item name="android:textColor">@android:color/white</item>
+	</style>
+
+	<style name="TextAppearance.Niixfliix.Wordmark" parent="TextAppearance.Niixfliix.HeadlineSmall">
+		<item name="android:fontFamily">@font/jetbrains_mono_extrabold</item>
+		<item name="fontFamily">@font/jetbrains_mono_extrabold</item>
+		<item name="android:textColor">@color/red</item>
+		<item name="android:textAllCaps">false</item>
+		<item name="android:letterSpacing">-0.03</item>
+		<item name="android:shadowColor">#73FF0A6C</item>
+		<item name="android:shadowRadius">22</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Chip.Filter" parent="Widget.Material3.Chip.Filter">
+		<item name="chipBackgroundColor">@color/chip_background</item>
+		<item name="chipStrokeColor">@color/chip_stroke</item>
+		<item name="chipStrokeWidth">1dp</item>
+		<item name="android:textColor">@color/chip_text</item>
+		<item name="checkedIconVisible">false</item>
+		<item name="chipCornerRadius">18dp</item>
+		<item name="android:textAppearance">@style/TextAppearance.Niixfliix.Chip</item>
+	</style>
+
+	<style name="TextAppearance.Niixfliix.Chip" parent="TextAppearance.Niixfliix.LabelLarge">
+		<item name="android:textStyle">bold</item>
+	</style>
+
+	<style name="Widget.Niixfliix.NavRail" parent="Widget.Material3.NavigationRailView">
+		<item name="itemIconTint">@color/nav_item</item>
+		<item name="itemTextColor">@color/nav_item</item>
+		<item name="itemActiveIndicatorStyle">@style/Widget.Niixfliix.NavRail.Indicator</item>
+	</style>
+
+	<style name="Widget.Niixfliix.NavRail.Indicator" parent="Widget.Material3.NavigationRailView.ActiveIndicator">
+		<item name="android:color">@color/red_track</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Button.Hero" parent="Widget.Material3.Button">
+		<item name="backgroundTint">@color/red</item>
+		<item name="android:textColor">@android:color/white</item>
+		<item name="iconTint">@android:color/white</item>
+		<item name="rippleColor">#40FFFFFF</item>
+		<item name="android:textStyle">bold</item>
+		<item name="cornerRadius">10dp</item>
+	</style>
+
+	<style name="Widget.Niixfliix.Button.HeroSecondary" parent="Widget.Material3.Button">
+		<item name="backgroundTint">@color/hero_button</item>
+		<item name="android:textColor">@android:color/white</item>
+		<item name="iconTint">@android:color/white</item>
+		<item name="strokeColor">@color/outline</item>
+		<item name="strokeWidth">1dp</item>
+		<item name="rippleColor">@color/red_soft</item>
+		<item name="android:textStyle">bold</item>
+		<item name="cornerRadius">10dp</item>
+	</style>
+
 	<style name="Widget.Niixfliix.BottomNav" parent="Widget.Material3.BottomNavigationView">
 		<item name="android:minHeight">0dp</item>
+		<item name="backgroundTint">@color/background</item>
+		<item name="itemIconTint">@color/nav_item</item>
+		<item name="itemTextColor">@color/nav_item</item>
 		<item name="itemPaddingTop">1dp</item>
 		<item name="itemPaddingBottom">1dp</item>
 		<item name="itemTextAppearanceActive">@style/TextAppearance.Niixfliix.NavLabel</item>
@@ -134,9 +312,10 @@
 	<style name="Widget.Niixfliix.BottomNav.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
 		<item name="android:width">56dp</item>
 		<item name="android:height">28dp</item>
+		<item name="android:color">@color/red_track</item>
 	</style>
 
-	<style name="TextAppearance.Niixfliix.NavLabel" parent="TextAppearance.Material3.LabelMedium">
+	<style name="TextAppearance.Niixfliix.NavLabel" parent="TextAppearance.Niixfliix.LabelMedium">
 		<item name="android:textSize">10sp</item>
 	</style>
 
@@ -148,20 +327,26 @@
 
 	<style name="Widget.Niixfliix.Progress" parent="Widget.Material3.LinearProgressIndicator">
 		<item name="indicatorColor">@color/red</item>
-		<item name="trackColor">@color/outline</item>
+		<item name="trackColor">@color/line</item>
 	</style>
 
 	<style name="Widget.Niixfliix.Progress.Circular" parent="Widget.Material3.CircularProgressIndicator">
 		<item name="indicatorColor">@color/red</item>
 	</style>
 
-	<!-- section titles, white and bold; red is kept for small highlights like "UP NEXT" -->
-	<style name="TextAppearance.Niixfliix.Section" parent="TextAppearance.Material3.TitleSmall">
+	<style name="TextAppearance.Niixfliix.Section" parent="TextAppearance.Niixfliix.TitleMedium">
 		<item name="android:textColor">?attr/colorOnSurface</item>
 		<item name="android:textStyle">bold</item>
 	</style>
 
-	<style name="TextAppearance.Niixfliix.Caption" parent="TextAppearance.Material3.BodySmall">
+	<style name="TextAppearance.Niixfliix.HeroType" parent="TextAppearance.Niixfliix.LabelLarge">
+		<item name="android:textColor">@color/red</item>
+		<item name="android:textStyle">bold</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:letterSpacing">0.2</item>
+	</style>
+
+	<style name="TextAppearance.Niixfliix.Caption" parent="TextAppearance.Niixfliix.BodySmall">
 		<item name="android:textColor">?attr/colorOnSurfaceVariant</item>
 	</style>
 </resources>

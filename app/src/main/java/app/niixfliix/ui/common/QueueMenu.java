@@ -19,27 +19,42 @@ import app.niixfliix.app.AppGraph;
 import app.niixfliix.data.History;
 import app.niixfliix.data.model.QueueItem;
 
-/** The long-press menu on posters and episodes: queue it, play it next, mark it watched. */
 public final class QueueMenu {
 
 	private QueueMenu() {
 	}
 
-	public static void show(@NonNull Context context, @NonNull PosterItem poster) {
-		show(context, poster, null, null);
+	public static void show(@NonNull Context context, @NonNull PosterItem poster, @Nullable String extraLabel,
+			@Nullable Runnable extraAction, @Nullable Runnable onWatchedChanged) {
+		show(context, poster, true, extraLabel, extraAction, onWatchedChanged);
 	}
 
-	/** with one more action at the end, like "Remove" in the library */
-	public static void show(@NonNull Context context, @NonNull PosterItem poster, @Nullable String extraLabel,
-			@Nullable Runnable extraAction) {
+	public static void show(@NonNull Context context, @NonNull PosterItem poster, boolean libraryToggle,
+			@Nullable String extraLabel, @Nullable Runnable extraAction, @Nullable Runnable onWatchedChanged) {
 		Menu menu = new Menu(context, QueueItem.of(poster.id, poster.type, poster.name, poster.poster));
+		if (libraryToggle) {
+			AppGraph graph = AppGraph.get();
+			boolean saved = graph.library.contains(poster.id);
+			menu.add(saved ? R.string.details_unsave : R.string.details_save, () -> {
+				boolean nowSaved = LibraryToggle.toggle(graph.library, poster);
+				Toast.makeText(context, nowSaved ? R.string.library_added : R.string.library_removed,
+						Toast.LENGTH_SHORT).show();
+				if (onWatchedChanged != null) {
+					onWatchedChanged.run();
+				}
+			});
+		}
 		if (Meta.TYPE_SERIES.equals(poster.type)) {
-			menu.add(R.string.details_mark_watched, () -> markSeriesWatched(context, poster));
+			menu.add(R.string.details_mark_watched, () -> markSeriesWatched(context, poster, onWatchedChanged));
 		} else {
 			History history = AppGraph.get().history;
 			boolean watched = history.isWatched(poster.id);
-			menu.add(watched ? R.string.details_mark_unwatched : R.string.details_mark_watched,
-					() -> history.setWatched(poster.id, !watched));
+			menu.add(watched ? R.string.details_mark_unwatched : R.string.details_mark_watched, () -> {
+				history.setWatched(poster.id, !watched);
+				if (onWatchedChanged != null) {
+					onWatchedChanged.run();
+				}
+			});
 		}
 		if (extraLabel != null && extraAction != null) {
 			menu.add(extraLabel, extraAction);
@@ -54,8 +69,7 @@ public final class QueueMenu {
 		menu.show();
 	}
 
-	/** every episode, which needs the episode list first */
-	private static void markSeriesWatched(Context context, PosterItem poster) {
+	private static void markSeriesWatched(Context context, PosterItem poster, @Nullable Runnable onDone) {
 		AppGraph graph = AppGraph.get();
 		Context app = context.getApplicationContext();
 		graph.io.execute(() -> {
@@ -68,6 +82,9 @@ public final class QueueMenu {
 				}
 				graph.history.setWatched(ids, true);
 				Toast.makeText(app, R.string.queue_marked_watched, Toast.LENGTH_SHORT).show();
+				if (onDone != null) {
+					onDone.run();
+				}
 			});
 		});
 	}

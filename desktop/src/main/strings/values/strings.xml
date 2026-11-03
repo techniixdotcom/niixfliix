@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">Sign out of Stremio? Your sources and library stay on this computer.</string>
+	<string name="action_quit">Quit</string>
+	<string name="download_failed_desktop">Failed. Click resume to try again.</string>
+	<string name="download_show_in_folder">Show in folder</string>
+	<string name="hardware_decoding_crash">The app closed unexpectedly while your graphics card was decoding a video, so hardware decoding is off now. You can turn it back on in Settings &gt; Playback.</string>
+	<string name="hardware_decoding_crash_title">Hardware decoding turned off</string>
+	<string name="hero_info">More info</string>
+	<string name="library_downloads_empty_desktop">No downloads. Right-click a stream to download it.</string>
+	<string name="library_queue_empty_desktop">Nothing queued. Right-click a movie, show or episode to add it.</string>
+	<string name="player_all_files">All files</string>
+	<string name="player_keeps_screen_on">Playing a video</string>
+	<string name="player_mute">Mute</string>
+	<string name="player_open">Back to the video</string>
+	<string name="player_subtitle_files">Subtitle files</string>
+	<string name="quality_hint_desktop">The best stream in this quality starts by itself. If there isn\'t one, the next lower quality is used.</string>
+	<string name="quit_downloads_running">Downloads are still running. Quit anyway? They pause and can be resumed next time.</string>
+	<string name="row_failed_desktop">Couldn\'t load this row.</string>
+	<string name="row_scroll_back">Scroll back</string>
+	<string name="row_scroll_forward">Scroll forward</string>
+	<string name="settings_crash_log_summary_desktop">Last crash %1$s. It stays on this computer until you copy it.</string>
+	<string name="settings_hardware_decoding">Hardware video decoding</string>
+	<string name="settings_hardware_decoding_summary">Your graphics card decodes videos, for smooth playback that hardly uses the processor. Turn it off if videos show wrong colours or glitches.</string>
+	<string name="settings_language_restart">The new language is used the next time the app starts.</string>
+	<string name="streams_quality_desktop">Auto: %1$s · Change</string>
+	<string name="update_no_bundle">Release %1$s has no .flatpak attached. Attach the .flatpak from the dist folder to the GitHub release.</string>
+	<string name="update_no_bundle_checksum">Release %1$s has no .flatpak.sha256 file attached, so the download can\'t be checked. Attach both files from the dist folder to the GitHub release.</string>
+	<string name="update_ready_desktop">The update was saved as %1$s and handed to your software centre. If nothing opened, install it from a terminal:\n\n%2$s\n\nThen restart the app.</string>
+</resources>

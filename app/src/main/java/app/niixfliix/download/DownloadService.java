@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -21,28 +22,18 @@ import androidx.core.app.ServiceCompat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
 import app.niixfliix.R;
 import app.niixfliix.app.App;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.download.model.DownloadItem;
-import app.niixfliix.download.model.DownloadSource;
 import app.niixfliix.ui.MainActivity;
 import app.niixfliix.util.FileNames;
-import app.niixfliix.util.Logs;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
-/** One download at a time into Downloads/<app name>/, resumable via Range. */
-public final class DownloadService extends Service {
+public final class DownloadService extends Service implements Downloads.Target {
 
-	private static final String TAG = "DownloadService";
 	private static final int NOTIFICATION_ID = 4101;
-	private static final long PROGRESS_INTERVAL_MS = 750;
 
 	@Nullable private Thread worker;
 	private boolean again;
@@ -73,7 +64,6 @@ public final class DownloadService extends Service {
 		Downloads downloads = AppGraph.get().downloads();
 		while (true) {
 			synchronized (this) {
-				// decide under the same lock as onStartCommand or a download queued right now gets stranded
 				if (!again) {
 					worker = null;
 					ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
@@ -82,91 +72,36 @@ public final class DownloadService extends Service {
 				}
 				again = false;
 			}
-			DownloadItem item;
-			while ((item = downloads.claimNextQueued()) != null) {
-				download(downloads, item);
-			}
+			downloads.drain(AppGraph.get().http, this);
 		}
 	}
 
-	/** Android 15+ gives dataSync services ~6h a day. Pause instead of getting killed. */
 	@Override
 	public void onTimeout(int startId, int fgsType) {
-		Downloads downloads = AppGraph.get().downloads();
-		for (DownloadItem item : downloads.all()) {
-			if (item.state == DownloadItem.State.RUNNING || item.state == DownloadItem.State.QUEUED) {
-				downloads.pause(item.id);
-			}
-		}
+		AppGraph.get().downloads().pauseAll();
 		ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE);
 		stopSelf();
 	}
 
-	private void download(Downloads downloads, DownloadItem item) {
-		DownloadSource source = downloads.source(item.id);
-		if (source == null || source.url == null) {
-			finish(downloads, item, DownloadItem.State.FAILED);
-			return;
-		}
-		Request.Builder request = new Request.Builder().url(source.url);
-		for (Map.Entry<String, String> h : source.headers.entrySet()) {
-			request.header(h.getKey(), h.getValue());
-		}
-		if (item.bytesDone > 0) {
-			request.header("Range", "bytes=" + item.bytesDone + "-");
-		}
-		try (Response response = AppGraph.get().http.newCall(request.build()).execute()) {
-			if (response.code() == 416 && item.bytesTotal > 0 && item.bytesDone >= item.bytesTotal) {
-				complete(downloads, item);
-				return;
-			}
-			if (!response.isSuccessful()) {
-				throw new IOException("HTTP " + response.code());
-			}
-			boolean resumed = response.code() == 206 && item.bytesDone > 0;
-			if (!resumed) {
-				item.bytesDone = 0;
-			}
-			ResponseBody body = response.body();
-			long length = body.contentLength();
-			item.bytesTotal = length >= 0 ? item.bytesDone + length : -1;
-			try (OutputStream out = open(item, resumed); InputStream in = body.byteStream()) {
-				if (!copy(downloads, item, in, out)) {
-					return;
-				}
-			}
-			complete(downloads, item);
-		} catch (IOException | RuntimeException e) {
-			// headers etc come from the add-on, a bad one shouldn't crash the app
-			Logs.w(TAG, "Download failed", e);
-			finish(downloads, item, DownloadItem.State.FAILED);
-		}
-	}
-
-	/** false if paused/deleted midway */
-	private boolean copy(Downloads downloads, DownloadItem item, InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[64 * 1024];
-		long lastUpdate = 0;
-		int n;
-		while ((n = in.read(buffer)) != -1) {
-			out.write(buffer, 0, n);
-			item.bytesDone += n;
-			long now = System.currentTimeMillis();
-			if (now - lastUpdate >= PROGRESS_INTERVAL_MS) {
-				lastUpdate = now;
-				DownloadItem current = downloads.get(item.id);
-				if (current == null || current.state != DownloadItem.State.RUNNING) {
-					downloads.changed();
-					return false;
-				}
-				downloads.changed();
-				showProgress(item);
+	@NonNull
+	@Override
+	public OutputStream open(@NonNull DownloadItem item, boolean append) throws IOException {
+		if (item.contentUri == null) {
+			Uri tree = DownloadFolder.picked(this, AppGraph.get().prefs);
+			Uri file = tree != null ? DownloadFolder.createFile(this, tree,
+					FileNames.mimeType(item.fileName, "video/x-matroska"), item.fileName) : null;
+			if (file != null) {
+				item.contentUri = file.toString();
 			}
 		}
-		return true;
-	}
-
-	private OutputStream open(DownloadItem item, boolean append) throws IOException {
+		Uri saved = item.contentUri != null ? Uri.parse(item.contentUri) : null;
+		if (saved != null && DownloadFolder.isDocument(this, saved)) {
+			OutputStream out = getContentResolver().openOutputStream(saved, append ? "wa" : "wt");
+			if (out == null) {
+				throw new IOException("Cannot open output");
+			}
+			return out;
+		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 			ContentResolver resolver = getContentResolver();
 			Uri uri = item.contentUri != null ? Uri.parse(item.contentUri) : null;
@@ -196,44 +131,29 @@ public final class DownloadService extends Service {
 		}
 		File file = item.contentUri != null && item.contentUri.startsWith("file:")
 				? new File(Uri.parse(item.contentUri).getPath())
-				: unique(dir, item.fileName);
+				: FileNames.unique(dir, item.fileName);
 		item.contentUri = Uri.fromFile(file).toString();
 		return new FileOutputStream(file, append);
 	}
 
-	private static File unique(File dir, String name) {
-		File file = new File(dir, name);
-		int dot = name.lastIndexOf('.');
-		String base = dot > 0 ? name.substring(0, dot) : name;
-		String ext = dot > 0 ? name.substring(dot) : "";
-		for (int i = 1; file.exists() && i < 1000; i++) {
-			file = new File(dir, base + " (" + i + ")" + ext);
-		}
-		return file;
-	}
-
-	private void complete(Downloads downloads, DownloadItem item) {
+	@Override
+	public void completed(@NonNull DownloadItem item) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && item.contentUri != null
-				&& item.contentUri.startsWith("content:")) {
+				&& item.contentUri.startsWith("content:")
+				&& !DownloadFolder.isDocument(this, Uri.parse(item.contentUri))) {
 			ContentValues values = new ContentValues();
 			values.put(MediaStore.Downloads.IS_PENDING, 0);
 			getContentResolver().update(Uri.parse(item.contentUri), values, null, null);
 		}
-		finish(downloads, item, DownloadItem.State.DONE);
 	}
 
-	private void finish(Downloads downloads, DownloadItem item, DownloadItem.State state) {
-		item.state = state;
-		downloads.changed();
-	}
-
-	private void showProgress(DownloadItem item) {
+	@Override
+	public void progress(@NonNull DownloadItem item) {
 		if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
 			try {
 				NotificationManagerCompat.from(this).notify(NOTIFICATION_ID,
 						notification(item.title, item.bytesTotal > 0 ? item.percent() : -1));
 			} catch (SecurityException ignored) {
-				// permission revoked, keep going
 			}
 		}
 	}

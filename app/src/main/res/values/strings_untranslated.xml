@@ -9,5 +9,5 @@
 		<item>Offcloud</item>
 	</string-array>
 
-	<string name="licences_text" translatable="false">AndroidX, Media3, Material Components\nApache License 2.0\n\nOkHttp, Picasso\nApache License 2.0\n\nGson\nApache License 2.0\n\nMMKV\nBSD 3-Clause License\n\nlibtorrent4j\nMIT License\n\nlibtorrent\nBSD 3-Clause License\n\nBoost\nBoost Software License 1.0\n\nOpenSSL\nApache License 2.0</string>
+	<string name="licences_text" translatable="false">AndroidX, Media3, Material Components\nApache License 2.0\n\nOkHttp\nApache License 2.0\n\nGlide\nBSD 2-Clause License (parts MIT and Apache License 2.0)\n\nGson\nApache License 2.0\n\nMMKV\nBSD 3-Clause License\n\nlibtorrent4j\nMIT License\n\nlibtorrent\nBSD 3-Clause License\n\nBoost\nBoost Software License 1.0\n\nOpenSSL\nApache License 2.0</string>
 </resources>

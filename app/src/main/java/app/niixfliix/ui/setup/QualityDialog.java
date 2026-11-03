@@ -15,9 +15,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import app.niixfliix.R;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.player.PlayerPreferences;
+import app.niixfliix.ui.Formats;
 import app.niixfliix.ui.common.Dropdown;
 
-/** Asks once which quality auto-play should use on Wi-Fi and on mobile data. The streams sheet reopens it too. */
 public final class QualityDialog extends DialogFragment {
 
 	public static final String RESULT_KEY = "quality_chosen";
@@ -38,11 +38,10 @@ public final class QualityDialog extends DialogFragment {
 	public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 		View view = getLayoutInflater().inflate(R.layout.dialog_quality, null);
 		PlayerPreferences prefs = AppGraph.get().playerPrefs;
-		wifi = new Dropdown(view.findViewById(R.id.quality_wifi), Choices.qualityLabels(),
+		wifi = new Dropdown(view.findViewById(R.id.quality_wifi), Formats.qualityLabels(requireContext()),
 				Choices.qualityIndex(prefs.quality(true)));
-		mobile = new Dropdown(view.findViewById(R.id.quality_mobile), Choices.qualityLabels(),
+		mobile = new Dropdown(view.findViewById(R.id.quality_mobile), Formats.qualityLabels(requireContext()),
 				Choices.qualityIndex(prefs.quality(false)));
-		setCancelable(prefs.qualityChosen());
 		return new MaterialAlertDialogBuilder(requireContext())
 				.setTitle(R.string.quality_title)
 				.setView(view)

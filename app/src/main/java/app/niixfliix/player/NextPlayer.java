@@ -10,10 +10,6 @@ import androidx.media3.common.util.UnstableApi;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * The player as the screen, the notification, the lock screen and headset buttons see it. Its "next" is the
- * next episode or the next thing in the queue, so the usual next button skips to that.
- */
 @OptIn(markerClass = UnstableApi.class)
 final class NextPlayer extends ForwardingPlayer {
 

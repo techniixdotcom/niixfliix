@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">Выйти из Stremio? Ваши источники и библиотека останутся на этом компьютере.</string>
+	<string name="action_quit">Выйти</string>
+	<string name="download_failed_desktop">Ошибка. Нажмите «Продолжить», чтобы повторить.</string>
+	<string name="download_show_in_folder">Показать в папке</string>
+	<string name="hardware_decoding_crash">Приложение неожиданно закрылось, пока видеокарта декодировала видео, поэтому аппаратное декодирование выключено. Его можно снова включить в разделе «Настройки &gt; Воспроизведение».</string>
+	<string name="hardware_decoding_crash_title">Аппаратное декодирование выключено</string>
+	<string name="hero_info">Подробнее</string>
+	<string name="library_downloads_empty_desktop">Загрузок нет. Щёлкните поток правой кнопкой мыши, чтобы скачать его.</string>
+	<string name="library_queue_empty_desktop">Очередь пуста. Щёлкните фильм, сериал или серию правой кнопкой мыши, чтобы добавить.</string>
+	<string name="player_all_files">Все файлы</string>
+	<string name="player_keeps_screen_on">Воспроизведение видео</string>
+	<string name="player_mute">Без звука</string>
+	<string name="player_open">Вернуться к видео</string>
+	<string name="player_subtitle_files">Файлы субтитров</string>
+	<string name="quality_hint_desktop">Лучший поток в этом качестве запускается сам. Если его нет, используется следующее, более низкое качество.</string>
+	<string name="quit_downloads_running">Загрузки ещё идут. Всё равно выйти? Они будут приостановлены, и их можно будет продолжить в следующий раз.</string>
+	<string name="row_failed_desktop">Не удалось загрузить этот ряд.</string>
+	<string name="row_scroll_back">Прокрутить назад</string>
+	<string name="row_scroll_forward">Прокрутить вперёд</string>
+	<string name="settings_crash_log_summary_desktop">Последний сбой: %1$s. Остаётся на этом компьютере, пока вы его не скопируете.</string>
+	<string name="settings_hardware_decoding">Аппаратное декодирование видео</string>
+	<string name="settings_hardware_decoding_summary">Видео декодирует видеокарта: воспроизведение плавное и почти не нагружает процессор. Выключите, если в видео неправильные цвета или артефакты.</string>
+	<string name="settings_language_restart">Новый язык будет использоваться при следующем запуске приложения.</string>
+	<string name="streams_quality_desktop">Авто: %1$s · Изменить</string>
+	<string name="update_no_bundle">К релизу %1$s не прикреплён файл .flatpak. Прикрепите .flatpak из папки dist к релизу на GitHub.</string>
+	<string name="update_no_bundle_checksum">К релизу %1$s не прикреплён файл .flatpak.sha256, поэтому загрузку нельзя проверить. Прикрепите оба файла из папки dist к релизу на GitHub.</string>
+	<string name="update_ready_desktop">Обновление сохранено как %1$s и открыто в центре приложений. Если ничего не открылось, установите его из терминала:\n\n%2$s\n\nЗатем перезапустите приложение.</string>
+</resources>

@@ -29,12 +29,14 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.Renderer;
 import androidx.media3.exoplayer.audio.AudioRendererEventListener;
 import androidx.media3.exoplayer.audio.AudioSink;
+import androidx.media3.exoplayer.mediacodec.MediaCodecInfo;
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.ui.CaptionStyleCompat;
 import androidx.media3.ui.SubtitleView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,7 +46,6 @@ import app.niixfliix.app.Constant;
 import app.niixfliix.net.Http;
 import okhttp3.OkHttpClient;
 
-/** ExoPlayer setup. Add-on headers only go to the stream host. */
 @OptIn(markerClass = UnstableApi.class)
 public final class PlayerEngine {
 
@@ -65,16 +66,12 @@ public final class PlayerEngine {
 		}
 	}
 
-	/**
-	 * Most torrent/debrid releases are MKV with AC3, E-AC3, DTS or TrueHD sound, which most phones have no
-	 * decoder for, so the video played silently. The phone's own decoders go first, FFmpeg takes whatever
-	 * they can't. Added directly rather than through Media3's reflection lookup so R8 can't strip it.
-	 */
 	private static final class Renderers extends DefaultRenderersFactory {
 
 		Renderers(Context context) {
 			super(context);
 			setEnableDecoderFallback(true);
+			setMediaCodecSelector(HARDWARE_FIRST);
 		}
 
 		@Override
@@ -88,16 +85,21 @@ public final class PlayerEngine {
 		}
 	}
 
+	private static final MediaCodecSelector HARDWARE_FIRST = (mimeType, secure, tunneling) -> {
+		List<MediaCodecInfo> decoders = new ArrayList<>(
+				MediaCodecSelector.DEFAULT.getDecoderInfos(mimeType, secure, tunneling));
+		decoders.sort(Comparator.comparing(info -> !info.hardwareAccelerated));
+		return decoders;
+	};
+
 	private static final int START_BUFFER_MS = 1000;
 	private static final int REBUFFER_MS = 3000;
 
 	private final ExoPlayer player;
 	private final PlayerPreferences prefs;
-	/** add-on headers, each only ever sent to the host of the stream it came with */
 	private final Map<String, Map<String, String>> headersByHost = new ConcurrentHashMap<>();
 	private final List<SideSubtitle> sideSubtitles = new ArrayList<>();
 	@Nullable private MediaItem item;
-	/** what plays next, already in the playlist so the player buffers it and moves on without a pause */
 	@Nullable private MediaItem next;
 	@Nullable private String pendingSubtitleId;
 	private boolean userPicked;
@@ -109,7 +111,6 @@ public final class PlayerEngine {
 		DefaultDataSource.Factory dataSource = new DefaultDataSource.Factory(context, withHeaders);
 		player = new ExoPlayer.Builder(context, new Renderers(context))
 				.setLoadControl(new DefaultLoadControl.Builder()
-						// start after 1 s of buffer instead of 2.5 s; the torrent side keeps far more coming
 						.setBufferDurationsMs(DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
 								DefaultLoadControl.DEFAULT_MAX_BUFFER_MS, START_BUFFER_MS, REBUFFER_MS)
 						.build())
@@ -121,7 +122,6 @@ public final class PlayerEngine {
 				.setHandleAudioBecomingNoisy(true)
 				.setSeekBackIncrementMs(Constant.SEEK_STEP_MS)
 				.setSeekForwardIncrementMs(Constant.SEEK_STEP_MS)
-				// keep wifi + cpu awake with the screen off
 				.setWakeMode(C.WAKE_MODE_NETWORK)
 				.build();
 		applyLanguagePreferences();
@@ -144,7 +144,6 @@ public final class PlayerEngine {
 		player.play();
 	}
 
-	/** lines up what plays after this one; the player starts buffering it near the end */
 	public void queueNext(@NonNull String url, @NonNull Map<String, String> headers, @NonNull MediaMetadata metadata) {
 		clearNext();
 		rememberHeaders(url, headers);
@@ -161,7 +160,6 @@ public final class PlayerEngine {
 		}
 	}
 
-	/** after the player moved on to the queued item by itself: that one is now the current one */
 	public void adoptNext() {
 		item = next;
 		next = null;
@@ -179,13 +177,11 @@ public final class PlayerEngine {
 		}
 	}
 
-	/** The user picked it. Rebuilds the media item, so there's a short rebuffer. */
 	public void addSubtitle(@NonNull SideSubtitle subtitle) {
 		userPicked = true;
 		addSideSubtitle(subtitle);
 	}
 
-	/** picked for the user from their language */
 	void addAutoSubtitle(@NonNull SideSubtitle subtitle) {
 		addSideSubtitle(subtitle);
 	}
@@ -214,14 +210,12 @@ public final class PlayerEngine {
 				.build());
 		player.setMediaItem(item, position);
 		if (next != null) {
-			// setMediaItem replaced the whole playlist
 			player.addMediaItem(next);
 		}
 		player.prepare();
 		player.setPlayWhenReady(playing);
 	}
 
-	/** selects a just-added subtitle once its track shows up */
 	public void onTracksChanged(@NonNull Tracks tracks) {
 		String wanted = pendingSubtitleId;
 		if (wanted == null) {
@@ -247,7 +241,6 @@ public final class PlayerEngine {
 		TrackSelectionParameters.Builder params = player.getTrackSelectionParameters().buildUpon()
 				.setTrackTypeDisabled(group.getType(), false)
 				.setOverrideForType(new TrackSelectionOverride(group.getMediaTrackGroup(), index));
-		// remember the language too so the next episode keeps it
 		String language = group.getTrackFormat(index).language;
 		if (language != null && group.getType() == C.TRACK_TYPE_AUDIO) {
 			params.setPreferredAudioLanguage(language);
@@ -302,7 +295,6 @@ public final class PlayerEngine {
 		view.setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * prefs.subtitleSize() / 100f);
 	}
 
-	/** another title: whatever the user picked for the last one doesn't carry over */
 	public void resetTracks() {
 		userPicked = false;
 		pendingSubtitleId = null;
@@ -314,7 +306,6 @@ public final class PlayerEngine {
 		applyLanguagePreferences();
 	}
 
-	/** the next episode of the same title, nothing picked by hand: subtitles are decided again for it */
 	void resetAutoSubtitles() {
 		pendingSubtitleId = null;
 		player.setTrackSelectionParameters(player.getTrackSelectionParameters().buildUpon()
@@ -331,7 +322,6 @@ public final class PlayerEngine {
 				.build());
 	}
 
-	/** audio or subtitles chosen by hand for this title */
 	boolean userPicked() {
 		return userPicked;
 	}
@@ -340,7 +330,6 @@ public final class PlayerEngine {
 		player.release();
 	}
 
-	/** audio in the chosen language when the file has it, otherwise the original; subtitles start off */
 	private void applyLanguagePreferences() {
 		player.setTrackSelectionParameters(player.getTrackSelectionParameters().buildUpon()
 				.setPreferredAudioLanguage(prefs.language())
@@ -354,7 +343,6 @@ public final class PlayerEngine {
 		return headers != null ? spec.withAdditionalHeaders(headers) : spec;
 	}
 
-	/** guess from name/url, default SRT */
 	@NonNull
 	public static String subtitleMimeType(@NonNull String name) {
 		String lower = name.toLowerCase(Locale.ROOT);

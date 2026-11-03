@@ -4,12 +4,11 @@ plugins {
 
 val appName = providers.gradleProperty("appName").get()
 val githubRepo = providers.gradleProperty("githubRepo").get()
-// BUILD.sh exports these. Without them the release build stays unsigned.
 val keystore: String? = System.getenv("NIIXFLIIX_KEYSTORE")
 
 android {
 	namespace = "app.niixfliix"
-	compileSdk = 36
+	compileSdk = 37
 
 	defaultConfig {
 		applicationId = providers.gradleProperty("appId").get()
@@ -63,10 +62,6 @@ android {
 		targetCompatibility = JavaVersion.VERSION_17
 	}
 
-	testOptions {
-		unitTests.isReturnDefaultValues = true
-	}
-
 	dependenciesInfo {
 		includeInApk = false
 		includeInBundle = false
@@ -74,11 +69,14 @@ android {
 }
 
 dependencies {
+	implementation(project(":core"))
+
 	implementation(libs.androidx.activity)
 	implementation(libs.androidx.appcompat)
 	implementation(libs.androidx.constraintlayout)
 	implementation(libs.androidx.core)
 	implementation(libs.androidx.fragment)
+	implementation(libs.androidx.profileinstaller)
 	implementation(libs.androidx.recyclerview)
 	implementation(libs.androidx.swiperefreshlayout)
 	implementation(libs.material)
@@ -91,16 +89,12 @@ dependencies {
 	implementation(libs.media3.ui)
 	implementation(libs.media3.session)
 
-	implementation(libs.okhttp)
-	implementation(libs.gson)
 	implementation(libs.mmkv)
-	implementation(libs.picasso)
+	implementation(libs.glide)
+	implementation(libs.glide.okhttp)
+	annotationProcessor(libs.glide.compiler)
 
-	implementation(libs.libtorrent4j)
 	implementation(libs.libtorrent4j.arm)
 	implementation(libs.libtorrent4j.arm64)
 	implementation(libs.libtorrent4j.x64)
-
-	testImplementation(libs.junit)
-	testImplementation(libs.mockito.core)
 }

@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 10
+    groups:
+      media3:
+        patterns:
+          - "androidx.media3:*"
+          - "org.jellyfin.media3:*"
+      androidx:
+        patterns:
+          - "androidx.*"
+          - "com.google.android.material:*"
+      libtorrent4j:
+        patterns:
+          - "org.libtorrent4j:*"
+      twelvemonkeys:
+        patterns:
+          - "com.twelvemonkeys.*"
+      build-tools:
+        patterns:
+          - "com.android.application"
+          - "com.android.tools.build:*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns:
+          - "*"

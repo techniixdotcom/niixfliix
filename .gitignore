@@ -2,6 +2,7 @@
 build/
 /dist/
 /build.log
+/build-linux.log
 local.properties
 .idea/
 *.iml

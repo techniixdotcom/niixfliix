@@ -34,20 +34,24 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import app.niixfliix.R;
 import app.niixfliix.addon.Quality;
 import app.niixfliix.addon.StreamInfo;
 import app.niixfliix.addon.StreamRanker;
+import app.niixfliix.addon.StreamCache;
 import app.niixfliix.addon.StreamSearch;
+import app.niixfliix.addon.model.Catalog;
 import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.addon.model.Stream;
 import app.niixfliix.app.AppGraph;
+import app.niixfliix.download.DownloadFolder;
+import app.niixfliix.download.SeriesDownload;
 import app.niixfliix.net.Network;
 import app.niixfliix.player.PlaySession;
 import app.niixfliix.player.PlayerLauncher;
+import app.niixfliix.ui.Formats;
 import app.niixfliix.ui.Links;
 import app.niixfliix.ui.setup.Choices;
 import app.niixfliix.ui.setup.QualityDialog;
@@ -55,7 +59,6 @@ import app.niixfliix.ui.setup.QualityDialog;
 public final class StreamsSheet extends BottomSheetDialogFragment implements StreamSearch.Listener,
 		StreamsAdapter.Listener {
 
-	/** full meta is needed later for the next episode */
 	public interface Host {
 		@Nullable
 		Meta streamsMeta();
@@ -72,11 +75,11 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 
 	private final AppGraph graph = AppGraph.get();
 	private final List<StreamInfo> all = new ArrayList<>();
-	/** everything, kept for the player's "try the next stream" */
 	private List<StreamInfo> sorted = new ArrayList<>();
-	/** what the list shows: one per quality */
 	private List<StreamInfo> best = new ArrayList<>();
-	@Nullable private StreamSearch search;
+	@Nullable private StreamCache.Handle search;
+	private long firstResultsAt;
+	private final Runnable graceOver = this::maybeAutoplay;
 	private boolean finished;
 	@Nullable private StreamInfo pendingDownload;
 	@Nullable private Runnable countdown;
@@ -107,7 +110,6 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 
 	private final ActivityResultLauncher<String> notificationPermission = registerForActivityResult(
 			new ActivityResultContracts.RequestPermission(), granted -> {
-				// download runs either way
 			});
 
 	public static void show(@NonNull FragmentManager fm, @NonNull Meta meta, @NonNull String videoId,
@@ -174,9 +176,6 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 					maybeAutoplay();
 				});
 		showQualityLine();
-		if (!graph.playerPrefs.qualityChosen()) {
-			QualityDialog.show(getParentFragmentManager());
-		}
 		start();
 	}
 
@@ -189,7 +188,6 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 		super.onDestroyView();
 	}
 
-	/** host's meta if loaded; right after a rotation it may not be, then a stub from the args */
 	@NonNull
 	private Meta meta() {
 		Meta full = requireActivity() instanceof Host ? ((Host) requireActivity()).streamsMeta() : null;
@@ -205,7 +203,6 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 		return stub;
 	}
 
-	/** "Show · S1E2" for an episode */
 	@NonNull
 	private String fullTitle() {
 		Bundle args = requireArguments();
@@ -222,7 +219,7 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 		boolean wifi = Network.isUnmetered(requireContext());
 		Quality quality = Choices.QUALITIES.get(Choices.qualityIndex(graph.playerPrefs.quality(wifi)));
 		qualityLine.setText(getString(wifi ? R.string.streams_quality_wifi : R.string.streams_quality_mobile,
-				quality.title));
+				Formats.quality(requireContext(), quality)));
 	}
 
 	private void start() {
@@ -239,7 +236,11 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 		adapter.submit(best);
 		empty.setVisibility(View.GONE);
 		progress.setVisibility(View.VISIBLE);
-		search = StreamSearch.start(graph.addons, graph.addonClient, graph.io, graph.main, meta.type, videoId(), this);
+		firstResultsAt = 0;
+		if (search != null) {
+			search.cancel();
+		}
+		search = graph.streams.open(meta.type, videoId(), this);
 		updateStatus();
 	}
 
@@ -251,14 +252,18 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			}
 		}
 		sorted = StreamRanker.sort(all);
-		best = StreamRanker.bestPerQuality(sorted);
+		best = StreamRanker.bestPerQuality(sorted, isLive());
 		adapter.submit(best);
 		updateStatus();
+		if (firstResultsAt == 0 && getView() != null) {
+			firstResultsAt = System.currentTimeMillis();
+			getView().postDelayed(graceOver, StreamRanker.AUTOPLAY_GRACE_MS);
+		}
+		maybeAutoplay();
 	}
 
 	@Override
 	public void onAddonFailed(@NonNull InstalledAddon addon) {
-		// which add-on didn't answer isn't shown
 	}
 
 	@Override
@@ -271,7 +276,6 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			if (search != null && search.addonCount() == 0) {
 				text = R.string.streams_no_addons;
 			} else if (sorted.isEmpty() || hasShownQuality(sorted)) {
-				// in range but all dead (zero seeders) reads the same as nothing at all
 				text = R.string.streams_none_found;
 			} else {
 				text = R.string.streams_none_in_range;
@@ -283,14 +287,17 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 		}
 	}
 
-	/** after all add-ons answer, counts down then plays the preferred quality (or the nearest) */
 	private void maybeAutoplay() {
-		if (!finished || autoplayStopped || countdown != null || getView() == null
-				|| !graph.playerPrefs.qualityChosen()) {
+		if (autoplayStopped || countdown != null || getView() == null || best.isEmpty()) {
 			return;
 		}
-		Quality preferred = graph.playerPrefs.quality(Network.isUnmetered(requireContext()));
-		StreamInfo pick = StreamRanker.pick(best, preferred, null);
+		Quality preferred = graph.playerPrefs.quality(seriesId(), Network.isUnmetered(requireContext()));
+		boolean waited = firstResultsAt > 0
+				&& System.currentTimeMillis() - firstResultsAt >= StreamRanker.AUTOPLAY_GRACE_MS;
+		if (!finished && !waited && !StreamRanker.canAutoplayEarly(best, preferred)) {
+			return;
+		}
+		StreamInfo pick = StreamRanker.pick(best, preferred, null, isLive());
 		if (pick == null) {
 			return;
 		}
@@ -301,10 +308,11 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			public void run() {
 				if (secondsLeft == 0) {
 					countdown = null;
-					play(pick);
+					StreamInfo now = StreamRanker.pick(best, preferred, null, isLive());
+					play(now != null ? now : pick);
 					return;
 				}
-				autoplayText.setText(getString(R.string.streams_autoplay, pick.quality.title, secondsLeft));
+				autoplayText.setText(getString(R.string.streams_autoplay, Formats.quality(requireContext(), pick.quality), secondsLeft));
 				secondsLeft--;
 				autoplayCard.postDelayed(this, 1000);
 			}
@@ -323,6 +331,10 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			countdown = null;
 		}
 		autoplayCard.setVisibility(View.GONE);
+	}
+
+	private boolean isLive() {
+		return Catalog.isLiveType(requireArguments().getString(ARG_TYPE));
 	}
 
 	private static boolean hasShownQuality(List<StreamInfo> streams) {
@@ -349,6 +361,10 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 		switch (s.kind) {
 			case DIRECT:
 			case TORRENT:
+				String seriesId = seriesId();
+				if (seriesId != null) {
+					graph.playerPrefs.setSeriesQuality(seriesId, s.quality);
+				}
 				play(s);
 				break;
 			case EXTERNAL:
@@ -360,6 +376,12 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 				Toast.makeText(requireContext(), R.string.streams_unsupported, Toast.LENGTH_SHORT).show();
 				break;
 		}
+	}
+
+	@Nullable
+	private String seriesId() {
+		Bundle args = requireArguments();
+		return Meta.TYPE_SERIES.equals(args.getString(ARG_TYPE)) ? args.getString(ARG_META_ID) : null;
 	}
 
 	private void play(StreamInfo s) {
@@ -394,7 +416,7 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			return;
 		}
 		new MaterialAlertDialogBuilder(requireContext())
-				.setTitle(s.quality.title)
+				.setTitle(Formats.quality(requireContext(), s.quality))
 				.setItems(labels.toArray(new String[0]), (d, which) -> actions.get(which).run())
 				.show();
 	}
@@ -405,7 +427,6 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			return;
 		}
 		ClipData clip = ClipData.newPlainText(getString(R.string.app_name), text);
-		// may contain a debrid key, keep it out of the clipboard preview (constant gets inlined, ignored < 13)
 		PersistableBundle extras = new PersistableBundle();
 		extras.putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true);
 		clip.getDescription().setExtras(extras);
@@ -429,8 +450,7 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 				Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
 			notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
 		}
-		if (Build.VERSION.SDK_INT < 29 && ContextCompat.checkSelfPermission(requireContext(),
-				Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+		if (DownloadFolder.needsStoragePermission(requireContext(), graph.prefs)) {
 			pendingDownload = s;
 			storagePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 			return;
@@ -443,28 +463,9 @@ public final class StreamsSheet extends BottomSheetDialogFragment implements Str
 			return;
 		}
 		String title = fullTitle();
-		boolean ok = graph.downloads().enqueue(s.stream.url, s.stream.requestHeaders(), title, fileName(s, title));
+		boolean ok = graph.downloads().enqueue(s.stream.url, s.stream.requestHeaders(), title,
+				SeriesDownload.fileNameFor(meta(), videoId(), s, title));
 		Toast.makeText(requireContext(), ok ? R.string.download_started : R.string.download_could_not_start,
 				Toast.LENGTH_SHORT).show();
-	}
-
-	/** release file name if known, else title + extension from the url */
-	private static String fileName(StreamInfo s, String title) {
-		String name = s.fileName != null ? s.fileName : s.releaseName;
-		if (name.isEmpty()) {
-			name = title;
-		}
-		if (name.toLowerCase(Locale.ROOT).matches(".*\\.(mkv|mp4|m4v|webm|avi)$")) {
-			return name;
-		}
-		String url = s.stream.url != null ? s.stream.url.toLowerCase(Locale.ROOT) : "";
-		int query = url.indexOf('?');
-		String path = query >= 0 ? url.substring(0, query) : url;
-		for (String ext : new String[] {".mp4", ".webm", ".m4v", ".avi"}) {
-			if (path.endsWith(ext)) {
-				return name + ext;
-			}
-		}
-		return name + ".mkv";
 	}
 }

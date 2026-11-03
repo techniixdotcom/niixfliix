@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import app.niixfliix.R;
 import app.niixfliix.download.model.DownloadItem;
 import app.niixfliix.ui.Formats;
+import app.niixfliix.ui.common.DiffAdapter;
 
-final class DownloadsAdapter extends RecyclerView.Adapter<DownloadsAdapter.Holder> {
+final class DownloadsAdapter extends DiffAdapter<DownloadItem, DownloadsAdapter.Holder> {
 
 	interface Listener {
 		void onDownloadClick(@NonNull DownloadItem item);
@@ -31,16 +31,21 @@ final class DownloadsAdapter extends RecyclerView.Adapter<DownloadsAdapter.Holde
 	}
 
 	private final Listener listener;
-	private final List<DownloadItem> items = new ArrayList<>();
 
 	DownloadsAdapter(@NonNull Listener listener) {
 		this.listener = listener;
 	}
 
-	void submit(@NonNull List<DownloadItem> newItems) {
-		items.clear();
-		items.addAll(newItems);
-		notifyDataSetChanged();
+	@NonNull
+	@Override
+	protected Object keyOf(@NonNull DownloadItem item) {
+		return item.id;
+	}
+
+	@NonNull
+	@Override
+	protected Object contentOf(@NonNull DownloadItem item) {
+		return Arrays.asList(item.title, item.state, item.bytesDone, item.bytesTotal);
 	}
 
 	@NonNull
@@ -51,12 +56,7 @@ final class DownloadsAdapter extends RecyclerView.Adapter<DownloadsAdapter.Holde
 
 	@Override
 	public void onBindViewHolder(@NonNull Holder holder, int position) {
-		holder.bind(items.get(position));
-	}
-
-	@Override
-	public int getItemCount() {
-		return items.size();
+		holder.bind(getItem(position));
 	}
 
 	final class Holder extends RecyclerView.ViewHolder {
@@ -96,9 +96,11 @@ final class DownloadsAdapter extends RecyclerView.Adapter<DownloadsAdapter.Holde
 			title.setText(item.title);
 			status.setText(statusText(context, item));
 			boolean active = item.isActive();
-			// can only switch modes while hidden
-			progress.setVisibility(View.GONE);
-			progress.setIndeterminate(active && item.bytesTotal <= 0);
+			boolean indeterminate = active && item.bytesTotal <= 0;
+			if (progress.isIndeterminate() != indeterminate) {
+				progress.setVisibility(View.GONE);
+				progress.setIndeterminate(indeterminate);
+			}
 			progress.setProgress(item.percent());
 			progress.setVisibility(item.state == DownloadItem.State.DONE ? View.GONE : View.VISIBLE);
 			toggle.setVisibility(item.state == DownloadItem.State.DONE ? View.GONE : View.VISIBLE);

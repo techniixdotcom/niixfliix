@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">¿Cerrar sesión en Stremio? Tus fuentes y tu biblioteca se quedan en este ordenador.</string>
+	<string name="action_quit">Salir</string>
+	<string name="download_failed_desktop">Error. Haz clic en reanudar para volver a intentarlo.</string>
+	<string name="download_show_in_folder">Mostrar en la carpeta</string>
+	<string name="hardware_decoding_crash">La app se cerró de forma inesperada mientras la tarjeta gráfica decodificaba un vídeo, así que la decodificación por hardware está desactivada. Puedes volver a activarla en Ajustes &gt; Reproducción.</string>
+	<string name="hardware_decoding_crash_title">Decodificación por hardware desactivada</string>
+	<string name="hero_info">Más información</string>
+	<string name="library_downloads_empty_desktop">No hay descargas. Haz clic derecho en un stream para descargarlo.</string>
+	<string name="library_queue_empty_desktop">No hay nada en cola. Haz clic derecho en una película, serie o episodio para añadirlo.</string>
+	<string name="player_all_files">Todos los archivos</string>
+	<string name="player_keeps_screen_on">Reproduciendo un vídeo</string>
+	<string name="player_mute">Silenciar</string>
+	<string name="player_open">Volver al vídeo</string>
+	<string name="player_subtitle_files">Archivos de subtítulos</string>
+	<string name="quality_hint_desktop">El mejor stream en esta calidad empieza solo. Si no hay ninguno, se usa la siguiente calidad más baja.</string>
+	<string name="quit_downloads_running">Todavía hay descargas en curso. ¿Salir de todos modos? Se pausan y puedes reanudarlas la próxima vez.</string>
+	<string name="row_failed_desktop">No se pudo cargar esta fila.</string>
+	<string name="row_scroll_back">Desplazar atrás</string>
+	<string name="row_scroll_forward">Desplazar adelante</string>
+	<string name="settings_crash_log_summary_desktop">Último cierre inesperado: %1$s. Se queda en este ordenador hasta que lo copies.</string>
+	<string name="settings_hardware_decoding">Decodificación de vídeo por hardware</string>
+	<string name="settings_hardware_decoding_summary">La tarjeta gráfica decodifica los vídeos para una reproducción fluida que apenas usa el procesador. Desactívala si los vídeos muestran colores incorrectos o fallos.</string>
+	<string name="settings_language_restart">El nuevo idioma se usará la próxima vez que se inicie la aplicación.</string>
+	<string name="streams_quality_desktop">Automático: %1$s · Cambiar</string>
+	<string name="update_no_bundle">La versión %1$s no tiene ningún .flatpak adjunto. Adjunta el .flatpak de la carpeta dist a la versión de GitHub.</string>
+	<string name="update_no_bundle_checksum">La versión %1$s no tiene adjunto el archivo .flatpak.sha256, así que no se puede comprobar la descarga. Adjunta los dos archivos de la carpeta dist a la versión de GitHub.</string>
+	<string name="update_ready_desktop">La actualización se guardó como %1$s y se abrió con tu centro de software. Si no se abrió nada, instálala desde una terminal:\n\n%2$s\n\nDespués reinicia la aplicación.</string>
+</resources>

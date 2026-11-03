@@ -1,0 +1,389 @@
+/* JetBrains Mono everywhere, as on niixa.org (bundled in the Flatpak). */
+window, popover, tooltip, dialog, toast {
+	font-family: "JetBrains Mono", monospace;
+}
+selection, text selection, label selection {
+	background-color: #ff0a6c;
+	color: white;
+}
+headerbar {
+	box-shadow: inset 0 -1px alpha(#ff0a6c, 0.35);
+}
+popover > contents,
+popover.menu > contents {
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	border-radius: 12px;
+}
+.card {
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	border-radius: 14px;
+}
+window.dialog.message, window.messagedialog, dialog.floating sheet {
+	box-shadow: 0 0 0 1px alpha(#ff0a6c, 0.6), 0 24px 70px alpha(black, 0.7), 0 0 40px alpha(#ff0a6c, 0.1);
+}
+entry:focus-within, text:focus-within {
+	outline-color: alpha(#ff0a6c, 0.6);
+}
+scrollbar slider { background-color: alpha(white, 0.13); }
+scrollbar slider:hover { background-color: #ff0a6c; }
+toast {
+	background-color: alpha(#121218, 0.94);
+	border: 1px solid alpha(#ff0a6c, 0.35);
+}
+switch:checked { background-color: #ff0a6c; }
+checkbutton check:checked, radio:checked { background-color: #ff0a6c; color: white; }
+progressbar progress { background-color: #ff0a6c; }
+
+.empty-text { color: #a0a0ae; font-size: 1.15em; }
+.accent-text { color: #ff4d94; font-weight: bold; }
+.crash-log { font-size: 0.8em; padding: 6px; }
+
+.rail {
+	background-color: #000000;
+	border-right: 1px solid alpha(#ff0a6c, 0.35);
+	padding: 16px 8px;
+}
+button.rail-button {
+	min-width: 76px;
+	padding: 10px 4px;
+	border-radius: 16px;
+	color: #a0a0ae;
+	font-size: 0.85em;
+	font-weight: normal;
+}
+button.rail-button:checked {
+	background-color: alpha(#ff0a6c, 0.16);
+	box-shadow: inset 0 0 0 1px alpha(#ff0a6c, 0.6);
+	color: white;
+	font-weight: bold;
+}
+button.rail-button:checked image { color: #ff0a6c; }
+.wordmark {
+	color: #ff0a6c;
+	font-weight: 800;
+	font-size: 1.55em;
+	letter-spacing: -0.5px;
+	text-shadow: 0 0 22px alpha(#ff0a6c, 0.45);
+	padding: 2px 4px 14px 4px;
+}
+.rail.expanded {
+	padding: 12px 12px;
+	min-width: 196px;
+}
+.rail.expanded button.rail-button {
+	min-width: 0;
+	padding: 10px 16px;
+	border-radius: 12px;
+	font-size: 1em;
+}
+button.rail-button:hover:not(:checked) { background-color: alpha(#ff0a6c, 0.14); color: white; }
+
+.page-top { padding: 20px 24px 4px 24px; }
+.row-header { padding: 22px 24px 6px 24px; }
+.row-header .title-4 { font-size: 1.25em; font-weight: 800; }
+.grid-heading { padding: 18px 6px 4px 6px; }
+
+button.poster-card {
+	padding: 6px;
+	border-radius: 14px;
+	background: none;
+	box-shadow: none;
+	font-weight: normal;
+}
+button.poster-card:hover { background-color: alpha(#ff0a6c, 0.08); }
+.poster-frame {
+	border-radius: 6px;
+	background-color: #121218;
+	transition: box-shadow 150ms ease-out;
+}
+button.poster-card:hover .poster-frame,
+button.poster-card:focus-visible .poster-frame {
+	box-shadow: 0 0 0 2px #ff0a6c, 0 0 22px alpha(#ff0a6c, 0.25), 0 8px 22px alpha(black, 0.6);
+}
+.poster-frame.whole-picture { background-color: #0e0e14; padding: 10px; }
+.poster-fallback { color: #a0a0ae; font-weight: bold; }
+.poster-title { font-size: 0.92em; }
+.new-badge {
+	background-color: #ff0a6c;
+	color: white;
+	border-radius: 6px;
+	padding: 2px 6px;
+	font-size: 0.75em;
+	font-weight: bold;
+}
+progressbar.poster-progress trough,
+progressbar.poster-progress progress {
+	min-height: 5px;
+	border-radius: 0;
+}
+progressbar.poster-progress trough { background-color: alpha(black, 0.55); }
+progressbar.poster-progress progress { background-color: #ff0a6c; }
+button.poster-card.watched .poster-frame { filter: grayscale(1) opacity(0.5); }
+button.poster-card.watched .poster-title { opacity: 0.5; }
+
+.skeleton {
+	background-color: #121218;
+	border-radius: 6px;
+}
+
+.plain-list,
+.plain-list > row,
+.plain-list > row:hover,
+.plain-list > row:selected {
+	background: none;
+	padding: 0;
+	box-shadow: none;
+}
+listview.poster-row { padding: 0 18px; }
+button.row-arrow {
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	color: white;
+	background-color: alpha(#121218, 0.8);
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	box-shadow: 0 2px 10px alpha(black, 0.6);
+	-gtk-icon-size: 26px;
+}
+button.row-arrow:hover { background-color: alpha(#ff0a6c, 0.22); border-color: #ff0a6c; }
+button.row-arrow:active { background-color: #26262f; }
+
+button.chip {
+	border-radius: 999px;
+	padding: 4px 14px;
+	background-color: #121218;
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	font-weight: normal;
+}
+button.chip:hover { background-color: alpha(#ff0a6c, 0.14); }
+button.chip:checked {
+	background-color: #ff0a6c;
+	border-color: #ff0a6c;
+	color: white;
+	font-weight: bold;
+}
+button.chip:checked:hover { background-color: #ff4d94; }
+.genre-chips { margin-top: 2px; }
+.genre-chips > flowboxchild { padding: 0; }
+.chip-static {
+	border-radius: 999px;
+	padding: 3px 10px;
+	background-color: #121218;
+	border: 1px solid alpha(white, 0.13);
+	font-size: 0.85em;
+}
+button.tab-button { padding: 6px 16px; }
+checkbutton.choice { padding: 6px 4px; }
+button.link-button {
+	color: #ff4d94;
+	padding: 2px 6px;
+	font-weight: normal;
+}
+.search-field { min-height: 40px; font-size: 1.1em; }
+
+.card.padded { padding: 12px 16px; }
+button.selectable-row {
+	padding: 8px 10px;
+	border-radius: 12px;
+	font-weight: normal;
+}
+button.selectable-row.next-episode { background-color: alpha(#ff0a6c, 0.12); box-shadow: inset 0 0 0 1px alpha(#ff0a6c, 0.6); }
+.episode-thumb { border-radius: 8px; }
+button.selectable-row.watched .episode-thumb { filter: grayscale(1) opacity(0.5); }
+button.selectable-row.watched .episode-name { opacity: 0.5; }
+.queue-poster { border-radius: 6px; }
+.dialog-actions { padding: 12px 18px 18px 18px; }
+
+popover.menu > contents { padding: 6px; }
+button.menu-item {
+	padding: 6px 10px;
+	border-radius: 6px;
+	font-weight: normal;
+}
+.menu-separator {
+	min-height: 1px;
+	margin: 4px 6px;
+	background-color: alpha(white, 0.07);
+}
+
+.mini-bar {
+	background-color: #0b0b10;
+	border-top: 1px solid alpha(#ff0a6c, 0.35);
+	padding: 6px 12px;
+}
+progressbar.mini-progress trough,
+progressbar.mini-progress progress {
+	min-height: 3px;
+	border-radius: 0;
+}
+progressbar.mini-progress trough { background-color: #121218; }
+progressbar.mini-progress progress { background-color: #ff0a6c; }
+.mini-poster { border-radius: 4px; }
+button.mini-open { padding: 4px; font-weight: normal; }
+
+.player,
+.video { background-color: black; }
+.player-top {
+	padding: 12px 16px 28px 16px;
+	background-image: linear-gradient(to bottom, alpha(black, 0.75), alpha(black, 0));
+	color: white;
+}
+.player-bottom {
+	padding: 28px 20px 16px 20px;
+	background-image: linear-gradient(to top, alpha(black, 0.8), alpha(black, 0));
+	color: white;
+}
+.player-title { color: white; font-weight: bold; font-size: 1.15em; }
+.player-subtitle { color: alpha(white, 0.75); }
+.player-time { color: white; font-feature-settings: "tnum"; }
+.player-card {
+	background-color: alpha(#121218, 0.94);
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	border-radius: 16px;
+	padding: 16px 20px;
+	color: white;
+}
+.player-indicator {
+	background-color: alpha(#121218, 0.88);
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	border-radius: 12px;
+	padding: 12px 20px;
+	font-size: 1.6em;
+	color: white;
+}
+.loading-text {
+	color: white;
+	background-color: alpha(black, 0.55);
+	border-radius: 10px;
+	padding: 6px 12px;
+}
+scale.seek-bar trough,
+scale.volume-bar trough { background-color: alpha(white, 0.3); }
+scale.seek-bar trough highlight,
+scale.volume-bar trough highlight { background-color: #ff0a6c; }
+scale.seek-bar slider,
+scale.volume-bar slider { background-color: #ff0a6c; }
+
+button.details-back {
+	min-width: 40px;
+	min-height: 40px;
+	color: white;
+	background-color: alpha(black, 0.55);
+}
+button.details-back:hover { background-color: alpha(black, 0.75); }
+.details-poster {
+	border-radius: 12px;
+	box-shadow: 0 6px 24px alpha(black, 0.6);
+}
+.episode-summary { font-size: 0.92em; }
+.details-fade {
+	background-image: linear-gradient(to bottom, alpha(#000000, 0.1), alpha(#000000, 0.65) 60%, #000000);
+}
+
+.hero { background-color: #000000; }
+.hero-fade {
+	background-image: linear-gradient(to right, alpha(#000000, 0.92), alpha(#000000, 0.55) 45%, alpha(#000000, 0) 75%),
+		linear-gradient(to bottom, alpha(#000000, 0.75), alpha(#000000, 0) 22%, alpha(#000000, 0) 55%, #000000);
+}
+.hero-art, .hero-text { transition: opacity 300ms ease-in-out; }
+.hero.hero-dim .hero-art, .hero.hero-dim .hero-text { opacity: 0; }
+button.hero-dot {
+	min-width: 18px;
+	min-height: 4px;
+	padding: 0;
+	border-radius: 2px;
+	background-color: alpha(white, 0.35);
+	transition: background-color 200ms ease, min-width 200ms ease;
+}
+button.hero-dot:hover { background-color: alpha(white, 0.7); }
+button.hero-dot.active { background-color: #ff0a6c; min-width: 30px; }
+.home-bar {
+	background-image: linear-gradient(to bottom, alpha(#000000, 0.85), alpha(#000000, 0));
+	background-color: transparent;
+	transition: background-color 250ms ease;
+}
+.home-bar.scrolled { background-color: alpha(black, 0.9); box-shadow: inset 0 -1px alpha(#ff0a6c, 0.35); }
+popover.hover-preview > contents {
+	padding: 0;
+	border-radius: 10px;
+	background-color: #0b0b10;
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	box-shadow: 0 12px 36px alpha(black, 0.7), 0 0 40px alpha(#ff0a6c, 0.1);
+}
+popover.hover-preview > arrow { background: none; border: none; }
+.preview-art { border-radius: 10px 10px 0 0; background-color: #121218; }
+.preview-title { font-weight: 800; font-size: 1.15em; }
+.preview-info { color: alpha(white, 0.75); font-size: 0.9em; }
+.preview-description { color: alpha(white, 0.85); font-size: 0.9em; }
+button.hero-play.compact { padding: 4px 16px; }
+button.preview-round {
+	min-width: 32px;
+	min-height: 32px;
+	padding: 0;
+	border-radius: 999px;
+	border: 1px solid alpha(#ff0a6c, 0.6);
+	background-color: alpha(#121218, 0.8);
+	color: white;
+}
+button.preview-round:hover { border-color: #ff0a6c; background-color: alpha(#ff0a6c, 0.22); }
+.skeleton-line { background-color: #121218; border-radius: 4px; min-height: 14px; }
+
+.hero-type {
+	text-transform: uppercase;
+	color: #ff0a6c;
+	font-weight: 700;
+	font-size: 0.85em;
+	letter-spacing: 3px;
+}
+.hero-title {
+	color: white;
+	font-weight: 800;
+	font-size: 2.6em;
+}
+.hero-genres { color: alpha(white, 0.85); font-weight: bold; }
+.hero-description { color: alpha(white, 0.88); font-size: 1.05em; }
+button.hero-play {
+	background-color: #ff0a6c;
+	color: white;
+	font-weight: bold;
+	padding: 8px 26px;
+	border: 1px solid #ff0a6c;
+	border-radius: 10px;
+}
+button.hero-play:hover { background-color: #ff4d94; box-shadow: 0 0 18px alpha(#ff0a6c, 0.45); }
+button.hero-secondary {
+	background-color: alpha(#121218, 0.8);
+	color: #f2f2f5;
+	font-weight: bold;
+	padding: 8px 22px;
+	border: 1px solid alpha(#ff0a6c, 0.35);
+	border-radius: 10px;
+}
+button.hero-secondary:hover { background-color: alpha(#ff0a6c, 0.14); border-color: #ff0a6c; color: white; }
+button.suggested-action { background-color: #ff0a6c; color: white; }
+button.suggested-action:hover { background-color: #ff4d94; box-shadow: 0 0 18px alpha(#ff0a6c, 0.45); }
+button.trailer-card {
+	padding: 0;
+	border-radius: 8px;
+	background: none;
+	box-shadow: none;
+}
+.trailer-art {
+	border-radius: 8px;
+	background-color: #121218;
+}
+button.trailer-card:hover .trailer-art,
+button.trailer-card:focus-visible .trailer-art { box-shadow: 0 0 0 2px #ff0a6c, 0 0 22px alpha(#ff0a6c, 0.25); }
+.play-badge {
+	background-color: #ff0a6c;
+	color: white;
+	border-radius: 999px;
+	padding: 14px;
+	box-shadow: 0 4px 16px alpha(black, 0.5), 0 0 18px alpha(#ff0a6c, 0.45);
+}
+button.trailer-card:hover .play-badge { background-color: #ff4d94; }
+@keyframes skeleton-pulse {
+	from { opacity: 1; }
+	to { opacity: 0.45; }
+}
+.skeleton-line { animation: skeleton-pulse 800ms ease-in-out infinite alternate; }

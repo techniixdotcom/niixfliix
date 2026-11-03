@@ -3,10 +3,14 @@ package app.niixfliix.ui.home;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.util.TypedValue;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,21 +24,28 @@ import java.util.Map;
 
 import app.niixfliix.R;
 import app.niixfliix.addon.AddonRepository;
+import app.niixfliix.addon.MetaFinder;
 import app.niixfliix.addon.model.Catalog;
 import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.data.model.HistoryEntry;
 import app.niixfliix.ui.Formats;
+import app.niixfliix.ui.Images;
 import app.niixfliix.ui.common.CatalogSource;
+import app.niixfliix.ui.common.HomeHero;
+import app.niixfliix.ui.common.LibraryToggle;
 import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.ui.common.QueueMenu;
 import app.niixfliix.ui.common.RowsAdapter;
+import app.niixfliix.ui.common.TabToolbar;
 import app.niixfliix.ui.details.DetailsActivity;
 
 public final class HomeFragment extends Fragment implements RowsAdapter.Listener, AddonRepository.Listener {
 
 	private static final String CONTINUE_KEY = "continue";
+	private static final float SOLID_TOOLBAR_AT_DP = 120;
+	private static final float STOP_ROTATING_AT_DP = 240;
 
 	private final AppGraph graph = AppGraph.get();
 	private final Map<RowsAdapter.Row, CatalogSource> sources = new HashMap<>();
@@ -42,6 +53,15 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 	private SwipeRefreshLayout refresh;
 	private View empty;
 	@Nullable private RowsAdapter.Row continueRow;
+	@Nullable private RowsAdapter.Row heroRow;
+	private final List<HomeHero> heroes = new ArrayList<>();
+	private final Runnable rotate = this::rotate;
+	private int heroIndex;
+	private RecyclerView list;
+	private View toolbar;
+	private int toolbarHeight;
+	@NonNull private List<RowsAdapter.Row> shownRows = new ArrayList<>();
+	@Nullable private RowsAdapter.Notice shownNotice;
 
 	@NonNull
 	@Override
@@ -52,19 +72,33 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		TabToolbar.setUp(this, view, R.string.app_name);
 		refresh = view.findViewById(R.id.refresh);
 		empty = view.findViewById(R.id.empty);
-		RecyclerView list = view.findViewById(R.id.list);
+		list = view.findViewById(R.id.list);
+		toolbar = view.findViewById(R.id.tab_toolbar);
+		TypedValue size = new TypedValue();
+		toolbarHeight = requireContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, size, true)
+				? TypedValue.complexToDimensionPixelSize(size.data, getResources().getDisplayMetrics()) : 0;
 		list.setLayoutManager(new LinearLayoutManager(requireContext()));
 		adapter = new RowsAdapter(this);
 		list.setAdapter(adapter);
+		Images.pauseWhileFlinging(list);
+		list.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+				updateToolbar();
+			}
+		});
+		refresh.setProgressViewOffset(false, toolbarHeight / 2, toolbarHeight + dp(48));
 		refresh.setOnRefreshListener(() -> refreshAll(true));
 		graph.addons.addListener(this);
-		buildRows();
+		buildRows(false);
 	}
 
 	@Override
 	public void onDestroyView() {
+		graph.main.removeCallbacks(rotate);
 		graph.addons.removeListener(this);
 		super.onDestroyView();
 	}
@@ -72,27 +106,95 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 	@Override
 	public void onResume() {
 		super.onResume();
-		updateContinueWatching();
+		refreshWatched();
+		scheduleRotate();
+	}
+
+	@Override
+	public void onPause() {
+		graph.main.removeCallbacks(rotate);
+		super.onPause();
 	}
 
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
 		if (!hidden) {
-			updateContinueWatching();
+			refreshWatched();
+			scheduleRotate();
+		} else {
+			graph.main.removeCallbacks(rotate);
 		}
+	}
+
+	private int dp(float value) {
+		return Math.round(value * getResources().getDisplayMetrics().density);
+	}
+
+	private void updateToolbar() {
+		if (getView() == null) {
+			return;
+		}
+		float fraction = heroes.isEmpty() ? 1f
+				: Math.min(1f, scrollY() / (float) dp(SOLID_TOOLBAR_AT_DP));
+		int color = ContextCompat.getColor(requireContext(), R.color.background);
+		toolbar.setBackgroundColor(ColorUtils.setAlphaComponent(color, Math.round(fraction * 255)));
+	}
+
+	private int scrollY() {
+		RecyclerView.LayoutManager manager = list.getLayoutManager();
+		if (!(manager instanceof LinearLayoutManager)) {
+			return 0;
+		}
+		LinearLayoutManager layout = (LinearLayoutManager) manager;
+		int first = layout.findFirstVisibleItemPosition();
+		if (first > 0) {
+			return Integer.MAX_VALUE / 2;
+		}
+		View top = layout.findViewByPosition(0);
+		return top == null ? 0 : Math.max(0, list.getPaddingTop() - top.getTop());
+	}
+
+	private void scheduleRotate() {
+		graph.main.removeCallbacks(rotate);
+		if (getView() != null && isResumed() && !isHidden() && heroes.size() > 1) {
+			graph.main.postDelayed(rotate, HomeHero.ROTATE_EVERY_MS);
+		}
+	}
+
+	private void rotate() {
+		if (getView() == null || heroes.size() < 2) {
+			return;
+		}
+		boolean nearTop = scrollY() < dp(STOP_ROTATING_AT_DP);
+		boolean idle = list.getScrollState() == RecyclerView.SCROLL_STATE_IDLE;
+		if (nearTop && idle) {
+			heroIndex = (heroIndex + 1) % heroes.size();
+			showContent();
+		}
+		scheduleRotate();
+	}
+
+	private void refreshWatched() {
+		if (getView() == null) {
+			return;
+		}
+		updateContinueWatching();
+		adapter.refreshWatched();
+		showContent();
 	}
 
 	@Override
 	public void onAddonsChanged() {
 		if (getView() != null) {
 			refresh.setRefreshing(false);
-			buildRows();
+			buildRows(true);
 		}
 	}
 
-	private void buildRows() {
+	private void buildRows(boolean keepLoaded) {
 		sources.clear();
+		heroRow = null;
 		List<RowsAdapter.Row> rows = new ArrayList<>();
 		continueRow = continueWatchingRow();
 		if (continueRow != null) {
@@ -103,18 +205,31 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 				continue;
 			}
 			for (Catalog catalog : addon.manifest.validCatalogs()) {
-				if (!catalog.worksWithoutExtras()) {
+				if (!catalog.worksForHome()) {
 					continue;
 				}
 				String name = catalog.name != null ? catalog.name : catalog.id;
 				String title = getString(R.string.row_title, name, Formats.typeLabel(requireContext(), catalog.type));
-				RowsAdapter.Row row = new RowsAdapter.Row(addon.transportUrl + "|" + catalog.type + "|" + catalog.id,
-						title, addon.displayName());
+				String key = addon.transportUrl + "|" + catalog.type + "|" + catalog.id;
+				String subtitle = addon.displayName();
+				RowsAdapter.Row old = keepLoaded ? adapter.row(key) : null;
+				RowsAdapter.Row row = old != null && isLoaded(old) && old.title.equals(title)
+						&& subtitle.equals(old.subtitle) ? old : new RowsAdapter.Row(key, title, subtitle);
 				sources.put(row, new CatalogSource(addon, catalog));
 				rows.add(row);
+				if (heroRow == null) {
+					heroRow = row;
+				}
 			}
 		}
-		adapter.setContent(notice(), rows);
+		if (heroRow == null) {
+			heroes.clear();
+		} else if (heroRow.state == RowsAdapter.State.READY) {
+			pickHero(heroRow.items);
+		}
+		shownRows = rows;
+		shownNotice = notice();
+		showContent();
 		boolean loading = stillLoadingManifests();
 		if (loading) {
 			refresh.setRefreshing(true);
@@ -122,7 +237,92 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 		empty.setVisibility(adapter.isEmpty() && !loading ? View.VISIBLE : View.GONE);
 	}
 
-	/** fresh install, manifests not fetched yet */
+	private void showContent() {
+		if (getView() == null) {
+			return;
+		}
+		RowsAdapter.Hero entry = heroEntry();
+		int top = entry == null ? toolbarHeight : 0;
+		if (list.getPaddingTop() != top) {
+			list.setPadding(list.getPaddingLeft(), top, list.getPaddingRight(), list.getPaddingBottom());
+		}
+		adapter.setContent(entry, shownNotice, shownRows);
+		updateToolbar();
+	}
+
+	@Nullable
+	private RowsAdapter.Hero heroEntry() {
+		if (heroes.isEmpty()) {
+			return null;
+		}
+		heroIndex = Math.min(heroIndex, heroes.size() - 1);
+		HomeHero current = heroes.get(heroIndex);
+		PosterItem item = current.item;
+		return new RowsAdapter.Hero(current, graph.library.contains(item.id), heroes.size(), heroIndex,
+				() -> DetailsActivity.start(requireContext(), item, true),
+				() -> {
+					boolean saved = LibraryToggle.toggle(graph.library, item);
+					Toast.makeText(requireContext(), saved ? R.string.library_added : R.string.library_removed,
+							Toast.LENGTH_SHORT).show();
+					showContent();
+				},
+				() -> DetailsActivity.start(requireContext(), item),
+				index -> {
+					heroIndex = index;
+					showContent();
+					scheduleRotate();
+				});
+	}
+
+	private void pickHero(@NonNull List<PosterItem> items) {
+		List<PosterItem> picked = HomeHero.pickAll(items, HomeHero.ROTATION);
+		if (picked.isEmpty() || sameHeroes(picked)) {
+			return;
+		}
+		heroes.clear();
+		for (PosterItem p : picked) {
+			heroes.add(new HomeHero(p, null));
+		}
+		heroIndex = 0;
+		showContent();
+		scheduleRotate();
+		for (PosterItem p : picked) {
+			graph.io.execute(() -> {
+				Meta found = MetaFinder.find(graph.addons, graph.addonClient, p.type, p.id);
+				Meta meta = found != null ? graph.translations.translate(found) : null;
+				graph.main.post(() -> {
+					if (getView() == null || meta == null) {
+						return;
+					}
+					for (int i = 0; i < heroes.size(); i++) {
+						if (heroes.get(i).item.id.equals(p.id)) {
+							heroes.set(i, new HomeHero(p, meta));
+							if (i == heroIndex) {
+								showContent();
+							}
+						}
+					}
+				});
+			});
+		}
+	}
+
+	private boolean sameHeroes(@NonNull List<PosterItem> picked) {
+		if (picked.size() != heroes.size()) {
+			return false;
+		}
+		for (int i = 0; i < picked.size(); i++) {
+			if (!picked.get(i).id.equals(heroes.get(i).item.id)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean isLoaded(@NonNull RowsAdapter.Row row) {
+		return row.state == RowsAdapter.State.READY || row.state == RowsAdapter.State.EMPTY;
+	}
+
 	private boolean stillLoadingManifests() {
 		for (InstalledAddon addon : graph.addons.active()) {
 			if (addon.manifest == null && !graph.addons.isUnreachable(addon)) {
@@ -134,7 +334,7 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 
 	@Nullable
 	private RowsAdapter.Notice notice() {
-		List<InstalledAddon> down = graph.addons.unreachable();
+		List<InstalledAddon> down = graph.addons.unreachableToReport();
 		if (down.isEmpty()) {
 			return null;
 		}
@@ -155,7 +355,7 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 				if (clearCache) {
 					graph.addonClient.clearCache();
 				}
-				buildRows();
+				buildRows(false);
 				refresh.setRefreshing(false);
 			}
 		});
@@ -175,7 +375,6 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 		return row;
 	}
 
-	/** only the continue row changes after playback */
 	private void updateContinueWatching() {
 		if (getView() == null) {
 			return;
@@ -185,7 +384,7 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 			continueRow.items = latest.items;
 			adapter.update(continueRow);
 		} else if (latest != null || continueRow != null) {
-			buildRows();
+			buildRows(true);
 		}
 	}
 
@@ -208,6 +407,9 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 					row.state = result.isEmpty() ? RowsAdapter.State.EMPTY : RowsAdapter.State.READY;
 				}
 				adapter.update(row);
+				if (row == heroRow && row.state == RowsAdapter.State.READY) {
+					pickHero(row.items);
+				}
 			});
 		});
 	}
@@ -219,7 +421,14 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 
 	@Override
 	public boolean onPosterLongClick(@NonNull PosterItem item) {
-		QueueMenu.show(requireContext(), item);
+		boolean inContinue = continueRow != null && continueRow.items.contains(item);
+		QueueMenu.show(requireContext(), item,
+				inContinue ? getString(R.string.continue_remove) : null,
+				inContinue ? () -> {
+					graph.history.dismiss(item.id);
+					updateContinueWatching();
+				} : null,
+				this::refreshWatched);
 		return true;
 	}
 }

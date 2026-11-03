@@ -13,7 +13,6 @@ import java.util.Locale;
 
 import app.niixfliix.R;
 
-/** http/https only, add-on text is untrusted (no intent:, file:, javascript: etc) */
 public final class Links {
 
 	private Links() {

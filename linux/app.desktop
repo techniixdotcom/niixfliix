@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=@APP_NAME@
+Comment=Watch films and series from your Stremio add-ons
+Exec=@SLUG@ %u
+Icon=@APP_ID@
+Terminal=false
+Categories=AudioVideo;Video;Player;
+Keywords=stremio;torrent;movies;series;player;
+MimeType=x-scheme-handler/stremio;x-scheme-handler/magnet;
+StartupWMClass=@APP_ID@
+SingleMainWindow=true

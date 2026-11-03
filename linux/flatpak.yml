@@ -1,0 +1,55 @@
+id: @APP_ID@
+runtime: org.gnome.Platform
+runtime-version: '@GNOME@'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk25
+command: @SLUG@
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=dri
+  - --filesystem=xdg-download:ro
+  - --filesystem=xdg-download/@APP_NAME@:create
+  - --filesystem=xdg-videos:ro
+modules:
+  - name: openjdk
+    buildsystem: simple
+    sources:
+      - type: file
+        path: "@DIST@/lib/java-modules.txt"
+    build-commands:
+      - |
+        JDK=/usr/lib/sdk/openjdk25/jvm/openjdk-25
+        if "$JDK/bin/jlink" --add-modules "$(tr -d '[:space:]' < java-modules.txt)" --strip-debug --no-man-pages \
+            --no-header-files --generate-cds-archive --output /app/jre; then
+          install -m644 "$JDK/lib/security/cacerts" /app/jre/lib/security/cacerts
+        else
+          echo "jlink failed: using the SDK's whole JRE" >&2
+          rm -rf /app/jre
+          /usr/lib/sdk/openjdk25/install.sh
+        fi
+
+  - name: @SLUG@
+    buildsystem: simple
+    sources:
+      - type: dir
+        path: "@DIST@"
+      - type: file
+        path: @SLUG@.sh
+      - type: file
+        path: @APP_ID@.desktop
+      - type: file
+        path: @APP_ID@.metainfo.xml
+    build-commands:
+      - mkdir -p /app/lib/@SLUG@
+      - cp -r lib/app lib/native /app/lib/@SLUG@/
+      - install -Dm755 @SLUG@.sh /app/bin/@SLUG@
+      - install -Dm644 share/app-icon.svg /app/share/icons/hicolor/scalable/apps/@APP_ID@.svg
+      - install -Dm644 -t /app/share/fonts/jetbrains-mono share/fonts/*.ttf share/fonts/JetBrainsMono-OFL.txt
+      - fc-cache -f /app/share/fonts
+      - install -Dm644 @APP_ID@.desktop /app/share/applications/@APP_ID@.desktop
+      - install -Dm644 @APP_ID@.metainfo.xml /app/share/metainfo/@APP_ID@.metainfo.xml

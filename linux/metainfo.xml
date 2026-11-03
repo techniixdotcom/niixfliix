@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>@APP_ID@</id>
+	<name>@APP_NAME@</name>
+	<summary>Watch films and series from your Stremio add-ons</summary>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>MIT</project_license>
+	<description>
+		<p>
+			A player and add-on client: browse the catalogs of your Stremio add-ons, pick a stream and watch it,
+			with a built-in torrent engine or through your debrid service.
+		</p>
+		<p>
+			The app contains no media and hosts no streams. Add-ons are run by third parties, and you are
+			responsible for what you watch.
+		</p>
+	</description>
+	<launchable type="desktop-id">@APP_ID@.desktop</launchable>
+	<url type="homepage">https://github.com/@GITHUB_REPO@</url>
+	<url type="bugtracker">https://github.com/@GITHUB_REPO@/issues</url>
+	<developer id="app.niixfliix">
+		<name>@APP_NAME@ contributors</name>
+	</developer>
+	<content_rating type="oars-1.1"/>
+	<supports>
+		<control>pointing</control>
+		<control>keyboard</control>
+	</supports>
+	<provides>
+		<binary>@SLUG@</binary>
+	</provides>
+	<releases>
+		<release version="@VERSION@" date="@DATE@"/>
+	</releases>
+</component>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">Stremio에서 로그아웃할까요? 소스와 라이브러리는 이 컴퓨터에 남아요.</string>
+	<string name="action_quit">종료</string>
+	<string name="download_failed_desktop">실패했어요. 재개를 클릭하여 다시 시도하세요.</string>
+	<string name="download_show_in_folder">폴더에서 보기</string>
+	<string name="hardware_decoding_crash">그래픽 카드가 동영상을 디코딩하는 중에 앱이 예기치 않게 종료되어 하드웨어 디코딩을 껐어요. 설정 &gt; 재생에서 다시 켤 수 있어요.</string>
+	<string name="hardware_decoding_crash_title">하드웨어 디코딩을 껐어요</string>
+	<string name="hero_info">상세 정보</string>
+	<string name="library_downloads_empty_desktop">다운로드가 없어요. 스트림을 마우스 오른쪽 버튼으로 클릭해 다운로드하세요.</string>
+	<string name="library_queue_empty_desktop">대기열이 비어 있어요. 영화, 시리즈, 에피소드를 마우스 오른쪽 버튼으로 클릭해 추가하세요.</string>
+	<string name="player_all_files">모든 파일</string>
+	<string name="player_keeps_screen_on">동영상 재생 중</string>
+	<string name="player_mute">음소거</string>
+	<string name="player_open">동영상으로 돌아가기</string>
+	<string name="player_subtitle_files">자막 파일</string>
+	<string name="quality_hint_desktop">해당 화질에서 가장 좋은 스트림이 자동으로 재생됩니다. 없으면 한 단계 낮은 화질을 사용합니다.</string>
+	<string name="quit_downloads_running">다운로드가 아직 진행 중이에요. 그래도 종료할까요? 다운로드는 일시 정지되며 다음에 재개할 수 있어요.</string>
+	<string name="row_failed_desktop">이 줄을 불러오지 못했어요.</string>
+	<string name="row_scroll_back">뒤로 스크롤</string>
+	<string name="row_scroll_forward">앞으로 스크롤</string>
+	<string name="settings_crash_log_summary_desktop">마지막 오류: %1$s. 복사하기 전까지 이 컴퓨터 밖으로 나가지 않아요.</string>
+	<string name="settings_hardware_decoding">하드웨어 동영상 디코딩</string>
+	<string name="settings_hardware_decoding_summary">그래픽 카드가 동영상을 디코딩해서 프로세서를 거의 쓰지 않고 부드럽게 재생해요. 동영상 색이 이상하거나 깨지면 끄세요.</string>
+	<string name="settings_language_restart">새 언어는 다음에 앱을 시작할 때 적용돼요.</string>
+	<string name="streams_quality_desktop">자동: %1$s · 변경</string>
+	<string name="update_no_bundle">릴리스 %1$s에 .flatpak이 첨부되어 있지 않아요. dist 폴더의 .flatpak을 GitHub 릴리스에 첨부하세요.</string>
+	<string name="update_no_bundle_checksum">릴리스 %1$s에 .flatpak.sha256 파일이 첨부되어 있지 않아 다운로드를 확인할 수 없어요. dist 폴더의 두 파일을 GitHub 릴리스에 첨부하세요.</string>
+	<string name="update_ready_desktop">업데이트를 %1$s(으)로 저장하고 소프트웨어 센터로 열었어요. 아무것도 열리지 않으면 터미널에서 설치하세요:\n\n%2$s\n\n그런 다음 앱을 다시 시작하세요.</string>
+</resources>

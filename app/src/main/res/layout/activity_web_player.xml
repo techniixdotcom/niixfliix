@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@android:color/black">
+
+	<LinearLayout
+		android:id="@+id/content"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+		<include layout="@layout/view_toolbar" />
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1">
+
+			<WebView
+				android:id="@+id/web"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent" />
+
+			<com.google.android.material.progressindicator.LinearProgressIndicator
+				android:id="@+id/progress"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="top"
+				android:indeterminate="false"
+				android:max="100"
+				android:visibility="gone"
+				app:trackCornerRadius="0dp"
+				app:trackThickness="3dp" />
+		</FrameLayout>
+	</LinearLayout>
+
+	<FrameLayout
+		android:id="@+id/fullscreen"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@android:color/black"
+		android:visibility="gone" />
+</FrameLayout>

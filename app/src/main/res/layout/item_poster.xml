@@ -16,6 +16,23 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
+			<TextView
+				android:id="@+id/poster_fallback"
+				android:layout_width="0dp"
+				android:layout_height="0dp"
+				android:ellipsize="end"
+				android:gravity="center"
+				android:importantForAccessibility="no"
+				android:maxLines="4"
+				android:padding="10dp"
+				android:textAppearance="?attr/textAppearanceTitleSmall"
+				android:textColor="@color/on_surface_variant"
+				android:textStyle="bold"
+				app:layout_constraintBottom_toBottomOf="@id/poster"
+				app:layout_constraintEnd_toEndOf="@id/poster"
+				app:layout_constraintStart_toStartOf="@id/poster"
+				app:layout_constraintTop_toTopOf="@id/poster" />
+
 			<ImageView
 				android:id="@+id/poster"
 				android:layout_width="0dp"
@@ -26,6 +43,23 @@
 				app:layout_constraintEnd_toEndOf="parent"
 				app:layout_constraintStart_toStartOf="parent"
 				app:layout_constraintTop_toTopOf="parent" />
+
+			<TextView
+				android:id="@+id/new_badge"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="6dp"
+				android:background="@drawable/bg_new_badge"
+				android:importantForAccessibility="no"
+				android:paddingHorizontal="5dp"
+				android:paddingVertical="1dp"
+				android:text="@string/poster_new"
+				android:textColor="@android:color/white"
+				android:textSize="10sp"
+				android:textStyle="bold"
+				android:visibility="gone"
+				app:layout_constraintEnd_toEndOf="@id/poster"
+				app:layout_constraintTop_toTopOf="@id/poster" />
 
 			<com.google.android.material.progressindicator.LinearProgressIndicator
 				android:id="@+id/progress"

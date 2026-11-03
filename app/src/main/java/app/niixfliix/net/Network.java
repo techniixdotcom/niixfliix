@@ -11,7 +11,6 @@ public final class Network {
 	private Network() {
 	}
 
-	/** "Wi-Fi" in settings = unmetered, so ethernet counts too. */
 	public static boolean isUnmetered(@NonNull Context context) {
 		ConnectivityManager cm = context.getSystemService(ConnectivityManager.class);
 		if (cm == null) {

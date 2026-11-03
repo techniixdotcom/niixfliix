@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import app.niixfliix.BuildConfig;
 import app.niixfliix.R;
 import app.niixfliix.app.AppGraph;
 
@@ -23,32 +24,35 @@ public final class UpdatePrompt {
 	private UpdatePrompt() {
 	}
 
-	/** manual check, always reports back */
 	public static void check(@NonNull Activity activity) {
 		Toast.makeText(activity, R.string.update_checking, Toast.LENGTH_SHORT).show();
-		AppGraph.get().updates().check((release, failed) -> {
+		AppGraph.get().updates().check(result -> {
 			if (!alive(activity)) {
 				return;
 			}
-			if (release != null) {
-				offer(activity, release);
+			if (result.release != null) {
+				offer(activity, result.release);
+			} else if (result.status == Releases.Status.UP_TO_DATE) {
+				Toast.makeText(activity, R.string.update_none, Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(activity, failed ? R.string.update_check_failed : R.string.update_none,
-						Toast.LENGTH_SHORT).show();
+				new MaterialAlertDialogBuilder(activity)
+						.setTitle(R.string.update_check_failed)
+						.setMessage(explain(activity, result))
+						.setPositiveButton(R.string.action_ok, null)
+						.show();
 			}
 		});
 	}
 
-	/** start-up check, silent unless there's an update */
 	public static void checkQuietly(@NonNull Activity activity) {
-		AppGraph.get().updates().check((release, failed) -> {
-			if (release != null && alive(activity)) {
-				offer(activity, release);
+		AppGraph.get().updates().check(result -> {
+			if (result.release != null && alive(activity)) {
+				offer(activity, result.release);
 			}
 		});
 	}
 
-	private static void offer(Activity activity, UpdateManager.Release release) {
+	private static void offer(Activity activity, Releases.Release release) {
 		String notes = release.notes.length() > MAX_NOTES ? release.notes.substring(0, MAX_NOTES) + "…" : release.notes;
 		new MaterialAlertDialogBuilder(activity)
 				.setTitle(activity.getString(R.string.update_available, release.version))
@@ -58,7 +62,36 @@ public final class UpdatePrompt {
 				.show();
 	}
 
-	private static void install(Activity activity, UpdateManager.Release release) {
+	@NonNull
+	private static String explain(@NonNull Activity activity, @NonNull Releases.CheckResult result) {
+		String repo = BuildConfig.GITHUB_REPO;
+		String version = result.version != null ? result.version : "";
+		switch (result.status) {
+			case REPO_NOT_FOUND:
+				return activity.getString(R.string.update_repo_not_found, repo);
+			case NO_RELEASES:
+				return activity.getString(R.string.update_no_releases, repo);
+			case NO_FILE:
+				return activity.getString(R.string.update_no_apk, version);
+			case NO_CHECKSUM:
+				return activity.getString(R.string.update_no_checksum, version);
+			case RATE_LIMITED:
+				return activity.getString(R.string.update_rate_limited);
+			case NETWORK:
+			default:
+				return activity.getString(R.string.update_network);
+		}
+	}
+
+	private static void install(Activity activity, Releases.Release release) {
+		if (BuildConfig.DEBUG) {
+			new MaterialAlertDialogBuilder(activity)
+					.setTitle(R.string.update_failed_title)
+					.setMessage(R.string.update_debug_build)
+					.setPositiveButton(R.string.action_ok, null)
+					.show();
+			return;
+		}
 		if (!activity.getPackageManager().canRequestPackageInstalls()) {
 			new MaterialAlertDialogBuilder(activity)
 					.setTitle(R.string.update_permission_title)
@@ -86,7 +119,6 @@ public final class UpdatePrompt {
 					return;
 				}
 				if (bar.isIndeterminate()) {
-					// setIndeterminate(false) only works while hidden
 					bar.setVisibility(View.INVISIBLE);
 					bar.setIndeterminate(false);
 					bar.setVisibility(View.VISIBLE);
@@ -113,7 +145,6 @@ public final class UpdatePrompt {
 		});
 	}
 
-	/** rotation = destroyed but not finishing */
 	private static boolean alive(Activity activity) {
 		return !activity.isFinishing() && !activity.isDestroyed();
 	}
@@ -131,10 +162,11 @@ public final class UpdatePrompt {
 			case CHECKSUM:
 				return R.string.update_failed_checksum;
 			case WRONG_PACKAGE:
+				return R.string.update_failed_wrong_package;
 			case WRONG_SIGNER:
-				return R.string.update_failed_untrusted;
+				return R.string.update_failed_wrong_signer;
 			case NOT_NEWER:
-				return R.string.update_failed_not_newer;
+				return R.string.update_failed_version_code;
 			case INSTALLER:
 				return R.string.update_install_failed;
 			case DOWNLOAD:

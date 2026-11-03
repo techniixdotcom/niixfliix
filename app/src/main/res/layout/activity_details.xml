@@ -80,6 +80,7 @@
 
 					<com.google.android.material.button.MaterialButton
 						android:id="@+id/play"
+						style="@style/Widget.Niixfliix.Button.Hero"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="1"
@@ -105,13 +106,34 @@
 						android:contentDescription="@string/details_mark_watched"
 						app:icon="@drawable/ic_check" />
 
-					<com.google.android.material.button.MaterialButton
-						android:id="@+id/trailer"
-						style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:contentDescription="@string/details_trailer"
-						app:icon="@drawable/ic_trailer" />
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/loading"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="16dp"
+					android:contentDescription="@string/loading"
+					android:importantForAccessibility="yes"
+					android:orientation="vertical">
+
+					<View
+						android:layout_width="match_parent"
+						android:layout_height="12dp"
+						android:background="@drawable/bg_skeleton_line" />
+
+					<View
+						android:layout_width="match_parent"
+						android:layout_height="12dp"
+						android:layout_marginTop="10dp"
+						android:layout_marginEnd="24dp"
+						android:background="@drawable/bg_skeleton_line" />
+
+					<View
+						android:layout_width="200dp"
+						android:layout_height="12dp"
+						android:layout_marginTop="10dp"
+						android:background="@drawable/bg_skeleton_line" />
 				</LinearLayout>
 
 				<TextView
@@ -121,12 +143,27 @@
 					android:layout_marginTop="16dp"
 					android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-				<TextView
-					android:id="@+id/cast"
+				<LinearLayout
+					android:id="@+id/cast_section"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="12dp"
-					android:textAppearance="@style/TextAppearance.Niixfliix.Caption" />
+					android:layout_marginTop="16dp"
+					android:orientation="vertical"
+					android:visibility="gone">
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/details_cast_title"
+						android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+					<com.google.android.material.chip.ChipGroup
+						android:id="@+id/cast_chips"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="4dp"
+						app:chipSpacingVertical="2dp" />
+				</LinearLayout>
 
 				<TextView
 					android:id="@+id/notice"
@@ -144,19 +181,36 @@
 					android:orientation="vertical"
 					android:visibility="gone">
 
-					<com.google.android.material.textfield.TextInputLayout
-						style="@style/Widget.Niixfliix.TextField.Dropdown"
-						android:layout_width="wrap_content"
+					<LinearLayout
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:minWidth="200dp"
-						android:hint="@string/details_season">
+						android:gravity="center_vertical"
+						android:orientation="horizontal">
 
-						<com.google.android.material.textfield.MaterialAutoCompleteTextView
-							android:id="@+id/season_input"
-							android:layout_width="match_parent"
+						<com.google.android.material.textfield.TextInputLayout
+							style="@style/Widget.Niixfliix.TextField.Dropdown"
+							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
-							android:inputType="none" />
-					</com.google.android.material.textfield.TextInputLayout>
+							android:minWidth="200dp"
+							android:hint="@string/details_season">
+
+							<com.google.android.material.textfield.MaterialAutoCompleteTextView
+								android:id="@+id/season_input"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:inputType="none" />
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.button.MaterialButton
+							android:id="@+id/download_episodes"
+							style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_marginStart="12dp"
+							android:contentDescription="@string/details_download_episodes"
+							android:tooltipText="@string/details_download_episodes"
+							app:icon="@drawable/ic_download" />
+					</LinearLayout>
 
 					<androidx.recyclerview.widget.RecyclerView
 						android:id="@+id/episodes"
@@ -165,6 +219,118 @@
 						android:layout_marginTop="8dp"
 						android:nestedScrollingEnabled="false" />
 				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/trailer_section"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="24dp"
+					android:orientation="vertical"
+					android:visibility="gone">
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/details_trailer"
+						android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+					<com.google.android.material.card.MaterialCardView
+						android:id="@+id/trailer_card"
+						style="@style/Widget.Niixfliix.Card.Thumbnail"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="8dp"
+						android:clickable="true"
+						android:contentDescription="@string/details_trailer"
+						android:focusable="true">
+
+						<androidx.constraintlayout.widget.ConstraintLayout
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content">
+
+							<ImageView
+								android:id="@+id/trailer_image"
+								android:layout_width="0dp"
+								android:layout_height="0dp"
+								android:importantForAccessibility="no"
+								android:scaleType="centerCrop"
+								app:layout_constraintDimensionRatio="16:9"
+								app:layout_constraintEnd_toEndOf="parent"
+								app:layout_constraintStart_toStartOf="parent"
+								app:layout_constraintTop_toTopOf="parent" />
+
+							<ImageView
+								android:layout_width="64dp"
+								android:layout_height="64dp"
+								android:background="@drawable/bg_play_badge"
+								android:importantForAccessibility="no"
+								android:padding="16dp"
+								android:src="@drawable/ic_play"
+								app:layout_constraintBottom_toBottomOf="@id/trailer_image"
+								app:layout_constraintEnd_toEndOf="@id/trailer_image"
+								app:layout_constraintStart_toStartOf="@id/trailer_image"
+								app:layout_constraintTop_toTopOf="@id/trailer_image"
+								app:tint="@android:color/white" />
+						</androidx.constraintlayout.widget.ConstraintLayout>
+					</com.google.android.material.card.MaterialCardView>
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/about_section"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="24dp"
+					android:orientation="vertical"
+					android:visibility="gone">
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/details_about"
+						android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+					<LinearLayout
+						android:id="@+id/about_facts"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:orientation="vertical" />
+
+					<com.google.android.material.button.MaterialButton
+						android:id="@+id/imdb"
+						style="@style/Widget.Material3.Button.TextButton"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginStart="-12dp"
+						android:layout_marginTop="4dp"
+						android:text="@string/details_imdb"
+						android:textColor="@color/red"
+						android:visibility="gone" />
+				</LinearLayout>
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/similar_section"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:paddingBottom="24dp"
+				android:visibility="gone">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:paddingHorizontal="@dimen/screen_padding"
+					android:text="@string/details_more_like_this"
+					android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+				<androidx.recyclerview.widget.RecyclerView
+					android:id="@+id/similar"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:clipToPadding="false"
+					android:nestedScrollingEnabled="false"
+					android:paddingHorizontal="10dp" />
 			</LinearLayout>
 		</LinearLayout>
 	</androidx.core.widget.NestedScrollView>
@@ -178,12 +344,6 @@
 		android:contentDescription="@string/action_back"
 		app:icon="@drawable/ic_back" />
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-		android:id="@+id/loading"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:indeterminate="true" />
 
 	<include layout="@layout/view_mini_player" />
 </FrameLayout>

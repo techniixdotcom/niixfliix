@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.niixfliix.R;
-import app.niixfliix.ui.Formats;
+import app.niixfliix.ui.setup.Choices;
 
 final class TrackPicker {
 
@@ -34,7 +34,7 @@ final class TrackPicker {
 
 		@NonNull
 		PlayerEngine.SideSubtitle toSide() {
-			String label = language != null ? Formats.language(language) : addonName;
+			String label = language != null ? Choices.languageName(language) : addonName;
 			return new PlayerEngine.SideSubtitle("addon-" + id, Uri.parse(url), language, label,
 					PlayerEngine.subtitleMimeType(url));
 		}
@@ -81,7 +81,7 @@ final class TrackPicker {
 			}
 		}
 		for (AddonSubtitle s : fromAddons) {
-			String language = s.language != null ? Formats.language(s.language) : "";
+			String language = s.language != null ? Choices.languageName(s.language) : "";
 			labels.add(context.getString(R.string.player_subtitle_from_addon,
 					language.isEmpty() ? context.getString(R.string.player_track_unknown) : language, s.addonName));
 			actions.add(() -> choice.addon(s));
@@ -124,7 +124,7 @@ final class TrackPicker {
 	}
 
 	private static String label(Context context, Format format, int number) {
-		String language = format.language != null ? Formats.language(format.language) : "";
+		String language = format.language != null ? Choices.languageName(format.language) : "";
 		if (format.label != null && !format.label.isEmpty()) {
 			return language.isEmpty() || format.label.contains(language)
 					? format.label

@@ -11,7 +11,6 @@
 		android:layout_height="match_parent"
 		android:orientation="vertical">
 
-		<!-- the whole screen in fullscreen, a 16:9 strip at the top in portrait -->
 		<FrameLayout
 			android:id="@+id/video_frame"
 			android:layout_width="match_parent"
@@ -29,6 +28,62 @@
 				app:show_shuffle_button="false"
 				app:show_subtitle_button="false"
 				app:use_controller="true" />
+
+			<LinearLayout
+				android:id="@+id/bottom_actions"
+				android:layout_width="wrap_content"
+				android:layout_height="@dimen/player_bottom_bar_height"
+				android:layout_gravity="bottom|end"
+				android:layout_marginEnd="@dimen/player_settings_button_space"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+
+				<ImageButton
+					android:id="@+id/player_subtitles"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_subtitles"
+					android:src="@drawable/ic_subtitles"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_audio"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_audio"
+					android:src="@drawable/ic_audio"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_streams"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_switch_stream"
+					android:src="@drawable/ic_quality"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_more"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/action_more"
+					android:src="@drawable/ic_more"
+					android:visibility="gone"
+					app:tint="@android:color/white" />
+
+				<ImageButton
+					android:id="@+id/player_fullscreen"
+					android:background="?attr/selectableItemBackgroundBorderless"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:contentDescription="@string/player_exit_fullscreen"
+					android:src="@drawable/ic_fullscreen_exit"
+					app:tint="@android:color/white" />
+			</LinearLayout>
 
 			<LinearLayout
 				android:id="@+id/top_bar"
@@ -86,42 +141,6 @@
 					app:tint="@android:color/white" />
 
 				<ImageButton
-					android:id="@+id/player_subtitles"
-					android:background="?attr/selectableItemBackgroundBorderless"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
-					android:contentDescription="@string/player_subtitles"
-					android:src="@drawable/ic_subtitles"
-					app:tint="@android:color/white" />
-
-				<ImageButton
-					android:id="@+id/player_audio"
-					android:background="?attr/selectableItemBackgroundBorderless"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
-					android:contentDescription="@string/player_audio"
-					android:src="@drawable/ic_audio"
-					app:tint="@android:color/white" />
-
-				<ImageButton
-					android:id="@+id/player_streams"
-					android:background="?attr/selectableItemBackgroundBorderless"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
-					android:contentDescription="@string/player_switch_stream"
-					android:src="@drawable/ic_quality"
-					app:tint="@android:color/white" />
-
-				<ImageButton
-					android:id="@+id/player_fullscreen"
-					android:background="?attr/selectableItemBackgroundBorderless"
-					android:layout_width="48dp"
-					android:layout_height="48dp"
-					android:contentDescription="@string/player_exit_fullscreen"
-					android:src="@drawable/ic_fullscreen_exit"
-					app:tint="@android:color/white" />
-
-				<ImageButton
 					android:id="@+id/player_pip"
 					android:background="?attr/selectableItemBackgroundBorderless"
 					android:layout_width="48dp"
@@ -145,6 +164,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
+				android:accessibilityLiveRegion="polite"
 				android:background="@drawable/bg_gesture_hint"
 				android:gravity="center_vertical"
 				android:paddingHorizontal="16dp"
@@ -152,6 +172,82 @@
 				android:textAppearance="?attr/textAppearanceTitleMedium"
 				android:textColor="@android:color/white"
 				android:visibility="gone" />
+
+			<LinearLayout
+				android:id="@+id/brightness_panel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="start|center_vertical"
+				android:layout_marginStart="24dp"
+				android:background="@drawable/bg_gesture_hint"
+				android:gravity="center_horizontal"
+				android:orientation="vertical"
+				android:paddingHorizontal="6dp"
+				android:paddingVertical="10dp"
+				android:visibility="gone">
+
+				<TextView
+					android:id="@+id/brightness_value"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:importantForAccessibility="no"
+					android:minWidth="40dp"
+					android:gravity="center"
+					android:textAppearance="?attr/textAppearanceLabelMedium"
+					android:textColor="@android:color/white" />
+
+				<app.niixfliix.player.LevelSlider
+					android:id="@+id/brightness_slider"
+					android:layout_width="36dp"
+					android:layout_height="@dimen/player_level_height"
+					android:layout_marginVertical="8dp"
+					android:contentDescription="@string/player_brightness" />
+
+				<ImageView
+					android:layout_width="24dp"
+					android:layout_height="24dp"
+					android:importantForAccessibility="no"
+					android:src="@drawable/ic_brightness"
+					app:tint="@android:color/white" />
+			</LinearLayout>
+
+			<LinearLayout
+				android:id="@+id/volume_panel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:layout_marginEnd="24dp"
+				android:background="@drawable/bg_gesture_hint"
+				android:gravity="center_horizontal"
+				android:orientation="vertical"
+				android:paddingHorizontal="6dp"
+				android:paddingVertical="10dp"
+				android:visibility="gone">
+
+				<TextView
+					android:id="@+id/volume_value"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:importantForAccessibility="no"
+					android:minWidth="40dp"
+					android:gravity="center"
+					android:textAppearance="?attr/textAppearanceLabelMedium"
+					android:textColor="@android:color/white" />
+
+				<app.niixfliix.player.LevelSlider
+					android:id="@+id/volume_slider"
+					android:layout_width="36dp"
+					android:layout_height="@dimen/player_level_height"
+					android:layout_marginVertical="8dp"
+					android:contentDescription="@string/player_volume" />
+
+				<ImageView
+					android:layout_width="24dp"
+					android:layout_height="24dp"
+					android:importantForAccessibility="no"
+					android:src="@drawable/ic_volume_up"
+					app:tint="@android:color/white" />
+			</LinearLayout>
 
 			<LinearLayout
 				android:id="@+id/loading"
@@ -165,7 +261,6 @@
 				android:visibility="gone">
 
 				<com.google.android.material.progressindicator.CircularProgressIndicator
-					android:id="@+id/loading_progress"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:indeterminate="true" />
@@ -174,6 +269,7 @@
 					android:id="@+id/loading_text"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
+					android:accessibilityLiveRegion="polite"
 					android:layout_marginTop="12dp"
 					android:gravity="center"
 					android:textAppearance="?attr/textAppearanceBodyMedium"
@@ -182,11 +278,12 @@
 
 			<com.google.android.material.card.MaterialCardView
 				android:id="@+id/up_next"
-				android:layout_width="300dp"
+				style="@style/Widget.Niixfliix.Card.Overlay"
+				android:layout_width="@dimen/up_next_width"
 				android:layout_height="wrap_content"
 				android:layout_gravity="bottom|end"
-				android:layout_marginEnd="24dp"
-				android:layout_marginBottom="96dp"
+				android:layout_marginEnd="16dp"
+				android:layout_marginBottom="16dp"
 				android:visibility="gone">
 
 				<LinearLayout
@@ -199,13 +296,11 @@
 						android:layout_height="wrap_content"
 						android:gravity="center_vertical"
 						android:orientation="horizontal"
-						android:paddingVertical="8dp"
-						android:paddingStart="16dp"
-						android:paddingEnd="4dp">
+						android:paddingStart="12dp">
 
 						<ImageView
-							android:layout_width="24dp"
-							android:layout_height="24dp"
+							android:layout_width="20dp"
+							android:layout_height="20dp"
 							android:importantForAccessibility="no"
 							android:src="@drawable/ic_skip_next"
 							app:tint="@color/red" />
@@ -213,9 +308,10 @@
 						<LinearLayout
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
-							android:layout_marginStart="12dp"
+							android:layout_marginStart="10dp"
 							android:layout_weight="1"
-							android:orientation="vertical">
+							android:orientation="vertical"
+							android:paddingVertical="6dp">
 
 							<TextView
 								android:id="@+id/up_next_label"
@@ -223,16 +319,18 @@
 								android:layout_height="wrap_content"
 								android:textAllCaps="true"
 								android:textColor="@color/red"
-								android:textSize="11sp"
+								android:textSize="10sp"
 								android:textStyle="bold" />
 
 							<TextView
 								android:id="@+id/up_next_title"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
+								android:accessibilityLiveRegion="polite"
 								android:ellipsize="end"
-								android:maxLines="2"
-								android:textAppearance="?attr/textAppearanceTitleSmall" />
+								android:maxLines="1"
+								android:textAppearance="?attr/textAppearanceBodyMedium"
+								android:textColor="@android:color/white" />
 						</LinearLayout>
 
 						<ImageButton
@@ -241,7 +339,8 @@
 							android:layout_width="48dp"
 							android:layout_height="48dp"
 							android:contentDescription="@string/player_up_next_cancel"
-							android:src="@drawable/ic_close" />
+							android:src="@drawable/ic_close"
+							app:tint="@android:color/white" />
 					</LinearLayout>
 
 					<com.google.android.material.progressindicator.LinearProgressIndicator
@@ -249,12 +348,15 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:max="1000"
-						app:trackCornerRadius="0dp" />
+						app:trackColor="@android:color/transparent"
+						app:trackCornerRadius="0dp"
+						app:trackThickness="2dp" />
 				</LinearLayout>
 			</com.google.android.material.card.MaterialCardView>
 
 			<com.google.android.material.card.MaterialCardView
 				android:id="@+id/error_card"
+				style="@style/Widget.Niixfliix.Card.Overlay"
 				android:layout_width="320dp"
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
@@ -270,6 +372,7 @@
 						android:id="@+id/error_text"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
+						android:accessibilityLiveRegion="assertive"
 						android:drawablePadding="12dp"
 						android:gravity="center_vertical"
 						android:textAppearance="?attr/textAppearanceBodyLarge"
@@ -346,12 +449,12 @@
 		</ScrollView>
 	</LinearLayout>
 
-	<!-- on top of everything while locked, so no touch gets through -->
 	<FrameLayout
 		android:id="@+id/lock_shield"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:clickable="true"
+		android:contentDescription="@string/player_locked"
 		android:focusable="true"
 		android:soundEffectsEnabled="false"
 		android:visibility="gone">

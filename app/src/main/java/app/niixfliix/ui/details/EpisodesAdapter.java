@@ -1,8 +1,6 @@
 package app.niixfliix.ui.details;
 
 import android.content.Context;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import app.niixfliix.R;
@@ -25,11 +23,9 @@ import app.niixfliix.data.History;
 import app.niixfliix.data.model.HistoryEntry;
 import app.niixfliix.ui.Formats;
 import app.niixfliix.ui.Images;
+import app.niixfliix.ui.common.DiffAdapter;
 
-final class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Holder> {
-
-	private static final float WATCHED_ALPHA = 0.5f;
-	private static final ColorMatrixColorFilter GREYSCALE = greyscale();
+final class EpisodesAdapter extends DiffAdapter<Video, EpisodesAdapter.Holder> {
 
 	interface Listener {
 		void onEpisodeClick(@NonNull Video video);
@@ -39,7 +35,6 @@ final class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Holder>
 
 	private final Listener listener;
 	private final History history;
-	private final List<Video> episodes = new ArrayList<>();
 	@Nullable private String nextUpId;
 
 	EpisodesAdapter(@NonNull Listener listener, @NonNull History history) {
@@ -48,10 +43,25 @@ final class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Holder>
 	}
 
 	void submit(@NonNull List<Video> list, @Nullable String nextUpId) {
-		episodes.clear();
-		episodes.addAll(list);
 		this.nextUpId = nextUpId;
-		notifyDataSetChanged();
+		submit(list);
+	}
+
+	@NonNull
+	@Override
+	protected Object keyOf(@NonNull Video video) {
+		return video.id != null ? video.id : video.seasonOrZero() + ":" + video.episodeOrZero();
+	}
+
+	@NonNull
+	@Override
+	protected Object contentOf(@NonNull Video video) {
+		boolean isWatched = video.id != null && history.isWatched(video.id);
+		HistoryEntry entry = video.id != null ? history.get(video.id) : null;
+		int percent = entry != null ? Math.round(entry.progress() * 100) : -1;
+		boolean isNext = video.id != null && video.id.equals(nextUpId);
+		return Arrays.asList(video.displayTitle(), video.season, video.episode, video.released, video.thumbnail,
+				isWatched, percent, isNext);
 	}
 
 	@NonNull
@@ -62,12 +72,7 @@ final class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Holder>
 
 	@Override
 	public void onBindViewHolder(@NonNull Holder holder, int position) {
-		holder.bind(episodes.get(position));
-	}
-
-	@Override
-	public int getItemCount() {
-		return episodes.size();
+		holder.bind(getItem(position));
 	}
 
 	final class Holder extends RecyclerView.ViewHolder {
@@ -112,10 +117,8 @@ final class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Holder>
 			Images.poster(thumb, video.thumbnail);
 			boolean isWatched = video.id != null && history.isWatched(video.id);
 			watched.setVisibility(isWatched ? View.VISIBLE : View.INVISIBLE);
-			// watched episodes: dimmed and greyscale
-			thumb.setColorFilter(isWatched ? GREYSCALE : null);
-			thumb.setAlpha(isWatched ? WATCHED_ALPHA : 1f);
-			title.setAlpha(isWatched ? WATCHED_ALPHA : 1f);
+			Images.watched(thumb, isWatched);
+			title.setAlpha(isWatched ? Images.WATCHED_ALPHA : 1f);
 			boolean isNext = video.id != null && video.id.equals(nextUpId);
 			next.setVisibility(isNext ? View.VISIBLE : View.GONE);
 			itemView.setBackgroundResource(isNext ? R.drawable.bg_next_episode : defaultBackground);
@@ -127,11 +130,5 @@ final class EpisodesAdapter extends RecyclerView.Adapter<EpisodesAdapter.Holder>
 				progress.setVisibility(View.GONE);
 			}
 		}
-	}
-
-	private static ColorMatrixColorFilter greyscale() {
-		ColorMatrix matrix = new ColorMatrix();
-		matrix.setSaturation(0);
-		return new ColorMatrixColorFilter(matrix);
 	}
 }

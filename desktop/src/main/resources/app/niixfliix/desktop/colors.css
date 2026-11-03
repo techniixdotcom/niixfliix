@@ -1,0 +1,26 @@
+/* The niixaOS look: black, dark glass (#121218) with a thin pink edge,
+   pink #ff0a6c for what is selected or on. */
+@define-color accent_color #ff4d94;
+@define-color accent_bg_color #ff0a6c;
+@define-color accent_fg_color #ffffff;
+@define-color window_bg_color #000000;
+@define-color window_fg_color #f2f2f5;
+@define-color view_bg_color #000000;
+@define-color view_fg_color #f2f2f5;
+@define-color headerbar_bg_color #000000;
+@define-color headerbar_fg_color #f2f2f5;
+@define-color headerbar_backdrop_color #000000;
+@define-color headerbar_border_color alpha(#ff0a6c, 0.35);
+@define-color card_bg_color #121218;
+@define-color card_fg_color #f2f2f5;
+@define-color dialog_bg_color #121218;
+@define-color dialog_fg_color #f2f2f5;
+@define-color popover_bg_color alpha(#121218, 0.92);
+@define-color popover_fg_color #f2f2f5;
+@define-color sidebar_bg_color #000000;
+@define-color sidebar_fg_color #f2f2f5;
+@define-color destructive_color #ff3b6b;
+@define-color destructive_bg_color #ff3b6b;
+@define-color success_color #0aff9e;
+@define-color warning_color #ffd166;
+@define-color error_color #ff3b6b;

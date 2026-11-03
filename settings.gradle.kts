@@ -15,4 +15,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "niixfliix"
-include(":app")
+
+include(":core")
+include(":desktop")
+if (providers.gradleProperty("linuxOnly").orNull != "true") {
+	include(":app")
+}

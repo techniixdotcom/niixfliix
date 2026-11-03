@@ -20,8 +20,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import app.niixfliix.R;
 import app.niixfliix.account.StremioAccount;
 import app.niixfliix.app.AppGraph;
+import app.niixfliix.ui.SecureScreens;
 
-/** Signs in to an existing Stremio account. Optional, and there's no sign-up here. */
 public final class SignInDialog extends DialogFragment {
 
 	public static final String RESULT_KEY = "signed_in";
@@ -48,7 +48,6 @@ public final class SignInDialog extends DialogFragment {
 				.setPositiveButton(R.string.account_sign_in, null)
 				.setNegativeButton(R.string.action_cancel, null)
 				.create();
-		// set after show() so a failed attempt keeps the dialog open
 		dialog.setOnShowListener(d -> {
 			Button go = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
 			go.setOnClickListener(v -> {
@@ -84,6 +83,7 @@ public final class SignInDialog extends DialogFragment {
 				});
 			});
 		});
+		SecureScreens.protect(this, dialog);
 		return dialog;
 	}
 }

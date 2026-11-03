@@ -5,6 +5,8 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
+	<include layout="@layout/view_tab_toolbar" />
+
 	<HorizontalScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -21,44 +23,22 @@
 			app:singleSelection="true" />
 	</HorizontalScrollView>
 
-	<LinearLayout
+	<HorizontalScrollView
+		android:id="@+id/genre_scroll"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:paddingHorizontal="@dimen/screen_padding"
-		android:paddingVertical="8dp">
+		android:scrollbars="none">
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/catalog_layout"
-			style="@style/Widget.Niixfliix.TextField.Dropdown"
-			android:layout_width="0dp"
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/genre_chips"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginEnd="8dp"
-			android:layout_weight="1"
-			android:hint="@string/discover_catalog">
-
-			<com.google.android.material.textfield.MaterialAutoCompleteTextView
-				android:id="@+id/catalog_input"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:inputType="none" />
-		</com.google.android.material.textfield.TextInputLayout>
-
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/genre_layout"
-			style="@style/Widget.Niixfliix.TextField.Dropdown"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:hint="@string/discover_genre">
-
-			<com.google.android.material.textfield.MaterialAutoCompleteTextView
-				android:id="@+id/genre_input"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:inputType="none" />
-		</com.google.android.material.textfield.TextInputLayout>
-	</LinearLayout>
+			android:paddingHorizontal="@dimen/screen_padding"
+			android:paddingBottom="8dp"
+			app:selectionRequired="true"
+			app:singleLine="true"
+			app:singleSelection="true" />
+	</HorizontalScrollView>
 
 	<FrameLayout
 		android:layout_width="match_parent"

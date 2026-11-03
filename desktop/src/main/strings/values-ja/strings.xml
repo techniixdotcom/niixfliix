@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="account_sign_out_confirm_desktop">Stremio からサインアウトしますか？ソースとライブラリはこのコンピューターに残ります。</string>
+	<string name="action_quit">終了</string>
+	<string name="download_failed_desktop">失敗しました。再開をクリックしてもう一度お試しください。</string>
+	<string name="download_show_in_folder">フォルダーで表示</string>
+	<string name="hardware_decoding_crash">グラフィックカードが動画をデコードしている間にアプリが予期せず終了したため、ハードウェアデコードをオフにしました。設定 &gt; 再生 でオンに戻せます。</string>
+	<string name="hardware_decoding_crash_title">ハードウェアデコードをオフにしました</string>
+	<string name="hero_info">詳細情報</string>
+	<string name="library_downloads_empty_desktop">ダウンロードはありません。ストリームを右クリックするとダウンロードできます。</string>
+	<string name="library_queue_empty_desktop">キューは空です。映画、番組、エピソードを右クリックすると追加できます。</string>
+	<string name="player_all_files">すべてのファイル</string>
+	<string name="player_keeps_screen_on">動画を再生中</string>
+	<string name="player_mute">ミュート</string>
+	<string name="player_open">動画に戻る</string>
+	<string name="player_subtitle_files">字幕ファイル</string>
+	<string name="quality_hint_desktop">この画質の最適なストリームが自動で再生されます。ない場合は、次に低い画質が使われます。</string>
+	<string name="quit_downloads_running">ダウンロードがまだ実行中です。終了しますか？ダウンロードは一時停止され、次回再開できます。</string>
+	<string name="row_failed_desktop">この行を読み込めませんでした。</string>
+	<string name="row_scroll_back">前へスクロール</string>
+	<string name="row_scroll_forward">次へスクロール</string>
+	<string name="settings_crash_log_summary_desktop">最後のクラッシュ: %1$s。コピーするまでこのコンピューターの外には出ません。</string>
+	<string name="settings_hardware_decoding">ハードウェア動画デコード</string>
+	<string name="settings_hardware_decoding_summary">グラフィックカードが動画をデコードするので、プロセッサーをほとんど使わずに滑らかに再生できます。動画の色がおかしい、乱れるなどの場合はオフにしてください。</string>
+	<string name="settings_language_restart">新しい言語は次回アプリを起動したときに使われます。</string>
+	<string name="streams_quality_desktop">自動：%1$s · 変更</string>
+	<string name="update_no_bundle">リリース %1$s に .flatpak が添付されていません。dist フォルダーの .flatpak を GitHub のリリースに添付してください。</string>
+	<string name="update_no_bundle_checksum">リリース %1$s に .flatpak.sha256 ファイルが添付されていないため、ダウンロードを確認できません。dist フォルダーの両方のファイルを GitHub のリリースに添付してください。</string>
+	<string name="update_ready_desktop">アップデートを %1$s として保存し、ソフトウェアセンターで開きました。何も開かない場合は、ターミナルからインストールしてください：\n\n%2$s\n\nその後、アプリを再起動してください。</string>
+</resources>

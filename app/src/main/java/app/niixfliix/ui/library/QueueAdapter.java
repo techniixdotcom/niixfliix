@@ -10,14 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import app.niixfliix.R;
 import app.niixfliix.data.model.QueueItem;
 import app.niixfliix.ui.Images;
+import app.niixfliix.ui.common.DiffAdapter;
 
-final class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.Holder> {
+final class QueueAdapter extends DiffAdapter<QueueItem, QueueAdapter.Holder> {
 
 	interface Listener {
 		void onQueueClick(@NonNull QueueItem item);
@@ -26,16 +26,21 @@ final class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.Holder> {
 	}
 
 	private final Listener listener;
-	private final List<QueueItem> items = new ArrayList<>();
 
 	QueueAdapter(@NonNull Listener listener) {
 		this.listener = listener;
 	}
 
-	void submit(@NonNull List<QueueItem> newItems) {
-		items.clear();
-		items.addAll(newItems);
-		notifyDataSetChanged();
+	@NonNull
+	@Override
+	protected Object keyOf(@NonNull QueueItem item) {
+		return item.key();
+	}
+
+	@NonNull
+	@Override
+	protected Object contentOf(@NonNull QueueItem item) {
+		return Arrays.asList(item.label(), item.poster);
 	}
 
 	@NonNull
@@ -46,12 +51,7 @@ final class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.Holder> {
 
 	@Override
 	public void onBindViewHolder(@NonNull Holder holder, int position) {
-		holder.bind(items.get(position));
-	}
-
-	@Override
-	public int getItemCount() {
-		return items.size();
+		holder.bind(getItem(position));
 	}
 
 	final class Holder extends RecyclerView.ViewHolder {

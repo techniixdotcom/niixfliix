@@ -5,9 +5,11 @@
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
+	<include layout="@layout/view_tab_toolbar" />
+
 	<com.google.android.material.textfield.TextInputLayout
 		android:id="@+id/search_layout"
-		style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+		style="@style/Widget.Niixfliix.TextField"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginHorizontal="@dimen/screen_padding"
