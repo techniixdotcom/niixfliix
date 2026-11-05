@@ -1,5 +1,4 @@
 <h1 align="center">
-  <img src="docs/images/icon.png" height="72" alt="" />
   <img src="docs/images/title.svg" height="72" alt="niixfliix" />
 </h1>
 
