@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="docs/images/title.svg" height="72" alt="niixfliix" />
+Niixfliix
 </h1>
 
 <p align="center">
