@@ -233,6 +233,8 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 		boolean loading = stillLoadingManifests();
 		if (loading) {
 			refresh.setRefreshing(true);
+		} else {
+			graph.warmUpContinueWatching();
 		}
 		empty.setVisibility(adapter.isEmpty() && !loading ? View.VISIBLE : View.GONE);
 	}
@@ -242,11 +244,18 @@ public final class HomeFragment extends Fragment implements RowsAdapter.Listener
 			return;
 		}
 		RowsAdapter.Hero entry = heroEntry();
+		// At the top before this update: stay at the top after it. The banner arrives after the first
+		// catalog loads and is inserted above rows already on screen, which would otherwise keep their
+		// place and leave the banner scrolled out of sight.
+		boolean atTop = !list.canScrollVertically(-1);
 		int top = entry == null ? toolbarHeight : 0;
 		if (list.getPaddingTop() != top) {
 			list.setPadding(list.getPaddingLeft(), top, list.getPaddingRight(), list.getPaddingBottom());
 		}
 		adapter.setContent(entry, shownNotice, shownRows);
+		if (atTop) {
+			list.scrollToPosition(0);
+		}
 		updateToolbar();
 	}
 

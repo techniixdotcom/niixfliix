@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,15 +43,21 @@ public final class Releases {
 		@NonNull public final String fileName;
 		@NonNull final String fileUrl;
 		@NonNull final String checksumUrl;
+		/** The file's Ed25519 signature (.sig), when the release has one. */
+		@Nullable final String signatureUrl;
+		/** The signing-key handovers ({@link Signatures}), when the release has them. */
+		@Nullable final String handoverUrl;
 		public final long size;
 
 		Release(@NonNull String version, @NonNull String notes, @NonNull String fileName, @NonNull String fileUrl,
-				@NonNull String checksumUrl, long size) {
+				@NonNull String checksumUrl, @Nullable String signatureUrl, @Nullable String handoverUrl, long size) {
 			this.version = version;
 			this.notes = notes;
 			this.fileName = fileName;
 			this.fileUrl = fileUrl;
 			this.checksumUrl = checksumUrl;
+			this.signatureUrl = signatureUrl;
+			this.handoverUrl = handoverUrl;
 			this.size = size;
 		}
 	}
@@ -62,6 +69,7 @@ public final class Releases {
 		NO_RELEASES,
 		NO_FILE,
 		NO_CHECKSUM,
+		NO_SIGNATURE,
 		RATE_LIMITED,
 		NETWORK
 	}
@@ -85,7 +93,8 @@ public final class Releases {
 	public enum Problem {
 		DOWNLOAD,
 		TOO_LARGE,
-		CHECKSUM
+		CHECKSUM,
+		SIGNATURE
 	}
 
 	public static final class DownloadException extends Exception {
@@ -102,20 +111,36 @@ public final class Releases {
 	private static final long REQUEST_TIMEOUT_MS = 20_000;
 	private static final int RELEASES_PER_PAGE = 30;
 	private static final Pattern VERSION = Pattern.compile("(\\d+(?:\\.\\d+)+)");
+	/** The release asset with the signing-key handovers: the slug followed by this. */
+	static final String HANDOVER_SUFFIX = "-linux-key-handover.txt";
+	private static final int MAX_SIGNATURE_BYTES = 1024;
+	private static final int MAX_HANDOVER_BYTES = 64 * 1024;
 
 	private final OkHttpClient http;
 	private final String repo;
 	private final String slug;
 	private final String current;
 	private final String extension;
+	private final List<String> trustedKeys;
 
+	/** Releases checked by their SHA-256 only. Android: the APK's own signature is checked on top. */
 	public Releases(@NonNull OkHttpClient http, @NonNull String repo, @NonNull String slug,
 			@NonNull String currentVersion, @NonNull String extension) {
+		this(http, repo, slug, currentVersion, extension, new ArrayList<>());
+	}
+
+	/**
+	 * Releases that also have to be signed with one of {@code trustedKeys} (Ed25519, hex), or a key
+	 * one of them handed over to. With no keys, nothing is required.
+	 */
+	public Releases(@NonNull OkHttpClient http, @NonNull String repo, @NonNull String slug,
+			@NonNull String currentVersion, @NonNull String extension, @NonNull List<String> trustedKeys) {
 		this.http = http;
 		this.repo = repo;
 		this.slug = slug;
 		this.current = currentVersion;
 		this.extension = extension;
+		this.trustedKeys = new ArrayList<>(trustedKeys);
 	}
 
 	@WorkerThread
@@ -123,7 +148,7 @@ public final class Releases {
 	public CheckResult check() {
 		try {
 			return choose(get(API + repo + "/releases?per_page=" + RELEASES_PER_PAGE, Constant.UPDATE_INFO_MAX_BYTES,
-					true), current, slug, extension);
+					true), current, slug, extension, !trustedKeys.isEmpty());
 		} catch (HttpStatusException e) {
 			Logs.w(TAG, "Update check failed", e);
 			return CheckResult.of(e.code == 404 ? Status.REPO_NOT_FOUND
@@ -146,6 +171,9 @@ public final class Releases {
 			if (!actual.equalsIgnoreCase(expected)) {
 				throw new DownloadException(Problem.CHECKSUM, null);
 			}
+			if (!trustedKeys.isEmpty()) {
+				checkSignature(release, actual);
+			}
 		} catch (DownloadException e) {
 			delete(target);
 			throw e;
@@ -159,6 +187,21 @@ public final class Releases {
 		}
 	}
 
+	/**
+	 * The SHA-256 only proves the file arrived as it was uploaded. The signature proves it was
+	 * made with the app's own key, which nobody can add to a release without having that key.
+	 */
+	private void checkSignature(Release release, String sha256) throws IOException, DownloadException {
+		if (release.signatureUrl == null) {
+			throw new DownloadException(Problem.SIGNATURE, null);
+		}
+		byte[] signature = getBytes(release.signatureUrl, MAX_SIGNATURE_BYTES);
+		String handovers = release.handoverUrl != null ? get(release.handoverUrl, MAX_HANDOVER_BYTES, false) : "";
+		if (!Signatures.verifyRelease(sha256, signature, Signatures.trusted(trustedKeys, handovers))) {
+			throw new DownloadException(Problem.SIGNATURE, null);
+		}
+	}
+
 	private static void delete(File file) {
 		if (file.exists() && !file.delete()) {
 			Logs.w(TAG, "Could not delete " + file.getName(), null);
@@ -169,6 +212,13 @@ public final class Releases {
 	@NonNull
 	static CheckResult choose(@NonNull String json, @NonNull String current, @NonNull String slug,
 			@NonNull String extension) {
+		return choose(json, current, slug, extension, false);
+	}
+
+	@VisibleForTesting
+	@NonNull
+	static CheckResult choose(@NonNull String json, @NonNull String current, @NonNull String slug,
+			@NonNull String extension, boolean needSignature) {
 		JsonElement root;
 		try {
 			root = JsonParser.parseString(json);
@@ -183,6 +233,8 @@ public final class Releases {
 		JsonObject best = null;
 		Asset bestFile = null;
 		Asset bestChecksum = null;
+		Asset bestSignature = null;
+		Asset bestHandover = null;
 		for (JsonElement element : root.getAsJsonArray()) {
 			if (!element.isJsonObject()) {
 				continue;
@@ -194,7 +246,9 @@ public final class Releases {
 			}
 			Asset file = null;
 			Asset checksum = null;
+			Asset handover = null;
 			List<Asset> checksums = new ArrayList<>();
+			List<Asset> signatures = new ArrayList<>();
 			JsonElement assets = release.get("assets");
 			if (assets != null && assets.isJsonArray()) {
 				for (JsonElement a : assets.getAsJsonArray()) {
@@ -206,6 +260,10 @@ public final class Releases {
 						file = asset;
 					} else if (asset.lowerName.endsWith(suffix + ".sha256")) {
 						checksums.add(asset);
+					} else if (asset.lowerName.endsWith(suffix + ".sig")) {
+						signatures.add(asset);
+					} else if (asset.lowerName.equals(slug + HANDOVER_SUFFIX)) {
+						handover = asset;
 					}
 				}
 			}
@@ -218,6 +276,13 @@ public final class Releases {
 					checksum = c;
 				}
 			}
+			Asset signature = null;
+			for (Asset s : signatures) {
+				if (file != null && s.lowerName.equals(file.lowerName + ".sig")) {
+					signature = s;
+					break;
+				}
+			}
 			String version = versionIn(string(release, "tag_name"));
 			if (version == null && file != null) {
 				version = versionIn(file.lowerName);
@@ -227,6 +292,8 @@ public final class Releases {
 				best = release;
 				bestFile = file;
 				bestChecksum = checksum;
+				bestSignature = signature;
+				bestHandover = handover;
 			}
 		}
 		if (best == null) {
@@ -241,9 +308,13 @@ public final class Releases {
 		if (bestChecksum == null) {
 			return new CheckResult(Status.NO_CHECKSUM, null, bestVersion);
 		}
+		if (needSignature && bestSignature == null) {
+			return new CheckResult(Status.NO_SIGNATURE, null, bestVersion);
+		}
 		String notes = string(best, "body");
 		return new CheckResult(Status.UPDATE, new Release(bestVersion, notes != null ? notes : "", bestFile.name,
-				bestFile.url, bestChecksum.url, bestFile.size), bestVersion);
+				bestFile.url, bestChecksum.url, bestSignature != null ? bestSignature.url : null,
+				bestHandover != null ? bestHandover.url : null, bestFile.size), bestVersion);
 	}
 
 	private static final class Asset {
@@ -338,6 +409,33 @@ public final class Releases {
 			}
 		}
 		return hex(digest.digest());
+	}
+
+	@NonNull
+	private byte[] getBytes(String url, int maxBytes) throws IOException {
+		Call call = http.newCall(new Request.Builder().url(url).build());
+		call.timeout().timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+		try (Response response = call.execute()) {
+			if (!response.isSuccessful()) {
+				throw new HttpStatusException(response.code());
+			}
+			ResponseBody body = response.body();
+			if (body.contentLength() > maxBytes) {
+				throw new SizeCappedReader.TooLargeException(maxBytes);
+			}
+			try (InputStream in = body.byteStream()) {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buffer = new byte[4096];
+				int n;
+				while ((n = in.read(buffer)) != -1) {
+					if (out.size() + n > maxBytes) {
+						throw new SizeCappedReader.TooLargeException(maxBytes);
+					}
+					out.write(buffer, 0, n);
+				}
+				return out.toByteArray();
+			}
+		}
 	}
 
 	@NonNull

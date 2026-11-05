@@ -25,6 +25,8 @@
 	<string name="settings_language_restart">Yeni dil, uygulama bir sonraki açılışında kullanılır.</string>
 	<string name="streams_quality_desktop">Otomatik: %1$s · Değiştir</string>
 	<string name="update_no_bundle">%1$s sürümüne .flatpak eklenmemiş. dist klasöründeki .flatpak dosyasını GitHub sürümüne ekleyin.</string>
-	<string name="update_no_bundle_checksum">%1$s sürümüne .flatpak.sha256 dosyası eklenmemiş, bu yüzden indirme doğrulanamıyor. dist klasöründeki iki dosyayı da GitHub sürümüne ekleyin.</string>
+	<string name="update_no_bundle_checksum">%1$s sürümüne .flatpak.sha256 dosyası eklenmemiş, bu yüzden indirme doğrulanamıyor. dist klasöründeki tüm dosyaları GitHub sürümüne ekleyin.</string>
+	<string name="update_no_bundle_signature">%1$s sürümüne .flatpak.sig dosyası eklenmemiş, bu yüzden indirme doğrulanamıyor. dist klasöründeki tüm dosyaları GitHub sürümüne ekleyin.</string>
+	<string name="update_failed_signature">İndirilen dosya bu uygulamanın anahtarıyla imzalanmamış, bu yüzden silindi.</string>
 	<string name="update_ready_desktop">Güncelleme %1$s olarak kaydedildi ve yazılım merkezinizde açıldı. Hiçbir şey açılmadıysa bir terminalden kurun:\n\n%2$s\n\nArdından uygulamayı yeniden başlatın.</string>
 </resources>

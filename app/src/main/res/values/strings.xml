@@ -305,7 +305,7 @@
 	<string name="update_rate_limited">GitHub is limiting update checks from this network right now. Try again in an hour.</string>
 	<string name="update_debug_build">This is a debug build. Updates install the release version, which Android keeps as a separate app. Install the release APK from GitHub once; it updates itself from then on.</string>
 	<string name="update_failed_wrong_package">The download is a different app, so it was thrown away.</string>
-	<string name="update_failed_wrong_signer">The update is signed with a different key than this app, so Android won\'t install it over it. Build releases with the same key (BUILD.sh keeps it in ~/.niixfliix/keys). To move to a new key, uninstall this app and install the new APK once.</string>
+	<string name="update_failed_wrong_signer">The update is signed with a different key than this app, so Android won\'t install it over it. Build releases with the same key (BUILD.sh keeps it in ~/.keys/niixfliix). To move to a new key without reinstalling, use BUILD.sh --use-shared-key.</string>
 	<string name="update_failed_version_code">The update\'s version code isn\'t higher than this app\'s, so Android won\'t install it. Raise versionCode in gradle.properties when building a release.</string>
 	<string name="update_install_cancelled">Update cancelled.</string>
 	<string name="update_install_conflict">Android refused the update: it\'s signed with a different key or isn\'t newer than the installed app.</string>

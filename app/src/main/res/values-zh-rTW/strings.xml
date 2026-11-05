@@ -302,7 +302,7 @@
 	<string name="update_rate_limited">GitHub 目前限制了來自此網路的檢查。請一小時後再試。</string>
 	<string name="update_debug_build">這是偵錯版本。更新會安裝正式版本，Android 會把它視為另一個應用程式。請從 GitHub 安裝一次 APK，之後它就能自行更新。</string>
 	<string name="update_failed_wrong_package">下載的是另一個應用程式，已將其捨棄。</string>
-	<string name="update_failed_wrong_signer">這個更新使用的簽署金鑰與此應用程式不同，因此 Android 不會覆蓋安裝。請使用同一把金鑰建置發布版本（BUILD.sh 將其儲存在 ~/.niixfliix/keys 中）。如需更換金鑰，請解除安裝此應用程式並安裝一次新的 APK。</string>
+	<string name="update_failed_wrong_signer">這個更新使用的簽署金鑰與此應用程式不同，因此 Android 不會覆蓋安裝。請使用同一把金鑰建置發布版本（BUILD.sh 將其儲存在 ~/.keys/niixfliix 中）。如需在不重新安裝的情況下更換金鑰，請使用 BUILD.sh --use-shared-key。</string>
 	<string name="update_failed_version_code">這個更新的版本代碼不高於此應用程式，因此 Android 不會安裝。建置發布版本時請提高 gradle.properties 中的 versionCode。</string>
 	<string name="update_install_cancelled">已取消更新。</string>
 	<string name="update_install_conflict">Android 拒絕了更新：它使用了不同的簽署金鑰，或並不比已安裝的應用程式新。</string>

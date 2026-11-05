@@ -311,7 +311,7 @@
 	<string name="update_rate_limited">Сейчас GitHub ограничивает проверки из этой сети. Попробуйте через час.</string>
 	<string name="update_debug_build">Это отладочная сборка. Обновления устанавливают обычную версию, которую Android считает отдельным приложением. Установите APK с GitHub один раз — дальше оно будет обновляться само.</string>
 	<string name="update_failed_wrong_package">Загруженный файл — другое приложение, поэтому он удалён.</string>
-	<string name="update_failed_wrong_signer">Обновление подписано другим ключом, чем это приложение, поэтому Android не установит его поверх. Собирайте релизы тем же ключом (BUILD.sh хранит его в ~/.niixfliix/keys). Чтобы перейти на новый ключ, удалите приложение и один раз установите новый APK.</string>
+	<string name="update_failed_wrong_signer">Обновление подписано другим ключом, чем это приложение, поэтому Android не установит его поверх. Собирайте релизы тем же ключом (BUILD.sh хранит его в ~/.keys/niixfliix). Чтобы перейти на новый ключ без переустановки, используйте BUILD.sh --use-shared-key.</string>
 	<string name="update_failed_version_code">Код версии обновления не больше, чем у этого приложения, поэтому Android его не установит. Увеличивайте versionCode в gradle.properties при сборке релиза.</string>
 	<string name="update_install_cancelled">Обновление отменено.</string>
 	<string name="update_install_conflict">Android отклонил обновление: оно подписано другим ключом или не новее установленного приложения.</string>

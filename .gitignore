@@ -11,3 +11,6 @@ captures/
 *.jks
 *.keystore
 signing.env
+*.p12
+*.pem
+lineage.bin

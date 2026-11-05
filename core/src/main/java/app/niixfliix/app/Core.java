@@ -37,6 +37,7 @@ import app.niixfliix.data.PlayQueue;
 import app.niixfliix.data.Prefs;
 import app.niixfliix.data.SearchHistory;
 import app.niixfliix.data.SecretStore;
+import app.niixfliix.data.model.HistoryEntry;
 import app.niixfliix.data.model.LibraryItem;
 import app.niixfliix.live.LiveCheck;
 import app.niixfliix.net.Http;
@@ -73,6 +74,7 @@ public class Core {
 	private final File torrentCacheDir;
 	private TorrentEngine torrentEngine;
 	@Nullable private StartAhead startAhead;
+	private boolean warmedContinueWatching;
 	private final Set<String> datesLookedUp = new HashSet<>();
 
 	protected Core(@NonNull MainQueue main, @NonNull Function<String, KeyValueStore> stores,
@@ -137,8 +139,10 @@ public class Core {
 			TorrentEngine engine = torrentEngine();
 			main.post(() -> {
 				engine.warmUp();
-				if (videoId != null && unmetered && startAhead == null) {
-					startAhead = StartAhead.start(streams, main, engine, playerPrefs.quality(seriesId, true), type,
+				// Pre-load on every network, mobile data and roaming included, at the quality Play will pick
+				// on this network, so the stream is already connected by the time Play is tapped.
+				if (videoId != null && startAhead == null) {
+					startAhead = StartAhead.start(streams, main, engine, playerPrefs.quality(seriesId, unmetered), type,
 							videoId);
 				}
 			});
@@ -147,6 +151,28 @@ public class Core {
 
 	protected boolean onUnmeteredNetwork() {
 		return true;
+	}
+
+	/**
+	 * When Home first shows, gets the top "Continue watching" title ready to play, the same way opening its
+	 * page does: its streams are looked up and the likely torrent is connected and its start fetched, so
+	 * tapping it starts straight away. Once per launch; what's opened after that takes over.
+	 */
+	@MainThread
+	public final void warmUpContinueWatching() {
+		if (warmedContinueWatching) {
+			return;
+		}
+		warmedContinueWatching = true;
+		List<HistoryEntry> entries = history.continueWatching();
+		if (entries.isEmpty()) {
+			return;
+		}
+		HistoryEntry top = entries.get(0);
+		if (top.videoId.isEmpty() || top.type.isEmpty()) {
+			return;
+		}
+		prepareToPlay(top.type, top.videoId, Meta.TYPE_SERIES.equals(top.type) ? top.metaId : null);
 	}
 
 	@NonNull

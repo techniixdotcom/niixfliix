@@ -90,6 +90,8 @@ public final class Updates {
 				return I18n.t("update_no_bundle", version);
 			case NO_CHECKSUM:
 				return I18n.t("update_no_bundle_checksum", version);
+			case NO_SIGNATURE:
+				return I18n.t("update_no_bundle_signature", version);
 			case RATE_LIMITED:
 				return I18n.t("update_rate_limited");
 			case NETWORK:
@@ -150,6 +152,8 @@ public final class Updates {
 				return I18n.t("update_failed_too_large");
 			case CHECKSUM:
 				return I18n.t("update_failed_checksum");
+			case SIGNATURE:
+				return I18n.t("update_failed_signature");
 			case DOWNLOAD:
 			default:
 				return I18n.t("update_failed_download");

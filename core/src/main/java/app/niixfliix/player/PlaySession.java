@@ -36,6 +36,20 @@ public final class PlaySession {
 		this.stream = stream;
 	}
 
+	/**
+	 * The torrent with this info hash won the start race, so it's the stream playing now. Returns whether it
+	 * was found among this session's streams.
+	 */
+	public boolean adoptTorrent(@NonNull String infoHash) {
+		for (StreamInfo s : streams) {
+			if (s.kind == StreamInfo.Kind.TORRENT && infoHash.equalsIgnoreCase(s.stream.infoHash)) {
+				stream = s;
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Nullable
 	public Video nextVideo() {
 		return meta != null ? meta.nextVideo(videoId) : null;

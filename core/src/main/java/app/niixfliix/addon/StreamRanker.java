@@ -186,6 +186,23 @@ public final class StreamRanker {
 		return null;
 	}
 
+	/**
+	 * The torrent to start next to {@code playing} so the two race to play first: the next best one of the
+	 * same quality, or null when there's none (or {@code playing} isn't a torrent).
+	 */
+	@Nullable
+	public static StreamInfo raceCandidate(@NonNull List<StreamInfo> sorted, @NonNull StreamInfo playing) {
+		if (playing.kind != StreamInfo.Kind.TORRENT || playing.stream.infoHash == null) {
+			return null;
+		}
+		StreamInfo next = nextSameQuality(sorted, playing);
+		if (next == null || next.kind != StreamInfo.Kind.TORRENT || next.stream.infoHash == null
+				|| next.stream.infoHash.equalsIgnoreCase(playing.stream.infoHash)) {
+			return null;
+		}
+		return next;
+	}
+
 	@Nullable
 	private static StreamInfo firstPlayable(List<StreamInfo> streams, Quality quality) {
 		for (StreamInfo s : streams) {

@@ -308,7 +308,7 @@
 	<string name="update_rate_limited">GitHub limite en ce moment les vérifications depuis ce réseau. Réessayez dans une heure.</string>
 	<string name="update_debug_build">Ceci est une version de débogage. Les mises à jour installent la version normale, qu\'Android considère comme une autre appli. Installez une fois l\'APK de GitHub ; elle se met ensuite à jour toute seule.</string>
 	<string name="update_failed_wrong_package">Le téléchargement est une autre appli, il a donc été supprimé.</string>
-	<string name="update_failed_wrong_signer">La mise à jour est signée avec une autre clé que cette appli, Android ne l\'installera donc pas par-dessus. Compilez les versions avec la même clé (BUILD.sh la garde dans ~/.niixfliix/keys). Pour changer de clé, désinstallez cette appli et installez le nouvel APK une fois.</string>
+	<string name="update_failed_wrong_signer">La mise à jour est signée avec une autre clé que cette appli, Android ne l\'installera donc pas par-dessus. Compilez les versions avec la même clé (BUILD.sh la garde dans ~/.keys/niixfliix). Pour changer de clé sans réinstaller, utilisez BUILD.sh --use-shared-key.</string>
 	<string name="update_failed_version_code">Le code de version de la mise à jour n\'est pas supérieur à celui de cette appli, Android ne l\'installera donc pas. Augmentez versionCode dans gradle.properties en compilant une version.</string>
 	<string name="update_install_cancelled">Mise à jour annulée.</string>
 	<string name="update_install_conflict">Android a refusé la mise à jour : elle est signée avec une autre clé ou n\'est pas plus récente que l\'appli installée.</string>

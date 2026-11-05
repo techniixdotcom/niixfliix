@@ -165,7 +165,11 @@ public final class HomePage implements Page, PosterCard.Listener, AddonRepositor
 		}
 		showHero();
 		rows.setRows(header, list);
-		empty.visible(rows.isEmpty() && !stillLoadingManifests());
+		boolean loading = stillLoadingManifests();
+		empty.visible(rows.isEmpty() && !loading);
+		if (!loading) {
+			graph.warmUpContinueWatching();
+		}
 	}
 
 	@Nullable

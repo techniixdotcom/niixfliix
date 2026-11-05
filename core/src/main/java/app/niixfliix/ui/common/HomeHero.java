@@ -25,7 +25,7 @@ public final class HomeHero {
 	}
 
 	public static final int ROTATION = 5;
-	public static final long ROTATE_EVERY_MS = 8000;
+	public static final long ROTATE_EVERY_MS = 4000;
 
 	@Nullable
 	public static PosterItem pick(@NonNull List<PosterItem> items) {

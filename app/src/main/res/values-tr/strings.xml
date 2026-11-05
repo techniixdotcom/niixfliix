@@ -305,7 +305,7 @@
 	<string name="update_rate_limited">GitHub şu anda bu ağdan yapılan kontrolleri sınırlıyor. Bir saat sonra tekrar deneyin.</string>
 	<string name="update_debug_build">Bu bir hata ayıklama sürümü. Güncellemeler normal sürümü yükler ve Android onu ayrı bir uygulama sayar. GitHub\'daki APK\'yı bir kez yükleyin; sonrasında kendini günceller.</string>
 	<string name="update_failed_wrong_package">İndirilen dosya başka bir uygulama olduğu için silindi.</string>
-	<string name="update_failed_wrong_signer">Güncelleme bu uygulamadan farklı bir anahtarla imzalanmış, bu yüzden Android üzerine yüklemez. Sürümleri aynı anahtarla derleyin (BUILD.sh onu ~/.niixfliix/keys içinde saklar). Yeni anahtara geçmek için bu uygulamayı kaldırıp yeni APK\'yı bir kez yükleyin.</string>
+	<string name="update_failed_wrong_signer">Güncelleme bu uygulamadan farklı bir anahtarla imzalanmış, bu yüzden Android üzerine yüklemez. Sürümleri aynı anahtarla derleyin (BUILD.sh onu ~/.keys/niixfliix içinde saklar). Yeniden yüklemeden yeni anahtara geçmek için BUILD.sh --use-shared-key kullanın.</string>
 	<string name="update_failed_version_code">Güncellemenin sürüm kodu bu uygulamanınkinden büyük değil, bu yüzden Android yüklemez. Sürüm derlerken gradle.properties içindeki versionCode değerini artırın.</string>
 	<string name="update_install_cancelled">Güncelleme iptal edildi.</string>
 	<string name="update_install_conflict">Android güncellemeyi reddetti: farklı bir anahtarla imzalanmış ya da yüklü uygulamadan yeni değil.</string>

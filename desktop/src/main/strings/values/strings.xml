@@ -25,6 +25,8 @@
 	<string name="settings_language_restart">The new language is used the next time the app starts.</string>
 	<string name="streams_quality_desktop">Auto: %1$s · Change</string>
 	<string name="update_no_bundle">Release %1$s has no .flatpak attached. Attach the .flatpak from the dist folder to the GitHub release.</string>
-	<string name="update_no_bundle_checksum">Release %1$s has no .flatpak.sha256 file attached, so the download can\'t be checked. Attach both files from the dist folder to the GitHub release.</string>
+	<string name="update_no_bundle_checksum">Release %1$s has no .flatpak.sha256 file attached, so the download can\'t be checked. Attach all the files from the dist folder to the GitHub release.</string>
+	<string name="update_no_bundle_signature">Release %1$s has no .flatpak.sig file attached, so the download can\'t be checked. Attach all the files from the dist folder to the GitHub release.</string>
+	<string name="update_failed_signature">The download isn\'t signed with this app\'s key, so it was thrown away.</string>
 	<string name="update_ready_desktop">The update was saved as %1$s and handed to your software centre. If nothing opened, install it from a terminal:\n\n%2$s\n\nThen restart the app.</string>
 </resources>

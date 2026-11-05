@@ -428,6 +428,11 @@ public final class DesktopPlayback implements VideoPlayer.Listener {
 		graph.main.postDelayed(torrentStartCheck, TORRENT_START_TIMEOUT_MS);
 		graph.torrentEngine().play(Core.magnetFor(s), s.stream.fileIdx,
 				Prefs.CLEAR_TORRENTS_AFTER_PLAYBACK, torrentListener());
+		PlaySession playing = session;
+		StreamInfo rival = playing != null ? StreamRanker.raceCandidate(playing.streams, s) : null;
+		if (rival != null) {
+			graph.torrentEngine().race(Core.magnetFor(rival), rival.stream.fileIdx);
+		}
 	}
 
 	private TorrentEngine.Listener torrentListener() {
@@ -441,6 +446,14 @@ public final class DesktopPlayback implements VideoPlayer.Listener {
 			public void onReady(@NonNull String url, @NonNull String fileName) {
 				if (player != null) {
 					open(player, url, new HashMap<>(), pendingStartMs);
+				}
+			}
+
+			@Override
+			public void onSwitched(@NonNull String infoHash) {
+				PlaySession playing = session;
+				if (playing != null) {
+					playing.adoptTorrent(infoHash);
 				}
 			}
 
@@ -514,7 +527,8 @@ public final class DesktopPlayback implements VideoPlayer.Listener {
 			return;
 		}
 		TorrentEngine.Status status = torrentStatus;
-		boolean moving = status != null && status.peers > 0 && status.phase != TorrentEngine.Phase.METADATA;
+		boolean moving = status != null && status.peers > 0 && status.phase != TorrentEngine.Phase.METADATA
+				|| graph.torrentEngine().isRivalMoving();
 		if (moving) {
 			graph.main.postDelayed(torrentStartCheck, TORRENT_START_TIMEOUT_MS);
 			return;

@@ -54,6 +54,15 @@ public final class TorrentEngine {
 
 		@MainThread
 		void onError(@NonNull Error error, long fileSize);
+
+		/**
+		 * The stream given to {@link #race} got its start in first (or the one given to {@link #play}
+		 * failed while the rival was still going), so the rival is what plays now. From here on the
+		 * status and {@link #onReady} calls are about that torrent.
+		 */
+		@MainThread
+		default void onSwitched(@NonNull String infoHash) {
+		}
 	}
 
 	public enum Error {
@@ -84,7 +93,9 @@ public final class TorrentEngine {
 	}
 
 	private static final String TAG = "TorrentEngine";
-	private static final long START_BUFFER_BYTES = 4L << 20;
+	// What must be downloaded before playback starts: the first ~2 MB (at least one piece) and the last
+	// piece. The player reads on from there while the rest streams in sequentially.
+	private static final long START_BUFFER_BYTES = 2L << 20;
 	private static final int AHEAD_SECONDS = 5 * 60;
 	private static final int ASSUMED_RUNTIME_SECONDS = 2 * 60 * 60;
 	private static final long MIN_AHEAD_BYTES = 16L << 20;
@@ -92,6 +103,11 @@ public final class TorrentEngine {
 	private static final int TAIL_PIECES = 2;
 	private static final int PREFETCH_DEADLINE_MS = 20_000;
 	private static final long STATUS_INTERVAL_MS = 1000;
+	/** While connecting and buffering, check 4 times a second so playback starts as soon as it can. */
+	private static final long STARTING_INTERVAL_MS = 250;
+	/** Extra DHT routers, so a fresh session finds peers sooner than with libtorrent's single default. */
+	private static final String DHT_BOOTSTRAP = "dht.libtorrent.org:25401,router.bittorrent.com:6881,"
+			+ "router.utorrent.com:6881,dht.transmissionbt.com:6881,dht.aelitis.com:6881";
 	private static final long LOW_SPACE_BYTES = 1L << 30;
 	private static final long KEEP_FREE_BYTES = 256L << 20;
 	private static final String[] VIDEO_EXTENSIONS = {".mkv", ".mp4", ".m4v", ".webm", ".avi", ".mov", ".ts", ".wmv"};
@@ -110,6 +126,8 @@ public final class TorrentEngine {
 	private SessionManager session;
 	@Nullable private volatile Playback current;
 	@Nullable private volatile Playback prefetch;
+	/** A second stream started next to {@link #current}: whichever has its start in first plays. */
+	@Nullable private volatile Playback rival;
 
 	private final class Playback {
 		final String infoHash;
@@ -136,6 +154,7 @@ public final class TorrentEngine {
 		boolean wifiLost;
 		volatile boolean preload;
 		volatile boolean held;
+		@Nullable volatile Status lastStatus;
 
 		Playback(String infoHash, @Nullable Integer wantedFile, Listener listener) {
 			this.infoHash = infoHash;
@@ -147,7 +166,7 @@ public final class TorrentEngine {
 			if (stopped) {
 				return;
 			}
-			main.postDelayed(tick, STATUS_INTERVAL_MS);
+			main.postDelayed(tick, phase == Phase.PLAYING ? STATUS_INTERVAL_MS : STARTING_INTERVAL_MS);
 			TorrentHandle h = handle;
 			Status status;
 			try {
@@ -161,11 +180,15 @@ public final class TorrentEngine {
 				Logs.w(TAG, "Torrent status failed", e);
 				return;
 			}
+			lastStatus = status;
 			listener.onStatus(status);
 			if (phase == Phase.BUFFERING && status.bufferedPercent >= 100) {
 				phase = Phase.PLAYING;
 				if (preload) {
 					hold(this);
+				}
+				if (!settleRace(this)) {
+					return;
 				}
 				listener.onReady(server.url(), fileName);
 			}
@@ -186,7 +209,7 @@ public final class TorrentEngine {
 
 	public static final class Limits {
 		public static final Limits COMPUTER = new Limits(200, 100, 0);
-		public static final Limits PHONE = new Limits(80, 30, 1 << 20);
+		public static final Limits PHONE = new Limits(120, 60, 1 << 20);
 
 		final int connections;
 		final int connectSpeed;
@@ -314,6 +337,76 @@ public final class TorrentEngine {
 		start(playback, magnet);
 	}
 
+	/**
+	 * Starts a second stream next to the one just given to {@link #play}, at the same priority. Whichever
+	 * has its start in first plays and the other is dropped. Streams that look alike on paper often differ a
+	 * lot in how fast real peers turn up, so this takes the long waits out of starting. Does nothing when
+	 * what's playing is already under way, or is this same torrent.
+	 */
+	@MainThread
+	public void race(@NonNull Magnet magnet, @Nullable Integer fileIdx) {
+		Playback playing = current;
+		if (playing == null || playing.stopped || playing.phase == Phase.PLAYING
+				|| playing.infoHash.equalsIgnoreCase(magnet.infoHash)) {
+			return;
+		}
+		Playback ahead = prefetch;
+		if (ahead != null && ahead.infoHash.equalsIgnoreCase(magnet.infoHash)) {
+			return;
+		}
+		dropRival();
+		Playback next = new Playback(magnet.infoHash, fileIdx, IGNORED);
+		rival = next;
+		start(next, magnet);
+	}
+
+	/** Whether a stream given to {@link #race} is still going and has peers, past finding the torrent. */
+	@MainThread
+	public boolean isRivalMoving() {
+		Playback r = rival;
+		Status status = r != null && !r.stopped ? r.lastStatus : null;
+		return status != null && status.peers > 0 && status.phase != Phase.METADATA;
+	}
+
+	@MainThread
+	private void dropRival() {
+		Playback old = rival;
+		rival = null;
+		if (old != null) {
+			release(old, true);
+		}
+	}
+
+	/**
+	 * Called when {@code ready} has its start in. Returns whether it should be announced: the first of the two
+	 * to get there plays and the other is dropped.
+	 */
+	@MainThread
+	private boolean settleRace(Playback ready) {
+		if (ready == rival) {
+			Playback loser = current;
+			if (loser == null || loser.stopped || loser.phase == Phase.PLAYING) {
+				dropRival();
+				return false;
+			}
+			takeOver(ready, loser);
+			return true;
+		}
+		if (ready == current) {
+			dropRival();
+		}
+		return true;
+	}
+
+	@MainThread
+	private void takeOver(Playback winner, Playback loser) {
+		rival = null;
+		current = winner;
+		winner.listener = loser.listener;
+		release(loser, true);
+		winner.listener.onSwitched(winner.infoHash);
+	}
+
 	private void start(Playback p, Magnet magnet) {
 		main.post(p.tick);
 		worker.execute(() -> {
@@ -413,7 +506,7 @@ public final class TorrentEngine {
 		main.postDelayed(coolDown, WARM_FOR_MS);
 		run(() -> {
 			ensureSession();
-			if (session.isPaused() && current == null && prefetch == null) {
+			if (session.isPaused() && idle()) {
 				session.resume();
 			}
 		});
@@ -421,7 +514,7 @@ public final class TorrentEngine {
 
 	private void coolDown() {
 		run(() -> {
-			if (current == null && prefetch == null && session != null && !session.isPaused()) {
+			if (idle() && session != null && !session.isPaused()) {
 				saveState();
 				session.pause();
 			}
@@ -437,6 +530,7 @@ public final class TorrentEngine {
 
 	@MainThread
 	public void stop(boolean deleteFiles) {
+		dropRival();
 		Playback p = current;
 		current = null;
 		if (p != null) {
@@ -471,7 +565,7 @@ public final class TorrentEngine {
 			if (deleteFiles) {
 				deleteRecursively(new File(cacheRoot, p.infoHash));
 			}
-			if (current == null && prefetch == null && session != null) {
+			if (idle() && session != null) {
 				saveState();
 				session.pause();
 			}
@@ -480,7 +574,7 @@ public final class TorrentEngine {
 
 	@Nullable
 	private Playback sharing(Playback p) {
-		for (Playback other : new Playback[] {current, prefetch}) {
+		for (Playback other : new Playback[] {current, prefetch, rival}) {
 			if (other != null && other != p && !other.stopped && other.infoHash.equalsIgnoreCase(p.infoHash)) {
 				return other;
 			}
@@ -523,7 +617,7 @@ public final class TorrentEngine {
 
 	public void clearCache() {
 		worker.execute(() -> {
-			if (current == null && prefetch == null) {
+			if (idle()) {
 				deleteRecursively(cacheRoot);
 			}
 		});
@@ -558,7 +652,7 @@ public final class TorrentEngine {
 		SettingsPack settings = new SettingsPack()
 				.listenInterfaces("0.0.0.0:0,[::]:0")
 				.connectionsLimit(limits.connections)
-				.activeDownloads(2)
+				.activeDownloads(3)
 				.setBoolean(settings_pack.bool_types.announce_to_all_trackers.swigValue(), true)
 				.setBoolean(settings_pack.bool_types.announce_to_all_tiers.swigValue(), true)
 				.setInteger(settings_pack.int_types.connection_speed.swigValue(), limits.connectSpeed)
@@ -567,7 +661,8 @@ public final class TorrentEngine {
 				.setInteger(settings_pack.int_types.peer_connect_timeout.swigValue(), 7)
 				.setInteger(settings_pack.int_types.request_timeout.swigValue(), 10)
 				.setInteger(settings_pack.int_types.piece_timeout.swigValue(), 10)
-				.setBoolean(settings_pack.bool_types.strict_end_game_mode.swigValue(), false);
+				.setBoolean(settings_pack.bool_types.strict_end_game_mode.swigValue(), false)
+				.setString(settings_pack.string_types.dht_bootstrap_nodes.swigValue(), DHT_BOOTSTRAP);
 		session = new SessionManager(false);
 		session.addListener(new AlertListener() {
 			@Override
@@ -628,7 +723,7 @@ public final class TorrentEngine {
 			return;
 		}
 		TorrentHandle alertHandle = ((TorrentAlert<?>) alert).handle();
-		for (Playback p : new Playback[] {current, prefetch}) {
+		for (Playback p : new Playback[] {current, prefetch, rival}) {
 			if (p == null || p.stopped || !isOurs(p, alertHandle)) {
 				continue;
 			}
@@ -866,6 +961,15 @@ public final class TorrentEngine {
 			if (prefetch == p) {
 				dropPrefetch();
 			}
+			if (rival == p) {
+				dropRival();
+				return;
+			}
+			Playback other = rival;
+			if (current == p && other != null && !other.stopped) {
+				takeOver(other, p);
+				return;
+			}
 			p.listener.onError(error, size);
 		});
 	}
@@ -899,10 +1003,16 @@ public final class TorrentEngine {
 	}
 
 	private boolean isActive(String infoHash) {
-		Playback p = current;
-		Playback next = prefetch;
-		return (p != null && p.infoHash.equalsIgnoreCase(infoHash))
-				|| (next != null && next.infoHash.equalsIgnoreCase(infoHash));
+		for (Playback p : new Playback[] {current, prefetch, rival}) {
+			if (p != null && p.infoHash.equalsIgnoreCase(infoHash)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean idle() {
+		return current == null && prefetch == null && rival == null;
 	}
 
 	private static long sizeOf(File f) {

@@ -25,6 +25,8 @@
 	<string name="settings_language_restart">La nouvelle langue sera utilisée au prochain démarrage de l’application.</string>
 	<string name="streams_quality_desktop">Auto : %1$s · Modifier</string>
 	<string name="update_no_bundle">La version %1$s n’a pas de .flatpak joint. Joignez le .flatpak du dossier dist à la version GitHub.</string>
-	<string name="update_no_bundle_checksum">La version %1$s n’a pas de fichier .flatpak.sha256 joint, le téléchargement ne peut donc pas être vérifié. Joignez les deux fichiers du dossier dist à la version GitHub.</string>
+	<string name="update_no_bundle_checksum">La version %1$s n’a pas de fichier .flatpak.sha256 joint, le téléchargement ne peut donc pas être vérifié. Joignez tous les fichiers du dossier dist à la version GitHub.</string>
+	<string name="update_no_bundle_signature">La version %1$s n’a pas de fichier .flatpak.sig joint, le téléchargement ne peut donc pas être vérifié. Joignez tous les fichiers du dossier dist à la version GitHub.</string>
+	<string name="update_failed_signature">Le téléchargement n’est pas signé avec la clé de cette appli, il a donc été supprimé.</string>
 	<string name="update_ready_desktop">La mise à jour a été enregistrée sous %1$s et ouverte avec votre logithèque. Si rien ne s’est ouvert, installez-la depuis un terminal :\n\n%2$s\n\nPuis redémarrez l’application.</string>
 </resources>

@@ -25,6 +25,8 @@
 	<string name="settings_language_restart">新しい言語は次回アプリを起動したときに使われます。</string>
 	<string name="streams_quality_desktop">自動：%1$s · 変更</string>
 	<string name="update_no_bundle">リリース %1$s に .flatpak が添付されていません。dist フォルダーの .flatpak を GitHub のリリースに添付してください。</string>
-	<string name="update_no_bundle_checksum">リリース %1$s に .flatpak.sha256 ファイルが添付されていないため、ダウンロードを確認できません。dist フォルダーの両方のファイルを GitHub のリリースに添付してください。</string>
+	<string name="update_no_bundle_checksum">リリース %1$s に .flatpak.sha256 ファイルが添付されていないため、ダウンロードを確認できません。dist フォルダーのすべてのファイルを GitHub のリリースに添付してください。</string>
+	<string name="update_no_bundle_signature">リリース %1$s に .flatpak.sig ファイルが添付されていないため、ダウンロードを確認できません。dist フォルダーのすべてのファイルを GitHub のリリースに添付してください。</string>
+	<string name="update_failed_signature">ダウンロードしたファイルがこのアプリの鍵で署名されていないため、破棄しました。</string>
 	<string name="update_ready_desktop">アップデートを %1$s として保存し、ソフトウェアセンターで開きました。何も開かない場合は、ターミナルからインストールしてください：\n\n%2$s\n\nその後、アプリを再起動してください。</string>
 </resources>

@@ -25,6 +25,8 @@
 	<string name="settings_language_restart">新語言會在下次啟動應用程式時生效。</string>
 	<string name="streams_quality_desktop">自動：%1$s · 變更</string>
 	<string name="update_no_bundle">版本 %1$s 沒有附加 .flatpak。請把 dist 資料夾中的 .flatpak 附加到 GitHub 版本。</string>
-	<string name="update_no_bundle_checksum">版本 %1$s 沒有附加 .flatpak.sha256 檔案，因此無法驗證下載。請把 dist 資料夾中的兩個檔案都附加到 GitHub 版本。</string>
+	<string name="update_no_bundle_checksum">版本 %1$s 沒有附加 .flatpak.sha256 檔案，因此無法驗證下載。請把 dist 資料夾中的所有檔案都附加到 GitHub 版本。</string>
+	<string name="update_no_bundle_signature">版本 %1$s 沒有附加 .flatpak.sig 檔案，因此無法驗證下載。請把 dist 資料夾中的所有檔案都附加到 GitHub 版本。</string>
+	<string name="update_failed_signature">下載的檔案未使用此應用程式的金鑰簽署，因此已被捨棄。</string>
 	<string name="update_ready_desktop">更新已儲存為 %1$s，並已交給軟體中心開啟。如果沒有開啟任何內容，請在終端機中安裝：\n\n%2$s\n\n然後重新啟動應用程式。</string>
 </resources>

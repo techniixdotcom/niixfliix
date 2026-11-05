@@ -89,6 +89,28 @@ public class ReleasesTest {
 	}
 
 	@Test
+	public void signedReleasesNeedTheirSignatureAndKeepTheHandovers() {
+		String unsigned = "[" + release("v1.18.0", false, asset("niixfliix1.18.0.flatpak"),
+				asset("niixfliix1.18.0.flatpak.sha256")) + "]";
+		assertEquals(Releases.Status.NO_SIGNATURE,
+				Releases.choose(unsigned, "1.17.1", "niixfliix", ".flatpak", true).status);
+		assertEquals(Releases.Status.UPDATE, Releases.choose(unsigned, "1.17.1", "niixfliix", ".flatpak").status);
+
+		String signed = "[" + release("v1.18.0", false, asset("niixfliix1.18.0.flatpak"),
+				asset("niixfliix1.18.0.flatpak.sha256"), asset("niixfliix1.18.0.flatpak.sig"),
+				asset("niixfliix1.18.0.apk.sig"), asset("niixfliix-linux-key-handover.txt")) + "]";
+		Releases.CheckResult result = Releases.choose(signed, "1.17.1", "niixfliix", ".flatpak", true);
+		assertEquals(Releases.Status.UPDATE, result.status);
+		assertTrue(result.release.signatureUrl.endsWith("/niixfliix1.18.0.flatpak.sig"));
+		assertTrue(result.release.handoverUrl.endsWith("/niixfliix-linux-key-handover.txt"));
+
+		String otherSignature = "[" + release("v1.18.0", false, asset("niixfliix1.18.0.flatpak"),
+				asset("niixfliix1.18.0.flatpak.sha256"), asset("niixfliix1.17.0.flatpak.sig")) + "]";
+		assertEquals(Releases.Status.NO_SIGNATURE,
+				Releases.choose(otherSignature, "1.17.1", "niixfliix", ".flatpak", true).status);
+	}
+
+	@Test
 	public void versionsInText() {
 		assertEquals("1.2.0", Releases.versionIn("v1.2.0"));
 		assertEquals("1.2.0", Releases.versionIn("niixfliix-1.2.0"));

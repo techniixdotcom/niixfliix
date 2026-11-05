@@ -308,7 +308,7 @@
 	<string name="update_rate_limited">GitHub está limitando ahora las comprobaciones desde esta red. Inténtalo de nuevo en una hora.</string>
 	<string name="update_debug_build">Esta es una versión de depuración. Las actualizaciones instalan la versión normal, que Android trata como otra app. Instala una vez el APK de GitHub; a partir de ahí se actualiza sola.</string>
 	<string name="update_failed_wrong_package">La descarga es otra app, así que se ha descartado.</string>
-	<string name="update_failed_wrong_signer">La actualización está firmada con otra clave distinta a la de esta app, así que Android no la instala encima. Compila las versiones con la misma clave (BUILD.sh la guarda en ~/.niixfliix/keys). Para cambiar de clave, desinstala esta app e instala el nuevo APK una vez.</string>
+	<string name="update_failed_wrong_signer">La actualización está firmada con otra clave distinta a la de esta app, así que Android no la instala encima. Compila las versiones con la misma clave (BUILD.sh la guarda en ~/.keys/niixfliix). Para cambiar de clave sin reinstalar, usa BUILD.sh --use-shared-key.</string>
 	<string name="update_failed_version_code">El código de versión de la actualización no es mayor que el de esta app, así que Android no la instala. Sube versionCode en gradle.properties al compilar una versión.</string>
 	<string name="update_install_cancelled">Actualización cancelada.</string>
 	<string name="update_install_conflict">Android rechazó la actualización: está firmada con otra clave o no es más nueva que la app instalada.</string>

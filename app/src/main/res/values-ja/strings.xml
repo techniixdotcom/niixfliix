@@ -302,7 +302,7 @@
 	<string name="update_rate_limited">現在このネットワークからの確認は GitHub によって制限されています。1 時間後にもう一度お試しください。</string>
 	<string name="update_debug_build">これはデバッグ版です。アップデートでは通常版がインストールされ、Android では別のアプリとして扱われます。GitHub の APK を一度インストールすれば、以降は自動で更新できます。</string>
 	<string name="update_failed_wrong_package">ダウンロードしたものは別のアプリだったため、破棄しました。</string>
-	<string name="update_failed_wrong_signer">アップデートはこのアプリと別の鍵で署名されているため、Android は上書きインストールしません。リリースは同じ鍵でビルドしてください（BUILD.sh は ~/.niixfliix/keys に保存します）。鍵を変えるには、このアプリをアンインストールして新しい APK を一度インストールしてください。</string>
+	<string name="update_failed_wrong_signer">アップデートはこのアプリと別の鍵で署名されているため、Android は上書きインストールしません。リリースは同じ鍵でビルドしてください（BUILD.sh は ~/.keys/niixfliix に保存します）。再インストールせずに鍵を変えるには、BUILD.sh --use-shared-key を使ってください。</string>
 	<string name="update_failed_version_code">アップデートのバージョンコードがこのアプリより大きくないため、Android はインストールしません。リリースをビルドするときに gradle.properties の versionCode を上げてください。</string>
 	<string name="update_install_cancelled">アップデートをキャンセルしました。</string>
 	<string name="update_install_conflict">Android がアップデートを拒否しました。別の鍵で署名されているか、インストール済みのアプリより新しくありません。</string>

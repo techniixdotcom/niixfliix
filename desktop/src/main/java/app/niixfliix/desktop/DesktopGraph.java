@@ -26,6 +26,7 @@ import app.niixfliix.desktop.player.DesktopPlayback;
 import app.niixfliix.download.Downloads;
 import app.niixfliix.download.model.DownloadItem;
 import app.niixfliix.update.Releases;
+import app.niixfliix.update.Signatures;
 import app.niixfliix.util.FileNames;
 import app.niixfliix.util.Logs;
 
@@ -46,7 +47,8 @@ public final class DesktopGraph extends Core {
 				Caches.torrents());
 		desktopPrefs = new DesktopPrefs(stores.apply("settings"));
 		Paths.setPickedDownloads(prefs.downloadsFolder());
-		releases = new Releases(http, AppInfo.GITHUB_REPO, AppInfo.APP_SLUG, AppInfo.VERSION_NAME, ".flatpak");
+		releases = new Releases(http, AppInfo.GITHUB_REPO, AppInfo.APP_SLUG, AppInfo.VERSION_NAME, ".flatpak",
+				Signatures.keys(AppInfo.LINUX_UPDATE_KEYS));
 	}
 
 	@NonNull

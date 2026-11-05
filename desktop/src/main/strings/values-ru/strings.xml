@@ -25,6 +25,8 @@
 	<string name="settings_language_restart">Новый язык будет использоваться при следующем запуске приложения.</string>
 	<string name="streams_quality_desktop">Авто: %1$s · Изменить</string>
 	<string name="update_no_bundle">К релизу %1$s не прикреплён файл .flatpak. Прикрепите .flatpak из папки dist к релизу на GitHub.</string>
-	<string name="update_no_bundle_checksum">К релизу %1$s не прикреплён файл .flatpak.sha256, поэтому загрузку нельзя проверить. Прикрепите оба файла из папки dist к релизу на GitHub.</string>
+	<string name="update_no_bundle_checksum">К релизу %1$s не прикреплён файл .flatpak.sha256, поэтому загрузку нельзя проверить. Прикрепите все файлы из папки dist к релизу на GitHub.</string>
+	<string name="update_no_bundle_signature">К релизу %1$s не прикреплён файл .flatpak.sig, поэтому загрузку нельзя проверить. Прикрепите все файлы из папки dist к релизу на GitHub.</string>
+	<string name="update_failed_signature">Загруженный файл не подписан ключом этого приложения, поэтому он удалён.</string>
 	<string name="update_ready_desktop">Обновление сохранено как %1$s и открыто в центре приложений. Если ничего не открылось, установите его из терминала:\n\n%2$s\n\nЗатем перезапустите приложение.</string>
 </resources>

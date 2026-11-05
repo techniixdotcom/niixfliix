@@ -134,10 +134,36 @@ public final class UpdateManager {
 		if (versionCode(update) <= versionCode(installed)) {
 			throw new FailureException(Failure.NOT_NEWER);
 		}
-		Set<String> mine = signers(installed);
-		if (mine.isEmpty() || !mine.equals(signers(update))) {
+		if (!sameSigner(update, installed)) {
 			throw new FailureException(Failure.WRONG_SIGNER);
 		}
+	}
+
+	/**
+	 * Whether the update is signed with the installed app's key. One change of key is allowed, the
+	 * way Android allows it (key rotation, APK Signature Scheme v3, Android 9 and newer): an APK
+	 * signed with a new key that carries the installed key's own signed approval of it. Only
+	 * whoever holds the installed key can make that approval, and from then on only the new key is
+	 * accepted. Android 8 never changes key; rotated APKs are still signed with the old key for it.
+	 */
+	private static boolean sameSigner(PackageInfo update, PackageInfo installed) {
+		Set<String> mine = signers(installed);
+		Set<String> theirs = signers(update);
+		if (mine.isEmpty() || theirs.isEmpty()) {
+			return false;
+		}
+		if (mine.equals(theirs)) {
+			return true;
+		}
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || mine.size() != 1) {
+			return false;
+		}
+		SigningInfo signing = update.signingInfo;
+		if (signing == null || signing.hasMultipleSigners() || !signing.hasPastSigningCertificates()) {
+			return false;
+		}
+		Set<String> history = hashes(signing.getSigningCertificateHistory());
+		return history.size() > 1 && history.containsAll(mine);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -157,11 +183,17 @@ public final class UpdateManager {
 		} else {
 			signatures = info.signatures;
 		}
+		return hashes(signatures);
+	}
+
+	private static Set<String> hashes(Signature[] signatures) {
 		Set<String> out = new HashSet<>();
 		if (signatures != null) {
 			MessageDigest digest = Releases.sha256();
 			for (Signature s : signatures) {
-				out.add(Releases.hex(digest.digest(s.toByteArray())));
+				if (s != null) {
+					out.add(Releases.hex(digest.digest(s.toByteArray())));
+				}
 			}
 		}
 		return out;

@@ -1,15 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
 	<include layout="@layout/view_tab_toolbar" />
 
+	<HorizontalScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scrollbars="none">
+
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/source_chips"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="@dimen/screen_padding"
+			android:paddingTop="8dp"
+			app:selectionRequired="true"
+			app:singleLine="true"
+			app:singleSelection="true" />
+	</HorizontalScrollView>
+
+	<HorizontalScrollView
+		android:id="@+id/genre_scroll"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:scrollbars="none">
+
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/genre_chips"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="@dimen/screen_padding"
+			app:selectionRequired="true"
+			app:singleLine="true"
+			app:singleSelection="true" />
+	</HorizontalScrollView>
+
+	<TextView
+		android:id="@+id/summary"
+		style="@style/TextAppearance.Niixfliix.Caption"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/screen_padding"
+		android:paddingTop="2dp"
+		android:paddingBottom="8dp"
+		android:textAppearance="@style/TextAppearance.Niixfliix.Caption"
+		android:visibility="gone" />
+
 	<FrameLayout
 		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1">
+		android:layout_height="match_parent">
 
 		<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 			android:id="@+id/refresh"
@@ -17,11 +60,30 @@
 			android:layout_height="match_parent">
 
 			<androidx.recyclerview.widget.RecyclerView
-				android:id="@+id/list"
+				android:id="@+id/grid"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:clipToPadding="false"
+				android:paddingHorizontal="10dp"
 				android:paddingBottom="16dp" />
 		</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+		<TextView
+			android:id="@+id/empty"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:gravity="center"
+			android:padding="32dp"
+			android:textAppearance="?attr/textAppearanceBodyLarge"
+			android:visibility="gone" />
+
+		<com.google.android.material.progressindicator.LinearProgressIndicator
+			android:id="@+id/loading"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:indeterminate="true"
+			android:visibility="gone" />
 	</FrameLayout>
 </LinearLayout>
