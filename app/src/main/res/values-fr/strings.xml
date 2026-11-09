@@ -4,7 +4,6 @@
 	<string name="nav_home">Accueil</string>
 	<string name="nav_discover">Découvrir</string>
 	<string name="nav_library">Bibliothèque</string>
-	<string name="nav_search">Recherche</string>
 	<string name="nav_settings">Paramètres</string>
 
 	<string name="action_back">Retour</string>

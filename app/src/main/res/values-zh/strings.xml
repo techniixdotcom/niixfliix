@@ -4,7 +4,6 @@
 	<string name="nav_home">首页</string>
 	<string name="nav_discover">发现</string>
 	<string name="nav_library">片库</string>
-	<string name="nav_search">搜索</string>
 	<string name="nav_settings">设置</string>
 
 	<string name="action_back">返回</string>

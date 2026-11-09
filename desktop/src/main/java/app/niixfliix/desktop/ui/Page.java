@@ -14,4 +14,9 @@ public interface Page {
 
 	default void onHide() {
 	}
+
+	/** Back (Escape, the mouse's back button) on a tab with nothing opened over it; true if it was used. */
+	default boolean onBack() {
+		return false;
+	}
 }

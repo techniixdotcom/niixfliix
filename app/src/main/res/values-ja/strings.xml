@@ -4,7 +4,6 @@
 	<string name="nav_home">ホーム</string>
 	<string name="nav_discover">見つける</string>
 	<string name="nav_library">ライブラリ</string>
-	<string name="nav_search">検索</string>
 	<string name="nav_settings">設定</string>
 
 	<string name="action_back">戻る</string>

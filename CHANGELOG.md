@@ -3,6 +3,8 @@
 What changed in each version. A version's section becomes its release notes on GitHub and in the
 apps' update dialog: `./BUILD.sh` publishes it, and refuses to publish a version without one.
 
+## 1.17.3
+
 ## 1.17.2
 
 - "More like this" shows up straight away: the row is there with placeholders as soon as a title opens, the titles from the same genres fill it within moments, and the closest matches from Wikidata move to the front when they're in. The Wikidata lookup starts the moment the title opens, and for the titles on Home's banner and the first ones to continue watching even before that; once found, a title's matches show at once the next time
@@ -12,6 +14,8 @@ apps' update dialog: `./BUILD.sh` publishes it, and refuses to publish a version
 - A "NEW" ribbon across the poster's corner when every episode of a series was watched and a new one is out, in Library and Discover, for saved series and series you've watched
 - Related movies: a film's page has a row with the rest of its series and its other versions (remakes, other adaptations), oldest first
 - Linux: the Live tab looks like the Android one, with chips for the source and genre above a grid
+- Linux: the mouse wheel scrolls More like this and Related movies sideways, a card per notch; at the row's end it scrolls the page again
+- Search is no longer a tab of its own: it's at the top of Discover, under the title and above Movies / Series. The results show in place of the browsing; Back goes back to it
 
 ## 1.17.1
 

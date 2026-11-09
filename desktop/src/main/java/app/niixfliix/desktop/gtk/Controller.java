@@ -37,6 +37,7 @@ public final class Controller extends GObj {
 	private static final Fn SCROLL_NEW = Fn.of(Lib.GTK, "gtk_event_controller_scroll_new", PTR, INT);
 	private static final Fn SCROLL_UNIT = Fn.of(Lib.GTK, "gtk_event_controller_scroll_get_unit", INT, PTR);
 	private static final Fn MOTION_NEW = Fn.of(Lib.GTK, "gtk_event_controller_motion_new", PTR);
+	private static final Fn FOCUS_NEW = Fn.of(Lib.GTK, "gtk_event_controller_focus_new", PTR);
 	private static final Fn PHASE = Fn.of(Lib.GTK, "gtk_event_controller_set_propagation_phase", null, PTR, INT);
 	private static final Fn STATE = Fn.of(Lib.GTK, "gtk_event_controller_get_current_event_state", INT, PTR);
 	private static final Fn GESTURE_STATE = Fn.of(Lib.GTK, "gtk_gesture_set_state", INT, PTR, INT);
@@ -89,6 +90,12 @@ public final class Controller extends GObj {
 	@NonNull
 	public static Controller scroll(int flags) {
 		return new Controller(SCROLL_NEW.p(flags));
+	}
+
+	/** Tells when the keyboard focus comes into the widget or one of its children, and when it leaves. */
+	@NonNull
+	public static Controller focus() {
+		return new Controller(FOCUS_NEW.p());
 	}
 
 	@NonNull
@@ -158,6 +165,16 @@ public final class Controller extends GObj {
 	}
 
 	public Controller onLeave(@NonNull Runnable handler) {
+		on("leave", handler);
+		return this;
+	}
+
+	public Controller onFocusIn(@NonNull Runnable handler) {
+		on("enter", handler);
+		return this;
+	}
+
+	public Controller onFocusOut(@NonNull Runnable handler) {
 		on("leave", handler);
 		return this;
 	}

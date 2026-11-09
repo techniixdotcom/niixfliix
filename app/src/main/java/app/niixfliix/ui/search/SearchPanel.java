@@ -1,17 +1,16 @@
 package app.niixfliix.ui.search;
 
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,41 +39,49 @@ import app.niixfliix.ui.common.CatalogSource;
 import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.ui.common.QueueMenu;
 import app.niixfliix.ui.common.RowsAdapter;
-import app.niixfliix.ui.common.TabToolbar;
 import app.niixfliix.ui.details.DetailsActivity;
 
-public final class SearchFragment extends Fragment implements RowsAdapter.Listener {
+/**
+ * Search, at the top of Discover. While the field has text its results take the place of the browsing
+ * below it; while the empty field has focus the recent searches do. {@link Listener#onSearchShown}
+ * says which of the two shows.
+ */
+public final class SearchPanel implements RowsAdapter.Listener {
+
+	public interface Listener {
+		/** {@code shown}: the search area is in place of the browsing. */
+		void onSearchShown(boolean shown);
+	}
 
 	private final AppGraph graph = AppGraph.get();
+	private final Fragment host;
+	private final Listener listener;
 	private final Runnable searchNow = this::search;
 	private final Map<String, RowsAdapter.Row> rowsByType = new HashMap<>();
 	private final Map<String, Set<String>> idsByType = new HashMap<>();
-	private EditText input;
-	@Nullable private String pendingQuery;
-	private View recentSection;
-	private ChipGroup recentChips;
-	private RecyclerView results;
-	private TextView status;
-	private RowsAdapter adapter;
+	private final View root;
+	private final EditText input;
+	private final View area;
+	private final View recentSection;
+	private final ChipGroup recentChips;
+	private final RecyclerView results;
+	private final TextView status;
+	private final RowsAdapter adapter;
+	private boolean shown;
 	private int generation;
 	private int pending;
 
-	@NonNull
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-			@Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_search, container, false);
-	}
-
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		TabToolbar.setUp(this, view, R.string.nav_search);
+	public SearchPanel(@NonNull Fragment host, @NonNull View view, @NonNull Listener listener) {
+		this.host = host;
+		this.listener = listener;
+		root = view;
 		input = view.findViewById(R.id.search_input);
+		area = view.findViewById(R.id.search_area);
 		recentSection = view.findViewById(R.id.recent_section);
 		recentChips = view.findViewById(R.id.recent_chips);
 		results = view.findViewById(R.id.results);
 		status = view.findViewById(R.id.status);
-		results.setLayoutManager(new LinearLayoutManager(requireContext()));
+		results.setLayoutManager(new LinearLayoutManager(view.getContext()));
 		adapter = new RowsAdapter(this);
 		results.setAdapter(adapter);
 		view.findViewById(R.id.recent_clear).setOnClickListener(v -> {
@@ -106,47 +113,52 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 				graph.main.removeCallbacks(searchNow);
 				graph.searchHistory.add(query());
 				search();
+				hideKeyboard();
 				return true;
 			}
 			return false;
 		});
-		showRecent();
-		String pending = pendingQuery;
-		pendingQuery = null;
-		if (pending != null) {
-			searchFor(pending);
-		}
+		// Posted, so focus that moved on to a recent search (with a D-pad) is seen as staying in the search
+		input.setOnFocusChangeListener((v, hasFocus) -> input.post(() -> {
+			boolean inSearch = input.hasFocus() || recentSection.hasFocus();
+			boolean recentShown = shown && recentSection.getVisibility() == View.VISIBLE;
+			if (host.getView() != null && query().isEmpty() && inSearch != recentShown) {
+				showRecent();
+			}
+		}));
 	}
 
-	@Override
-	public void onDestroyView() {
+	/** Stops a search that's still to start; call when the view goes. */
+	public void release() {
 		graph.main.removeCallbacks(searchNow);
-		super.onDestroyView();
+		generation++;
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		adapter.refreshWatched();
-	}
-
-	@Override
-	public void onHiddenChanged(boolean hidden) {
-		super.onHiddenChanged(hidden);
-		if (!hidden && getView() != null) {
-			adapter.refreshWatched();
-		}
+	/** Whether the search area shows, in place of the browsing. */
+	public boolean isShown() {
+		return shown;
 	}
 
 	public void searchFor(@NonNull String text) {
-		if (getView() == null || input == null) {
-			pendingQuery = text;
-			return;
-		}
 		input.setText(text);
 		input.setSelection(input.length());
 		graph.main.removeCallbacks(searchNow);
 		search();
+	}
+
+	/** Back to browsing: empties the field, drops its focus and hides the keyboard. */
+	public void close() {
+		graph.main.removeCallbacks(searchNow);
+		generation++;
+		input.clearFocus();
+		root.requestFocus();
+		hideKeyboard();
+		input.setText(null);
+		setShown(false);
+	}
+
+	public void refreshWatched() {
+		adapter.refreshWatched();
 	}
 
 	@NonNull
@@ -154,26 +166,46 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 		return input.getText() != null ? input.getText().toString().trim() : "";
 	}
 
+	private void setShown(boolean show) {
+		area.setVisibility(show ? View.VISIBLE : View.GONE);
+		if (show != shown) {
+			shown = show;
+			listener.onSearchShown(show);
+		}
+	}
+
+	private void hideKeyboard() {
+		if (host.getActivity() != null) {
+			WindowCompat.getInsetsController(host.requireActivity().getWindow(), input)
+					.hide(WindowInsetsCompat.Type.ime());
+		}
+	}
+
+	/** The empty field: recent searches while it has focus, otherwise the browsing. */
 	private void showRecent() {
 		results.setVisibility(View.GONE);
 		status.setVisibility(View.GONE);
 		recentChips.removeAllViews();
 		List<String> recent = graph.searchHistory.all();
-		recentSection.setVisibility(recent.isEmpty() ? View.GONE : View.VISIBLE);
-		for (String q : recent) {
-			Chip chip = (Chip) getLayoutInflater().inflate(R.layout.item_recent_chip, recentChips, false);
-			chip.setText(q);
-			chip.setOnClickListener(v -> {
-				input.setText(q);
-				input.setSelection(q.length());
-			});
-			recentChips.addView(chip);
+		boolean showRecent = (input.hasFocus() || recentSection.hasFocus()) && !recent.isEmpty();
+		recentSection.setVisibility(showRecent ? View.VISIBLE : View.GONE);
+		if (showRecent) {
+			for (String q : recent) {
+				Chip chip = (Chip) host.getLayoutInflater().inflate(R.layout.item_recent_chip, recentChips, false);
+				chip.setText(q);
+				chip.setOnClickListener(v -> {
+					input.setText(q);
+					input.setSelection(q.length());
+				});
+				recentChips.addView(chip);
+			}
 		}
+		setShown(showRecent);
 	}
 
 	private void search() {
 		String q = query();
-		if (q.isEmpty() || getView() == null) {
+		if (q.isEmpty() || host.getView() == null) {
 			return;
 		}
 		int requestGeneration = ++generation;
@@ -182,6 +214,8 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 		adapter.clear();
 		recentSection.setVisibility(View.GONE);
 		results.setVisibility(View.VISIBLE);
+		results.scrollToPosition(0);
+		setShown(true);
 		pending = 0;
 		for (InstalledAddon addon : graph.addons.active()) {
 			if (addon.manifest == null) {
@@ -209,11 +243,11 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 	}
 
 	private void onLocalTitles(int requestGeneration, List<Translations.Found> found) {
-		if (getView() == null || requestGeneration != generation) {
+		if (host.getView() == null || requestGeneration != generation) {
 			return;
 		}
 		for (Translations.Found title : found) {
-			if (isShown(title.imdbId)) {
+			if (isListed(title.imdbId)) {
 				continue;
 			}
 			pending++;
@@ -244,7 +278,7 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 		return null;
 	}
 
-	private boolean isShown(String id) {
+	private boolean isListed(String id) {
 		for (Set<String> ids : idsByType.values()) {
 			if (ids.contains(id)) {
 				return true;
@@ -263,7 +297,7 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 	}
 
 	private void onResults(int requestGeneration, List<Meta> metas) {
-		if (getView() == null || requestGeneration != generation) {
+		if (host.getView() == null || requestGeneration != generation) {
 			return;
 		}
 		pending--;
@@ -275,7 +309,8 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 			}
 			RowsAdapter.Row row = rowsByType.get(type);
 			if (row == null) {
-				row = new RowsAdapter.Row(requestGeneration + "|" + type, Formats.typeLabel(requireContext(), type), null);
+				row = new RowsAdapter.Row(requestGeneration + "|" + type,
+						Formats.typeLabel(host.requireContext(), type), null);
 				row.state = RowsAdapter.State.READY;
 				rowsByType.put(type, row);
 				adapter.add(row);
@@ -305,13 +340,13 @@ public final class SearchFragment extends Fragment implements RowsAdapter.Listen
 	@Override
 	public void onPosterClick(@NonNull PosterItem item) {
 		graph.searchHistory.add(query());
-		DetailsActivity.start(requireContext(), item);
+		DetailsActivity.start(host.requireContext(), item);
 	}
 
 	@Override
 	public boolean onPosterLongClick(@NonNull PosterItem item) {
-		QueueMenu.show(requireContext(), item, null, null, () -> {
-			if (getView() != null) {
+		QueueMenu.show(host.requireContext(), item, null, null, () -> {
+			if (host.getView() != null) {
 				adapter.refreshWatched();
 			}
 		});

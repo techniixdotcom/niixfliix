@@ -88,6 +88,11 @@ A title's page has, below the play button and description:
   same time, so when Wikidata knows too little (new or rare titles) or doesn't
   answer, they fill the row up without extra waiting.
 
+Search is at the top of Discover, under its title. Type and the results
+take the place of the browsing below, a row per type; tap the empty field to
+see your recent searches. Back (Esc on Linux) goes back
+to browsing.
+
 Discover has no catalog picker: pick Movies or Series, then a genre (or All
 genres) from the row of chips. The genres of all your sources are put
 together (years are left out), and each genre is browsed from the first
@@ -307,7 +312,8 @@ keeps to its own sandbox.
   Up/Down and the mouse wheel change the volume, M mutes, F or F11 or a double
   click toggles full screen, N plays what's next, Esc leaves full screen and
   then goes back to the app with the video carrying on in the mini bar. The
-  mouse's back button goes back a page. Ctrl+F opens the search.
+  mouse's back button goes back a page. Ctrl+F opens the search at the top
+  of Discover.
 - Subtitles can also be loaded from a file in your Downloads or Videos folder.
 - Downloads go to `~/Downloads/niixfliix`, or the folder picked in Settings >
   Downloads folder (through your desktop's folder picker, which gives the app

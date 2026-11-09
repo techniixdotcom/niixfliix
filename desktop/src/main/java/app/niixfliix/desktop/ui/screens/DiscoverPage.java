@@ -31,6 +31,7 @@ import app.niixfliix.desktop.ui.Page;
 import app.niixfliix.desktop.ui.PosterCard;
 import app.niixfliix.desktop.ui.PosterGrid;
 import app.niixfliix.desktop.ui.PosterMenu;
+import app.niixfliix.desktop.ui.SearchPanel;
 import app.niixfliix.ui.common.CatalogSource;
 import app.niixfliix.ui.common.DiscoverGenres;
 import app.niixfliix.ui.common.PosterItem;
@@ -45,6 +46,8 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 	private final PosterGrid grid = new PosterGrid(this);
 	private final Label empty = Label.wrapping(null, "empty-text");
 	private final Progress loading = Progress.spinner(40);
+	private final SearchPanel search = new SearchPanel(this::onSearchShown);
+	private Layers browse;
 	private final List<CatalogSource> sources = new ArrayList<>();
 	private final Set<String> seenIds = new HashSet<>();
 	private final List<PosterItem> items = new ArrayList<>();
@@ -62,7 +65,7 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 		typeChips.halign(Widget.ALIGN_START);
 		genreChips.halign(Widget.ALIGN_FILL);
 		genreChips.addClass("genre-chips");
-		Box top = Box.column(14, Label.of(I18n.t("nav_discover"), "title-1"), typeChips, genreChips);
+		Box top = Box.column(14, Label.of(I18n.t("nav_discover"), "title-1"), search.field(), typeChips, genreChips);
 		top.margins(20, 24, 8, 24);
 		empty.center();
 		empty.halign(Widget.ALIGN_CENTER).valign(Widget.ALIGN_CENTER).margin(32);
@@ -70,9 +73,9 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 		empty.visible(false);
 		loading.halign(Widget.ALIGN_CENTER).valign(Widget.ALIGN_END).margin(16);
 		loading.visible(false);
-		Layers center = Layers.overlay(grid.view(), empty, loading);
-		center.vexpand(true);
-		root.add(top, center);
+		browse = Layers.overlay(grid.view(), empty, loading);
+		browse.vexpand(true);
+		root.add(top, browse, search.area());
 		grid.setOnEnd(this::loadPage);
 		graph.addons.addListener(this);
 		rebuild();
@@ -86,6 +89,7 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 
 	@Override
 	public void onShow() {
+		search.onShown();
 		refreshMarks();
 		grid.onShown();
 		graph.refreshNewEpisodes(this::refreshMarks);
@@ -111,6 +115,31 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 	@Override
 	public void onAddonsChanged() {
 		rebuild();
+	}
+
+	@Override
+	public boolean onBack() {
+		if (!search.isShown()) {
+			return false;
+		}
+		search.close();
+		return true;
+	}
+
+	/** Searches for {@code text}, as typed in the search field at the top. */
+	public void searchFor(@NonNull String text) {
+		search.searchFor(text);
+	}
+
+	/** Puts the keyboard in the search field. */
+	public void focusSearch() {
+		search.focus();
+	}
+
+	private void onSearchShown(boolean shown) {
+		typeChips.visible(!shown);
+		genreChips.visible(!shown && genreButtons.size() > 1);
+		browse.visible(!shown);
 	}
 
 	private void rebuild() {
@@ -186,7 +215,7 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 		for (String g : genres.genres()) {
 			addGenreChip(g, g, first);
 		}
-		genreChips.visible(genreButtons.size() > 1);
+		genreChips.visible(!search.isShown() && genreButtons.size() > 1);
 		genre = first;
 		source = genres.sourceFor(first);
 		restart();

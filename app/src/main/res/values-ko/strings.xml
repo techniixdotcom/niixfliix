@@ -4,7 +4,6 @@
 	<string name="nav_home">홈</string>
 	<string name="nav_discover">둘러보기</string>
 	<string name="nav_library">보관함</string>
-	<string name="nav_search">검색</string>
 	<string name="nav_settings">설정</string>
 
 	<string name="action_back">뒤로</string>

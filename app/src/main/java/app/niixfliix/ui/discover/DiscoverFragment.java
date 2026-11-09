@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -40,6 +41,7 @@ import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.ui.common.QueueMenu;
 import app.niixfliix.ui.common.TabToolbar;
 import app.niixfliix.ui.details.DetailsActivity;
+import app.niixfliix.ui.search.SearchPanel;
 
 public final class DiscoverFragment extends Fragment implements PosterAdapter.Listener, AddonRepository.Listener {
 
@@ -54,6 +56,18 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 	private TextView empty;
 	private View loading;
 	private PosterAdapter adapter;
+	private View browse;
+	private SearchPanel search;
+	/** While the search shows, Back goes back to browsing. */
+	private final OnBackPressedCallback backToBrowsing = new OnBackPressedCallback(false) {
+		@Override
+		public void handleOnBackPressed() {
+			if (search != null) {
+				search.close();
+			}
+		}
+	};
+	@Nullable private String pendingSearch;
 
 	@Nullable private String type;
 	@Nullable private CatalogSource source;
@@ -74,6 +88,12 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		TabToolbar.setUp(this, view, R.string.nav_discover);
+		browse = view.findViewById(R.id.browse);
+		search = new SearchPanel(this, view, shown -> {
+			browse.setVisibility(shown ? View.GONE : View.VISIBLE);
+			updateBack();
+		});
+		requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), backToBrowsing);
 		typeChips = view.findViewById(R.id.type_chips);
 		genreChips = view.findViewById(R.id.genre_chips);
 		genreScroll = view.findViewById(R.id.genre_scroll);
@@ -118,11 +138,31 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 		});
 		graph.addons.addListener(this);
 		rebuild();
+		String pending = pendingSearch;
+		pendingSearch = null;
+		if (pending != null) {
+			search.searchFor(pending);
+		}
+	}
+
+	/** Searches for {@code text}, as typed in the search field at the top. */
+	public void searchFor(@NonNull String text) {
+		if (getView() == null || search == null) {
+			pendingSearch = text;
+			return;
+		}
+		search.searchFor(text);
+	}
+
+	private void updateBack() {
+		backToBrowsing.setEnabled(search != null && search.isShown() && !isHidden());
 	}
 
 	@Override
 	public void onDestroyView() {
 		graph.addons.removeListener(this);
+		search.release();
+		search = null;
 		super.onDestroyView();
 	}
 
@@ -138,10 +178,12 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 		if (!hidden && getView() != null) {
 			refreshMarks();
 		}
+		updateBack();
 	}
 
 	/** Watched state and the "NEW" mark on series, which may have changed while elsewhere. */
 	private void refreshMarks() {
+		search.refreshWatched();
 		adapter.refreshMarks(graph::markNew);
 		graph.refreshNewEpisodes(() -> {
 			if (getView() != null) {

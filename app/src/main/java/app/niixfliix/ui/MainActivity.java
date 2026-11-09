@@ -30,7 +30,6 @@ import app.niixfliix.ui.discover.DiscoverFragment;
 import app.niixfliix.ui.home.HomeFragment;
 import app.niixfliix.ui.library.LibraryFragment;
 import app.niixfliix.ui.live.LiveFragment;
-import app.niixfliix.ui.search.SearchFragment;
 import app.niixfliix.update.UpdatePrompt;
 
 public final class MainActivity extends BaseActivity {
@@ -130,9 +129,6 @@ public final class MainActivity extends BaseActivity {
 		if (id == R.id.nav_library) {
 			return new LibraryFragment();
 		}
-		if (id == R.id.nav_search) {
-			return new SearchFragment();
-		}
 		if (id == R.id.nav_live) {
 			return new LiveFragment();
 		}
@@ -150,12 +146,12 @@ public final class MainActivity extends BaseActivity {
 		String query = intent.getStringExtra(EXTRA_SEARCH);
 		if (query != null && !query.trim().isEmpty() && query.length() <= MAX_SEARCH_LENGTH) {
 			intent.removeExtra(EXTRA_SEARCH);
-			nav.setSelectedItemId(R.id.nav_search);
+			nav.setSelectedItemId(R.id.nav_discover);
 			FragmentManager fm = getSupportFragmentManager();
 			fm.executePendingTransactions();
-			Fragment tab = fm.findFragmentByTag("tab_" + R.id.nav_search);
-			if (tab instanceof SearchFragment) {
-				((SearchFragment) tab).searchFor(query.trim());
+			Fragment tab = fm.findFragmentByTag("tab_" + R.id.nav_discover);
+			if (tab instanceof DiscoverFragment) {
+				((DiscoverFragment) tab).searchFor(query.trim());
 			}
 			return;
 		}

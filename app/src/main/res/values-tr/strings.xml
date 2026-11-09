@@ -4,7 +4,6 @@
 	<string name="nav_home">Ana sayfa</string>
 	<string name="nav_discover">Keşfet</string>
 	<string name="nav_library">Kitaplık</string>
-	<string name="nav_search">Ara</string>
 	<string name="nav_settings">Ayarlar</string>
 
 	<string name="action_back">Geri</string>

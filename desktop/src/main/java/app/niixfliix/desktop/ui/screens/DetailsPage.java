@@ -256,8 +256,8 @@ public final class DetailsPage implements Page {
 		details.valign(Widget.ALIGN_START);
 		Layers content = Layers.overlay(Box.column(0, hero)).overMeasured(details);
 		Scroller scroll = Scroller.vertical(content);
-		similar.passWheelTo(scroll);
-		related.passWheelTo(scroll);
+		similar.wheelScrollsRow(scroll);
+		related.wheelScrollsRow(scroll);
 
 		Button back = Button.icon(Icons.name("back"), I18n.t("action_back"));
 		back.addClass("osd", "circular", "details-back");

@@ -161,4 +161,47 @@ public final class PosterRow {
 		});
 		scroll.addController(wheel);
 	}
+
+	/**
+	 * A mouse wheel turned over the row scrolls the row sideways, a card per notch; once the row is at its
+	 * end that way, the wheel scrolls {@code page} instead, so the page never gets stuck on the row. A
+	 * touchpad keeps scrolling the page up and down and the row with a sideways swipe.
+	 */
+	public void wheelScrollsRow(@NonNull Scroller page) {
+		Controller wheel = Controller.scroll(Controller.SCROLL_VERTICAL | Controller.SCROLL_HORIZONTAL);
+		wheel.phase(Controller.PHASE_CAPTURE);
+		wheel.onScroll((dx, dy) -> {
+			if ((wheel.modifiers() & Controller.MODIFIER_SHIFT) != 0 || Math.abs(dx) >= Math.abs(dy)) {
+				return false;
+			}
+			if (wheel.scrollUnit() == Controller.SCROLL_UNIT_WHEEL && slide(dy)) {
+				return true;
+			}
+			Scroller.Adjustment v = page.vadjustment();
+			double step = wheel.scrollUnit() == Controller.SCROLL_UNIT_WHEEL
+					? Math.pow(Math.max(1, v.pageSize()), 2.0 / 3.0) : 1;
+			v.value(v.value() + dy * step);
+			return true;
+		});
+		scroll.addController(wheel);
+	}
+
+	/** Moves the row {@code notches} cards along; false when it's already at its end that way. */
+	private boolean slide(double notches) {
+		Scroller.Adjustment h = scroll.hadjustment();
+		double now = h.value();
+		double max = Math.max(h.lower(), h.upper() - h.pageSize());
+		double from = gliding >= 0 ? gliding : now;
+		if (notches > 0 ? from >= max - END_SLACK : from <= h.lower() + END_SLACK) {
+			return false;
+		}
+		double to = Math.max(h.lower(), Math.min(max, from + notches * CARD_STRIDE));
+		if (glide == null) {
+			h.value(to);
+			return true;
+		}
+		gliding = to;
+		glide.play(now, to);
+		return true;
+	}
 }

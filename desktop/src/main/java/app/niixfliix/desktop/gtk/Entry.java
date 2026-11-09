@@ -72,4 +72,10 @@ public final class Entry extends Widget {
 		on("search-changed", action);
 		return this;
 	}
+
+	/** A search field's Escape. */
+	public Entry onStopSearch(@NonNull Runnable action) {
+		on("stop-search", action);
+		return this;
+	}
 }

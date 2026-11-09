@@ -1,73 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The root takes the first focus, so the search field only has it when tapped -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:focusable="true"
+	android:focusableInTouchMode="true"
 	android:orientation="vertical">
 
 	<include layout="@layout/view_tab_toolbar" />
 
-	<HorizontalScrollView
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/search_layout"
+		style="@style/Widget.Niixfliix.TextField"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:scrollbars="none">
+		android:layout_marginHorizontal="@dimen/screen_padding"
+		android:layout_marginTop="8dp"
+		android:hint="@string/search_hint"
+		app:endIconMode="clear_text"
+		app:startIconDrawable="@drawable/ic_search">
 
-		<com.google.android.material.chip.ChipGroup
-			android:id="@+id/type_chips"
-			android:layout_width="wrap_content"
+		<com.google.android.material.textfield.TextInputEditText
+			android:id="@+id/search_input"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingHorizontal="@dimen/screen_padding"
-			android:paddingTop="8dp"
-			app:selectionRequired="true"
-			app:singleLine="true"
-			app:singleSelection="true" />
-	</HorizontalScrollView>
+			android:imeOptions="actionSearch"
+			android:inputType="text"
+			android:maxLength="200"
+			android:maxLines="1" />
+	</com.google.android.material.textfield.TextInputLayout>
 
-	<HorizontalScrollView
-		android:id="@+id/genre_scroll"
+	<LinearLayout
+		android:id="@+id/browse"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:scrollbars="none">
+		android:layout_height="match_parent"
+		android:orientation="vertical">
 
-		<com.google.android.material.chip.ChipGroup
-			android:id="@+id/genre_chips"
-			android:layout_width="wrap_content"
+		<HorizontalScrollView
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingHorizontal="@dimen/screen_padding"
-			android:paddingBottom="8dp"
-			app:selectionRequired="true"
-			app:singleLine="true"
-			app:singleSelection="true" />
-	</HorizontalScrollView>
+			android:scrollbars="none">
 
-	<FrameLayout
+			<com.google.android.material.chip.ChipGroup
+				android:id="@+id/type_chips"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingHorizontal="@dimen/screen_padding"
+				android:paddingTop="8dp"
+				app:selectionRequired="true"
+				app:singleLine="true"
+				app:singleSelection="true" />
+		</HorizontalScrollView>
+
+		<HorizontalScrollView
+			android:id="@+id/genre_scroll"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:scrollbars="none">
+
+			<com.google.android.material.chip.ChipGroup
+				android:id="@+id/genre_chips"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingHorizontal="@dimen/screen_padding"
+				android:paddingBottom="8dp"
+				app:selectionRequired="true"
+				app:singleLine="true"
+				app:singleSelection="true" />
+		</HorizontalScrollView>
+
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/grid"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:clipToPadding="false"
+				android:paddingHorizontal="10dp"
+				android:paddingBottom="16dp" />
+
+			<TextView
+				android:id="@+id/empty"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="center"
+				android:padding="32dp"
+				android:textAppearance="?attr/textAppearanceBodyLarge"
+				android:visibility="gone" />
+
+			<com.google.android.material.progressindicator.LinearProgressIndicator
+				android:id="@+id/loading"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="bottom"
+				android:indeterminate="true"
+				android:visibility="gone" />
+		</FrameLayout>
+	</LinearLayout>
+
+	<!-- Search results, or the recent searches while the empty field has focus; in place of the browsing -->
+	<LinearLayout
+		android:id="@+id/search_area"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:visibility="gone">
 
-		<androidx.recyclerview.widget.RecyclerView
-			android:id="@+id/grid"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:clipToPadding="false"
-			android:paddingHorizontal="10dp"
-			android:paddingBottom="16dp" />
-
-		<TextView
-			android:id="@+id/empty"
+		<LinearLayout
+			android:id="@+id/recent_section"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:gravity="center"
-			android:padding="32dp"
-			android:textAppearance="?attr/textAppearanceBodyLarge"
-			android:visibility="gone" />
+			android:orientation="vertical"
+			android:paddingHorizontal="@dimen/screen_padding"
+			android:paddingTop="12dp">
 
-		<com.google.android.material.progressindicator.LinearProgressIndicator
-			android:id="@+id/loading"
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+
+				<TextView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:text="@string/search_recent"
+					android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+				<Button
+					android:id="@+id/recent_clear"
+					style="@style/Widget.Material3.Button.TextButton"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/action_clear" />
+			</LinearLayout>
+
+			<com.google.android.material.chip.ChipGroup
+				android:id="@+id/recent_chips"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+		</LinearLayout>
+
+		<FrameLayout
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom"
-			android:indeterminate="true"
-			android:visibility="gone" />
-	</FrameLayout>
+			android:layout_height="match_parent">
+
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/results"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:clipToPadding="false"
+				android:paddingBottom="16dp" />
+
+			<TextView
+				android:id="@+id/status"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:gravity="center"
+				android:padding="32dp"
+				android:textAppearance="?attr/textAppearanceBodyLarge"
+				android:visibility="gone" />
+		</FrameLayout>
+	</LinearLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package app.niixfliix.desktop.ui.screens;
+package app.niixfliix.desktop.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,47 +22,66 @@ import app.niixfliix.app.Constant;
 import app.niixfliix.desktop.DesktopGraph;
 import app.niixfliix.desktop.gtk.Box;
 import app.niixfliix.desktop.gtk.Button;
+import app.niixfliix.desktop.gtk.Controller;
 import app.niixfliix.desktop.gtk.Entry;
 import app.niixfliix.desktop.gtk.Flow;
 import app.niixfliix.desktop.gtk.Label;
 import app.niixfliix.desktop.gtk.Layers;
+import app.niixfliix.desktop.gtk.MainLoop;
 import app.niixfliix.desktop.gtk.Widget;
 import app.niixfliix.desktop.i18n.I18n;
-import app.niixfliix.desktop.ui.Fmt;
-import app.niixfliix.desktop.ui.MainWindow;
-import app.niixfliix.desktop.ui.Page;
-import app.niixfliix.desktop.ui.PosterCard;
-import app.niixfliix.desktop.ui.PosterMenu;
-import app.niixfliix.desktop.ui.PosterRows;
 import app.niixfliix.ui.common.CatalogSource;
 import app.niixfliix.ui.common.PosterItem;
 
-public final class SearchPage implements Page, PosterCard.Listener {
+/**
+ * Search, at the top of Discover. While the field has text its results take the place of the browsing
+ * below it; while the empty field has focus the recent searches do. {@link Listener#onSearchShown}
+ * says which of the two shows.
+ */
+public final class SearchPanel implements PosterCard.Listener {
 
-	private static final int FIELD_WIDTH = 720;
+	public interface Listener {
+		/** {@code shown}: the search area is in place of the browsing. */
+		void onSearchShown(boolean shown);
+	}
+
+	public static final int FIELD_WIDTH = 720;
 
 	private final DesktopGraph graph = DesktopGraph.get();
-	private final Box root = Box.column(0);
+	private final Listener listener;
 	private final Entry input = Entry.search(I18n.t("search_hint"), Constant.SEARCH_DEBOUNCE_MS);
 	private final Box recentSection = Box.column(10);
 	private final Flow recentChips = Flow.create(8);
 	private final PosterRows results = new PosterRows(this, row -> {
 	});
 	private final Label status = Label.wrapping(null, "empty-text");
+	private final Layers area;
 	private final Map<String, PosterRows.Row> rowsByType = new LinkedHashMap<>();
 	private final Map<String, Set<String>> idsByType = new HashMap<>();
+	private boolean shown;
+	private boolean recentShown;
+	/** The field was emptied by {@link #close}, so its coming search-changed doesn't show the recent searches. */
+	private boolean closing;
+	private boolean focusInField;
+	private boolean focusInRecent;
+	private boolean focusCheckPosted;
 	private int generation;
 	private int pending;
 	private String searched = "";
 
-	public SearchPage() {
+	public SearchPanel(@NonNull Listener listener) {
+		this.listener = listener;
 		input.addClass("search-field");
 		input.size(FIELD_WIDTH, -1).halign(Widget.ALIGN_START);
 		input.onSearch(() -> {
+			boolean closed = closing;
+			closing = false;
 			if (query().isEmpty()) {
 				generation++;
 				searched = "";
-				showRecent();
+				if (!closed) {
+					showRecent();
+				}
 			} else if (!query().equals(searched)) {
 				search();
 			}
@@ -71,7 +90,19 @@ public final class SearchPage implements Page, PosterCard.Listener {
 			graph.searchHistory.add(query());
 			search();
 		});
+		input.onStopSearch(() -> {
+			if (shown) {
+				close();
+			}
+		});
+		input.addController(Controller.focus()
+				.onFocusIn(() -> focusMoved(true, focusInRecent))
+				.onFocusOut(() -> focusMoved(false, focusInRecent)));
+		recentSection.addController(Controller.focus()
+				.onFocusIn(() -> focusMoved(focusInField, true))
+				.onFocusOut(() -> focusMoved(focusInField, false)));
 		Button clear = Button.text(I18n.t("action_clear"), "flat");
+		clear.set("focus-on-click", false);
 		clear.onClick(() -> {
 			graph.searchHistory.clear();
 			showRecent();
@@ -81,33 +112,57 @@ public final class SearchPage implements Page, PosterCard.Listener {
 		recentSection.add(recentHeader, recentChips);
 		recentSection.margins(16, 24, 0, 24);
 		recentSection.valign(Widget.ALIGN_START);
+		showRecentSection(false);
 		status.center();
 		status.halign(Widget.ALIGN_CENTER).valign(Widget.ALIGN_CENTER).margin(32);
 		status.canTarget(false);
-		Box top = Box.column(14, Label.of(I18n.t("nav_search"), "title-1"), input);
-		top.margins(20, 24, 8, 24);
-		Layers center = Layers.overlay(results.view(), status, recentSection);
-		center.vexpand(true);
-		root.add(top, center);
-		showRecent();
+		status.visible(false);
+		results.view().visible(false);
+		area = Layers.overlay(results.view(), status, recentSection);
+		area.vexpand(true);
+		area.visible(false);
 	}
 
+	/** The search field, for above the browsing. */
 	@NonNull
-	@Override
-	public Widget view() {
-		return root;
+	public Widget field() {
+		return input;
 	}
 
-	@Override
-	public void onShow() {
-		results.refreshWatched();
-		results.onShown();
+	/** The results and recent searches, for in place of the browsing. */
+	@NonNull
+	public Widget area() {
+		return area;
+	}
+
+	/** Whether the search area shows, in place of the browsing. */
+	public boolean isShown() {
+		return shown;
+	}
+
+	public void focus() {
 		input.grabFocus();
 	}
 
 	public void searchFor(@NonNull String text) {
+		closing = false;
 		input.text(text);
 		search();
+	}
+
+	/** Back to browsing: empties the field and leaves it. */
+	public void close() {
+		generation++;
+		searched = "";
+		closing = !input.text().isEmpty();
+		input.text("");
+		showRecentSection(false);
+		setShown(false);
+	}
+
+	public void onShown() {
+		results.refreshWatched();
+		results.onShown();
 	}
 
 	@NonNull
@@ -115,20 +170,56 @@ public final class SearchPage implements Page, PosterCard.Listener {
 		return input.text().trim();
 	}
 
+	/** Focus events come one by one as it moves; what's shown follows where it ends up. */
+	private void focusMoved(boolean inField, boolean inRecent) {
+		focusInField = inField;
+		focusInRecent = inRecent;
+		if (focusCheckPosted) {
+			return;
+		}
+		focusCheckPosted = true;
+		MainLoop.post(() -> {
+			focusCheckPosted = false;
+			boolean wanted = focusInField || focusInRecent;
+			if (query().isEmpty() && wanted != (shown && recentShown)) {
+				showRecent();
+			}
+		});
+	}
+
+	private void showRecentSection(boolean show) {
+		recentShown = show;
+		recentSection.visible(show);
+	}
+
+	private void setShown(boolean show) {
+		area.visible(show);
+		if (show != shown) {
+			shown = show;
+			listener.onSearchShown(show);
+		}
+	}
+
+	/** The empty field: recent searches while it has focus, otherwise the browsing. */
 	private void showRecent() {
 		results.view().visible(false);
 		status.visible(false);
 		recentChips.clear();
 		List<String> recent = graph.searchHistory.all();
-		recentSection.visible(!recent.isEmpty());
-		for (String q : recent) {
-			Button chip = Button.text(q, "chip");
-			chip.onClick(() -> {
-				input.text(q);
-				search();
-			});
-			recentChips.add(chip);
+		boolean showRecent = (focusInField || focusInRecent) && !recent.isEmpty();
+		showRecentSection(showRecent);
+		if (showRecent) {
+			for (String q : recent) {
+				Button chip = Button.text(q, "chip");
+				chip.set("focus-on-click", false);
+				chip.onClick(() -> {
+					input.text(q);
+					search();
+				});
+				recentChips.add(chip);
+			}
 		}
+		setShown(showRecent);
 	}
 
 	private void search() {
@@ -142,8 +233,10 @@ public final class SearchPage implements Page, PosterCard.Listener {
 		idsByType.clear();
 		results.setRows(null, new ArrayList<>());
 		results.scrollToTop();
-		recentSection.visible(false);
+		showRecentSection(false);
 		results.view().visible(true);
+		setShown(true);
+		results.onShown();
 		pending = 0;
 		for (InstalledAddon addon : graph.addons.active()) {
 			if (addon.manifest == null) {
@@ -175,7 +268,7 @@ public final class SearchPage implements Page, PosterCard.Listener {
 			return;
 		}
 		for (Translations.Found title : found) {
-			if (isShown(title.imdbId)) {
+			if (isListed(title.imdbId)) {
 				continue;
 			}
 			pending++;
@@ -206,7 +299,7 @@ public final class SearchPage implements Page, PosterCard.Listener {
 		return null;
 	}
 
-	private boolean isShown(String id) {
+	private boolean isListed(String id) {
 		for (Set<String> ids : idsByType.values()) {
 			if (ids.contains(id)) {
 				return true;

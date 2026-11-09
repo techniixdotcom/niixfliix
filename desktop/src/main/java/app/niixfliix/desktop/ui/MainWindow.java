@@ -30,7 +30,6 @@ import app.niixfliix.desktop.ui.screens.HomePage;
 import app.niixfliix.desktop.ui.screens.LibraryPage;
 import app.niixfliix.desktop.ui.screens.LivePage;
 import app.niixfliix.desktop.ui.screens.PlayerPage;
-import app.niixfliix.desktop.ui.screens.SearchPage;
 import app.niixfliix.desktop.ui.screens.SettingsPage;
 import app.niixfliix.ui.common.PosterItem;
 
@@ -40,7 +39,6 @@ public final class MainWindow {
 		HOME("nav_home", "home"),
 		DISCOVER("nav_discover", "explore"),
 		LIVE("nav_live", "live"),
-		SEARCH("nav_search", "search"),
 		LIBRARY("nav_library", "library"),
 		SETTINGS("nav_settings", "settings");
 
@@ -167,7 +165,11 @@ public final class MainWindow {
 				return back();
 			}
 			if (keyval == KEY_F && (state & Controller.MODIFIER_CONTROL) != 0) {
-				showTab(Tab.SEARCH);
+				showTab(Tab.DISCOVER);
+				Page discover = tabs.get(Tab.DISCOVER);
+				if (discover instanceof DiscoverPage) {
+					((DiscoverPage) discover).focusSearch();
+				}
 				return true;
 			}
 			return false;
@@ -200,10 +202,10 @@ public final class MainWindow {
 	}
 
 	public void search(@NonNull String query) {
-		showTab(Tab.SEARCH);
-		Page page = tabs.get(Tab.SEARCH);
-		if (page instanceof SearchPage) {
-			((SearchPage) page).searchFor(query);
+		showTab(Tab.DISCOVER);
+		Page page = tabs.get(Tab.DISCOVER);
+		if (page instanceof DiscoverPage) {
+			((DiscoverPage) page).searchFor(query);
 		}
 	}
 
@@ -220,7 +222,8 @@ public final class MainWindow {
 
 	public boolean back() {
 		if (stack.isEmpty()) {
-			return false;
+			Page page = tabs.get(tab);
+			return page != null && page.onBack();
 		}
 		Page old = stack.pop();
 		swap(old, current());
@@ -291,8 +294,6 @@ public final class MainWindow {
 				return new DiscoverPage();
 			case LIVE:
 				return new LivePage();
-			case SEARCH:
-				return new SearchPage();
 			case LIBRARY:
 				return new LibraryPage();
 			case SETTINGS:
