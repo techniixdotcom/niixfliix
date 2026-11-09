@@ -29,4 +29,7 @@
 	<string name="update_no_bundle_signature">版本 %1$s 没有附带 .flatpak.sig 文件，因此无法校验下载。请把 dist 文件夹中的所有文件都附加到 GitHub 版本。</string>
 	<string name="update_failed_signature">下载的文件未使用此应用的密钥签名，因此已被丢弃。</string>
 	<string name="update_ready_desktop">更新已保存为 %1$s，并已交给软件中心打开。如果没有打开任何内容，请在终端中安装：\n\n%2$s\n\n然后重新启动应用。</string>
+	<string name="menu_download_pick_hint_desktop">右键点击一集即可下载。</string>
+	<string name="details_poster_series_watched">点击将整部剧集标记为已看</string>
+	<string name="details_poster_series_unwatched">点击将整部剧集标记为未看</string>
 </resources>

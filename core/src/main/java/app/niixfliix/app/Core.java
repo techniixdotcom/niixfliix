@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -44,6 +45,7 @@ import app.niixfliix.net.Http;
 import app.niixfliix.player.PlayerPreferences;
 import app.niixfliix.torrent.Magnet;
 import app.niixfliix.torrent.TorrentEngine;
+import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.util.MainQueue;
 import okhttp3.OkHttpClient;
 
@@ -209,6 +211,33 @@ public class Core {
 				main.post(onChanged);
 			}
 		});
+	}
+
+	/**
+	 * Keeps the episode lists of the series the "NEW" mark is for up to date: saved series and series
+	 * that were watched. {@code onChanged} runs on the main thread when a list changed.
+	 */
+	@MainThread
+	public final void refreshNewEpisodes(@NonNull Runnable onChanged) {
+		Set<String> ids = new LinkedHashSet<>();
+		for (LibraryItem item : library.all()) {
+			if (Meta.TYPE_SERIES.equals(item.type)) {
+				ids.add(item.id);
+			}
+		}
+		for (HistoryEntry entry : history.recent()) {
+			if (Meta.TYPE_SERIES.equals(entry.type) && !entry.metaId.isEmpty()) {
+				ids.add(entry.metaId);
+			}
+		}
+		newEpisodes.refresh(ids, id -> MetaFinder.find(addons, addonClient, Meta.TYPE_SERIES, id), onChanged);
+	}
+
+	/** The poster with the "NEW" mark when every episode out was watched and a new one came out since. */
+	@MainThread
+	@NonNull
+	public final PosterItem markNew(@NonNull PosterItem item) {
+		return Meta.TYPE_SERIES.equals(item.type) && !item.header ? item.withNew(newEpisodes.hasNew(item.id)) : item;
 	}
 
 	@NonNull

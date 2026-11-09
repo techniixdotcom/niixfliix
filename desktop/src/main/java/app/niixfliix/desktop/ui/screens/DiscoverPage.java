@@ -86,8 +86,26 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 
 	@Override
 	public void onShow() {
-		grid.refresh();
+		refreshMarks();
 		grid.onShown();
+		graph.refreshNewEpisodes(this::refreshMarks);
+	}
+
+	/** Watched state and the "NEW" mark on series, which may have changed while elsewhere. */
+	private void refreshMarks() {
+		boolean changed = false;
+		for (int i = 0; i < items.size(); i++) {
+			PosterItem marked = graph.markNew(items.get(i));
+			if (marked != items.get(i)) {
+				items.set(i, marked);
+				changed = true;
+			}
+		}
+		if (changed) {
+			grid.show(items);
+		} else {
+			grid.refresh();
+		}
 	}
 
 	@Override
@@ -252,7 +270,7 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 		int before = items.size();
 		for (Meta m : metas) {
 			if (m.id != null && seenIds.add(m.id)) {
-				items.add(PosterItem.of(m));
+				items.add(graph.markNew(PosterItem.of(m)));
 			}
 		}
 		if (items.size() == before) {
@@ -276,6 +294,6 @@ public final class DiscoverPage implements Page, PosterCard.Listener, AddonRepos
 
 	@Override
 	public void onPosterMenu(@NonNull PosterItem item, @NonNull Widget card, double x, double y) {
-		PosterMenu.show(card, x, y, item, null, null, grid::refresh);
+		PosterMenu.show(card, x, y, item, null, null, this::refreshMarks);
 	}
 }

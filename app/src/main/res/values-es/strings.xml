@@ -364,4 +364,17 @@
 	<string name="web_desktop_site">Sitio de escritorio</string>
 	<string name="web_unavailable">No se pudo abrir el reproductor. Actualiza Android System WebView e inténtalo de nuevo.</string>
 	<string name="web_crashed">El reproductor se detuvo. Vuelve a abrirlo.</string>
+	<string name="menu_download_season">Descargar esta temporada</string>
+	<string name="menu_download_series">Descargar la serie completa</string>
+	<string name="menu_download_pick">Elegir episodios para descargar</string>
+	<string name="menu_download_pick_hint">Mantén pulsado un episodio para descargarlo.</string>
+	<string name="download_allow_storage">Permite el acceso al almacenamiento y vuelve a intentarlo.</string>
+	<string name="download_looking">Buscando una transmisión para descargar…</string>
+	<string name="download_already_there">Ya está en tus descargas.</string>
+	<string name="download_title_nothing">No se pudo descargar: ninguna transmisión tiene un enlace directo. Las descargas lo necesitan, por ejemplo de un servicio debrid; los torrents solo se pueden reproducir.</string>
+	<string name="details_mark_season_watched">Marcar temporada como vista</string>
+	<string name="details_mark_season_unwatched">Marcar temporada como no vista</string>
+	<string name="details_series_marked_watched">Serie completa marcada como vista</string>
+	<string name="details_series_marked_unwatched">Serie completa marcada como no vista</string>
+	<string name="details_related">Películas relacionadas</string>
 </resources>

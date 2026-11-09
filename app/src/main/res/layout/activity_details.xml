@@ -309,6 +309,31 @@
 			</LinearLayout>
 
 			<LinearLayout
+				android:id="@+id/related_section"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:paddingBottom="24dp"
+				android:visibility="gone">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:paddingHorizontal="@dimen/screen_padding"
+					android:text="@string/details_related"
+					android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
+
+				<androidx.recyclerview.widget.RecyclerView
+					android:id="@+id/related"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:clipToPadding="false"
+					android:nestedScrollingEnabled="false"
+					android:paddingHorizontal="10dp" />
+			</LinearLayout>
+
+			<LinearLayout
 				android:id="@+id/similar_section"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -323,6 +348,17 @@
 					android:text="@string/details_more_like_this"
 					android:textAppearance="@style/TextAppearance.Niixfliix.Section" />
 
+				<!-- Shown while the titles are looked up, so the row is seen to be coming -->
+				<LinearLayout
+					android:id="@+id/similar_placeholders"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="4dp"
+					android:clipChildren="true"
+					android:importantForAccessibility="noHideDescendants"
+					android:orientation="horizontal"
+					android:paddingHorizontal="10dp" />
+
 				<androidx.recyclerview.widget.RecyclerView
 					android:id="@+id/similar"
 					android:layout_width="match_parent"
@@ -330,7 +366,8 @@
 					android:layout_marginTop="4dp"
 					android:clipToPadding="false"
 					android:nestedScrollingEnabled="false"
-					android:paddingHorizontal="10dp" />
+					android:paddingHorizontal="10dp"
+					android:visibility="gone" />
 			</LinearLayout>
 		</LinearLayout>
 	</androidx.core.widget.NestedScrollView>

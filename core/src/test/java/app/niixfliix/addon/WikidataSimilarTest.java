@@ -52,4 +52,16 @@ public class WikidataSimilarTest {
 	public void aBrokenAnswerFails() throws IOException {
 		Wikidata.parseSimilar("{\"nope\":1}");
 	}
+
+	@Test
+	public void relatedQueryIsForFilmsOfTheSameSeriesOrSource() {
+		assertNull(Wikidata.relatedQuery("tt1\" } DROP", Collections.emptyList()));
+		String query = Wikidata.relatedQuery("tt0107290", Arrays.asList("fr", "x\" }"));
+		assertTrue(query.contains("wdt:P345 \"tt0107290\""));
+		assertTrue(query.contains("wdt:P179"));
+		assertTrue(query.contains("wdt:P144|wdt:P4969|wdt:P155|wdt:P156"));
+		assertTrue(query.contains("wd:Q11424"));
+		assertTrue(query.contains("IN (\"fr\")"));
+		assertFalse(Wikidata.relatedQuery("tt0107290", Collections.emptyList()).contains("?local"));
+	}
 }

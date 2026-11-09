@@ -348,4 +348,17 @@
 	<string name="web_desktop_site">桌面版网站</string>
 	<string name="web_unavailable">无法打开播放器。请更新 Android System WebView 后重试。</string>
 	<string name="web_crashed">播放器已停止。请重新打开。</string>
+	<string name="menu_download_season">下载本季</string>
+	<string name="menu_download_series">下载整部剧集</string>
+	<string name="menu_download_pick">选择要下载的剧集</string>
+	<string name="menu_download_pick_hint">长按一集即可下载。</string>
+	<string name="download_allow_storage">请允许存储权限，然后重试。</string>
+	<string name="download_looking">正在查找可下载的视频流…</string>
+	<string name="download_already_there">已在下载列表中。</string>
+	<string name="download_title_nothing">无法下载：没有带直链的视频流。下载需要直链，例如来自 debrid 服务；种子只能播放。</string>
+	<string name="details_mark_season_watched">将本季标记为已看</string>
+	<string name="details_mark_season_unwatched">将本季标记为未看</string>
+	<string name="details_series_marked_watched">已将整部剧集标记为已看</string>
+	<string name="details_series_marked_unwatched">已将整部剧集标记为未看</string>
+	<string name="details_related">相关电影</string>
 </resources>

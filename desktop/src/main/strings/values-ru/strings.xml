@@ -29,4 +29,7 @@
 	<string name="update_no_bundle_signature">К релизу %1$s не прикреплён файл .flatpak.sig, поэтому загрузку нельзя проверить. Прикрепите все файлы из папки dist к релизу на GitHub.</string>
 	<string name="update_failed_signature">Загруженный файл не подписан ключом этого приложения, поэтому он удалён.</string>
 	<string name="update_ready_desktop">Обновление сохранено как %1$s и открыто в центре приложений. Если ничего не открылось, установите его из терминала:\n\n%2$s\n\nЗатем перезапустите приложение.</string>
+	<string name="menu_download_pick_hint_desktop">Щёлкните правой кнопкой мыши по серии, чтобы скачать её.</string>
+	<string name="details_poster_series_watched">Нажмите, чтобы отметить весь сериал как просмотренный</string>
+	<string name="details_poster_series_unwatched">Нажмите, чтобы отметить весь сериал как непросмотренный</string>
 </resources>

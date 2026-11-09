@@ -29,4 +29,7 @@
 	<string name="update_no_bundle_signature">リリース %1$s に .flatpak.sig ファイルが添付されていないため、ダウンロードを確認できません。dist フォルダーのすべてのファイルを GitHub のリリースに添付してください。</string>
 	<string name="update_failed_signature">ダウンロードしたファイルがこのアプリの鍵で署名されていないため、破棄しました。</string>
 	<string name="update_ready_desktop">アップデートを %1$s として保存し、ソフトウェアセンターで開きました。何も開かない場合は、ターミナルからインストールしてください：\n\n%2$s\n\nその後、アプリを再起動してください。</string>
+	<string name="menu_download_pick_hint_desktop">エピソードを右クリックするとダウンロードできます。</string>
+	<string name="details_poster_series_watched">クリックするとシリーズ全体を視聴済みにします</string>
+	<string name="details_poster_series_unwatched">クリックするとシリーズ全体を未視聴にします</string>
 </resources>

@@ -29,4 +29,7 @@
 	<string name="update_no_bundle_signature">Release %1$s has no .flatpak.sig file attached, so the download can\'t be checked. Attach all the files from the dist folder to the GitHub release.</string>
 	<string name="update_failed_signature">The download isn\'t signed with this app\'s key, so it was thrown away.</string>
 	<string name="update_ready_desktop">The update was saved as %1$s and handed to your software centre. If nothing opened, install it from a terminal:\n\n%2$s\n\nThen restart the app.</string>
+	<string name="menu_download_pick_hint_desktop">Right-click an episode to download it.</string>
+	<string name="details_poster_series_watched">Click to mark the whole series as watched</string>
+	<string name="details_poster_series_unwatched">Click to mark the whole series as not watched</string>
 </resources>

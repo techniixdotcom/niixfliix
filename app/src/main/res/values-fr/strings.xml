@@ -364,4 +364,17 @@
 	<string name="web_desktop_site">Version pour ordinateur</string>
 	<string name="web_unavailable">Impossible d\'ouvrir le lecteur. Mettez à jour Android System WebView et réessayez.</string>
 	<string name="web_crashed">Le lecteur s\'est arrêté. Rouvrez-le.</string>
+	<string name="menu_download_season">Télécharger cette saison</string>
+	<string name="menu_download_series">Télécharger toute la série</string>
+	<string name="menu_download_pick">Choisir les épisodes à télécharger</string>
+	<string name="menu_download_pick_hint">Appuyez longuement sur un épisode pour le télécharger.</string>
+	<string name="download_allow_storage">Autorisez l’accès au stockage, puis réessayez.</string>
+	<string name="download_looking">Recherche d’un flux à télécharger…</string>
+	<string name="download_already_there">C’est déjà dans vos téléchargements.</string>
+	<string name="download_title_nothing">Impossible de télécharger : aucun flux n’a de lien direct. Les téléchargements en ont besoin, par exemple d’un service debrid ; les torrents peuvent seulement être lus.</string>
+	<string name="details_mark_season_watched">Marquer la saison comme vue</string>
+	<string name="details_mark_season_unwatched">Marquer la saison comme non vue</string>
+	<string name="details_series_marked_watched">Toute la série est marquée comme vue</string>
+	<string name="details_series_marked_unwatched">Toute la série est marquée comme non vue</string>
+	<string name="details_related">Films liés</string>
 </resources>

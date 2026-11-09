@@ -129,15 +129,25 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 	@Override
 	public void onResume() {
 		super.onResume();
-		adapter.refreshWatched();
+		refreshMarks();
 	}
 
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
 		if (!hidden && getView() != null) {
-			adapter.refreshWatched();
+			refreshMarks();
 		}
+	}
+
+	/** Watched state and the "NEW" mark on series, which may have changed while elsewhere. */
+	private void refreshMarks() {
+		adapter.refreshMarks(graph::markNew);
+		graph.refreshNewEpisodes(() -> {
+			if (getView() != null) {
+				adapter.refreshMarks(graph::markNew);
+			}
+		});
 	}
 
 	@Override
@@ -299,7 +309,7 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 		List<PosterItem> fresh = new ArrayList<>();
 		for (Meta m : metas) {
 			if (m.id != null && seenIds.add(m.id)) {
-				fresh.add(PosterItem.of(m));
+				fresh.add(graph.markNew(PosterItem.of(m)));
 			}
 		}
 		if (fresh.isEmpty()) {
@@ -325,7 +335,7 @@ public final class DiscoverFragment extends Fragment implements PosterAdapter.Li
 	public boolean onPosterLongClick(@NonNull PosterItem item) {
 		QueueMenu.show(requireContext(), item, null, null, () -> {
 			if (getView() != null) {
-				adapter.refreshWatched();
+				adapter.refreshMarks(graph::markNew);
 			}
 		});
 		return true;

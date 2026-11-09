@@ -356,4 +356,17 @@
 	<string name="web_desktop_site">Masaüstü sitesi</string>
 	<string name="web_unavailable">Oynatıcı açılamadı. Android System WebView\'i güncelleyip tekrar deneyin.</string>
 	<string name="web_crashed">Oynatıcı durdu. Yeniden açın.</string>
+	<string name="menu_download_season">Bu sezonu indir</string>
+	<string name="menu_download_series">Tüm diziyi indir</string>
+	<string name="menu_download_pick">İndirilecek bölümleri seç</string>
+	<string name="menu_download_pick_hint">İndirmek için bir bölüme uzun basın.</string>
+	<string name="download_allow_storage">Depolama erişimine izin verip tekrar deneyin.</string>
+	<string name="download_looking">İndirilecek akış aranıyor…</string>
+	<string name="download_already_there">Bu zaten indirilenlerde.</string>
+	<string name="download_title_nothing">İndirilemedi: hiçbir akışın doğrudan bağlantısı yok. İndirmek için debrid hizmeti gibi bir kaynaktan doğrudan bağlantı gerekir; torrentler yalnızca oynatılabilir.</string>
+	<string name="details_mark_season_watched">Sezonu izlendi olarak işaretle</string>
+	<string name="details_mark_season_unwatched">Sezonu izlenmedi olarak işaretle</string>
+	<string name="details_series_marked_watched">Tüm dizi izlendi olarak işaretlendi</string>
+	<string name="details_series_marked_unwatched">Tüm dizi izlenmedi olarak işaretlendi</string>
+	<string name="details_related">İlgili filmler</string>
 </resources>

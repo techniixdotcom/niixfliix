@@ -14,9 +14,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -30,6 +33,15 @@ import app.niixfliix.addon.model.Catalog;
 import app.niixfliix.addon.model.InstalledAddon;
 import app.niixfliix.addon.model.Meta;
 
+/**
+ * "More like this" under a title: titles Wikidata links to it (same series, same source, director,
+ * writer, specific genre, cast), then titles from the add-ons' catalogs of the same genres.
+ * <p>
+ * Wikidata's query can take a long while, so it never holds the row up: it starts the moment a
+ * title's page opens (or earlier, for titles likely to be opened next: {@link #warm}), the genre
+ * titles show as soon as the catalogs answer, and the Wikidata ones are put in front when they
+ * come. Once looked up, a title's answer is kept on disk, so the next time it's there at once.
+ */
 public final class MoreLikeThis {
 
 	public static final int MAX_ITEMS = 24;
@@ -40,6 +52,15 @@ public final class MoreLikeThis {
 	private static final Pattern IMDB_ID = Pattern.compile("tt\\d{1,10}");
 	private static final String POSTER = "https://images.metahub.space/poster/medium/";
 	private static final long GENRE_WAIT_MS = 20_000;
+	/** How long the genre titles wait for Wikidata before showing on their own (a kept answer is quicker). */
+	private static final long QUICK_WAIT_MS = 1500;
+	private static final ExecutorService WIKIDATA = Executors.newFixedThreadPool(2, daemon("wikidata"));
+	/** Look-ups for titles nobody opened yet, one at a time, so they never hold up an opened one. */
+	private static final ExecutorService WARMING = Executors.newSingleThreadExecutor(daemon("wikidata-warm"));
+	private static final ConcurrentHashMap<String, CompletableFuture<List<SimilarTitle>>> RUNNING =
+			new ConcurrentHashMap<>();
+	private static final Set<String> WARMED = ConcurrentHashMap.newKeySet();
+	private static final int MAX_WARMED = 200;
 	private static final int FETCHER_THREADS = 3;
 	private static final ExecutorService FETCHERS = Executors.newFixedThreadPool(FETCHER_THREADS, r -> {
 		Thread t = new Thread(r, "more-like-this");
@@ -61,6 +82,79 @@ public final class MoreLikeThis {
 	}
 
 	@NonNull
+	private static ThreadFactory daemon(@NonNull String name) {
+		return r -> {
+			Thread t = new Thread(r, name);
+			t.setDaemon(true);
+			return t;
+		};
+	}
+
+	private static boolean wikidataKnows(@Nullable String type, @Nullable String id) {
+		return id != null && (Meta.TYPE_SERIES.equals(type) || Meta.TYPE_MOVIE.equals(type))
+				&& IMDB_ID.matcher(id).matches();
+	}
+
+	/**
+	 * Starts looking the title up on Wikidata, or joins the look-up already running for it, and returns
+	 * at once. A title's page calls this as it opens, before its details are in, so the slow part has a
+	 * head start; {@link #find} then picks up the same look-up.
+	 */
+	@NonNull
+	public static CompletableFuture<List<SimilarTitle>> lookUp(@NonNull AddonClient client, @Nullable String type,
+			@Nullable String id, @Nullable String language) {
+		return lookUp(client, type, id, language, WIKIDATA);
+	}
+
+	/**
+	 * Looks a title up ahead of time, quietly and one at a time: for titles likely to be opened next
+	 * (the banner on Home, Continue watching), so their row is there the moment they are. Once per
+	 * title while the app runs; the answer is kept on disk.
+	 */
+	public static void warm(@NonNull AddonClient client, @Nullable String type, @Nullable String id,
+			@Nullable String language) {
+		if (!wikidataKnows(type, id) || WARMED.size() >= MAX_WARMED || !WARMED.add(key(type, id, language))) {
+			return;
+		}
+		lookUp(client, type, id, language, WARMING);
+	}
+
+	@NonNull
+	private static CompletableFuture<List<SimilarTitle>> lookUp(@NonNull AddonClient client, @Nullable String type,
+			@Nullable String id, @Nullable String language, @NonNull ExecutorService on) {
+		if (!wikidataKnows(type, id)) {
+			return CompletableFuture.completedFuture(Collections.emptyList());
+		}
+		String key = key(type, id, language);
+		CompletableFuture<List<SimilarTitle>> mine = new CompletableFuture<>();
+		CompletableFuture<List<SimilarTitle>> running = RUNNING.putIfAbsent(key, mine);
+		if (running != null) {
+			return running;
+		}
+		boolean series = Meta.TYPE_SERIES.equals(type);
+		try {
+			on.execute(() -> {
+				try {
+					mine.complete(client.similar(id, series, language));
+				} catch (IOException | RuntimeException e) {
+					mine.completeExceptionally(e);
+				} finally {
+					RUNNING.remove(key, mine);
+				}
+			});
+		} catch (RuntimeException e) {
+			RUNNING.remove(key, mine);
+			mine.completeExceptionally(e);
+		}
+		return mine;
+	}
+
+	@NonNull
+	private static String key(@Nullable String type, @Nullable String id, @Nullable String language) {
+		return type + "|" + id + "|" + (language != null ? language : "");
+	}
+
+	@NonNull
 	public static List<CatalogSource> sourcesOf(@NonNull AddonRepository addons, @NonNull String type) {
 		List<CatalogSource> out = new ArrayList<>();
 		for (InstalledAddon addon : addons.active()) {
@@ -76,36 +170,92 @@ public final class MoreLikeThis {
 		return out;
 	}
 
-	@NonNull
+	/** Where {@link #find} hands the row's titles. */
+	public interface Sink {
+		/**
+		 * The titles to show. Called once or twice, in order, on a background thread: {@code last} is the
+		 * final list, which may be empty (then there is no row).
+		 */
+		void show(@NonNull List<PosterItem> items, boolean last);
+	}
+
+	/**
+	 * Finds the row's titles and hands them to {@code sink}. When Wikidata answers within
+	 * {@link #QUICK_WAIT_MS} (it does when its answer is kept from before), that's one call with
+	 * everything. Otherwise the titles from the genre catalogs go first, as soon as they're in, and the
+	 * list with the Wikidata titles in front follows when it answers. Returns once the first call is
+	 * made; it doesn't wait for Wikidata, so it never holds a thread for long.
+	 */
 	@WorkerThread
-	public static List<PosterItem> find(@NonNull AddonRepository addons, @NonNull AddonClient client,
+	public static void find(@NonNull AddonRepository addons, @NonNull AddonClient client,
 			@Nullable String type, @Nullable String id, @Nullable List<String> genres, long released,
-			@Nullable String language) {
+			@Nullable String language, @NonNull Sink sink) {
 		if (type == null || id == null || Catalog.isLiveType(type)) {
-			return Collections.emptyList();
+			sink.show(Collections.emptyList(), true);
+			return;
 		}
 		List<String> titleGenres = genres != null ? genres : Collections.emptyList();
+		CompletableFuture<List<SimilarTitle>> wikidata = lookUp(client, type, id, language);
 		List<Future<List<Meta>>> genreLists = startGenreLists(addons, client, type, titleGenres);
-		List<PosterItem> related = Collections.emptyList();
-		boolean series = Meta.TYPE_SERIES.equals(type);
-		if ((series || Meta.TYPE_MOVIE.equals(type)) && IMDB_ID.matcher(id).matches()) {
-			try {
-				related = fromWikidata(client.similar(id, series, language), id, type, titleGenres, released);
-			} catch (IOException | RuntimeException e) {
-				related = Collections.emptyList();
+
+		List<SimilarTitle> found = wikidataWithin(wikidata, QUICK_WAIT_MS);
+		if (found != null) {
+			List<PosterItem> related = fromWikidata(found, id, type, titleGenres, released);
+			if (related.size() >= ENOUGH_FROM_WIKIDATA || genreLists.isEmpty()) {
+				cancel(genreLists);
+				sink.show(related, true);
+				return;
 			}
+			sink.show(merge(related, rank(id, titleGenres, released, awaitAll(genreLists))), true);
+			return;
 		}
-		if (related.size() >= ENOUGH_FROM_WIKIDATA || genreLists.isEmpty()) {
-			for (Future<List<Meta>> f : genreLists) {
-				f.cancel(true);
-			}
-			return related;
+
+		List<PosterItem> byGenre = genreLists.isEmpty() ? Collections.emptyList()
+				: rank(id, titleGenres, released, awaitAll(genreLists));
+		found = wikidataWithin(wikidata, 0);
+		if (found != null) {
+			sink.show(merge(fromWikidata(found, id, type, titleGenres, released), byGenre), true);
+			return;
 		}
+		// First the genre titles; the Wikidata ones follow (handed over after this call, so in order)
+		sink.show(byGenre, false);
+		wikidata.whenComplete((answer, failure) -> {
+			List<PosterItem> related = answer != null
+					? fromWikidata(answer, id, type, titleGenres, released) : Collections.emptyList();
+			sink.show(related.isEmpty() ? byGenre : merge(related, byGenre), true);
+		});
+	}
+
+	/** Wikidata's answer if it comes within {@code ms}; null if not yet, empty if it failed. */
+	@Nullable
+	private static List<SimilarTitle> wikidataWithin(@NonNull CompletableFuture<List<SimilarTitle>> wikidata,
+			long ms) {
+		try {
+			List<SimilarTitle> found = wikidata.get(ms, TimeUnit.MILLISECONDS);
+			return found != null ? found : Collections.emptyList();
+		} catch (TimeoutException e) {
+			return null;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return Collections.emptyList();
+		} catch (ExecutionException | RuntimeException e) {
+			return Collections.emptyList();
+		}
+	}
+
+	@NonNull
+	private static List<List<Meta>> awaitAll(@NonNull List<Future<List<Meta>>> genreLists) {
 		List<List<Meta>> lists = new ArrayList<>();
 		for (Future<List<Meta>> f : genreLists) {
 			lists.add(await(f));
 		}
-		return merge(related, rank(id, titleGenres, released, lists));
+		return lists;
+	}
+
+	private static void cancel(@NonNull List<Future<List<Meta>>> genreLists) {
+		for (Future<List<Meta>> f : genreLists) {
+			f.cancel(true);
+		}
 	}
 
 	@NonNull

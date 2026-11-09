@@ -348,4 +348,17 @@
 	<string name="web_desktop_site">데스크톱 사이트</string>
 	<string name="web_unavailable">플레이어를 열 수 없어요. Android System WebView를 업데이트한 후 다시 시도하세요.</string>
 	<string name="web_crashed">플레이어가 멈췄어요. 다시 열어 주세요.</string>
+	<string name="menu_download_season">이 시즌 다운로드</string>
+	<string name="menu_download_series">시리즈 전체 다운로드</string>
+	<string name="menu_download_pick">다운로드할 에피소드 선택</string>
+	<string name="menu_download_pick_hint">에피소드를 길게 누르면 다운로드할 수 있어요.</string>
+	<string name="download_allow_storage">저장공간 접근을 허용한 다음 다시 시도해 주세요.</string>
+	<string name="download_looking">다운로드할 스트림을 찾는 중…</string>
+	<string name="download_already_there">이미 다운로드에 있어요.</string>
+	<string name="download_title_nothing">다운로드할 수 없어요. 직접 링크가 있는 스트림이 없어요. 다운로드하려면 debrid 서비스 등의 직접 링크가 필요해요. 토렌트는 재생만 할 수 있어요.</string>
+	<string name="details_mark_season_watched">시즌을 시청함으로 표시</string>
+	<string name="details_mark_season_unwatched">시즌을 시청 안 함으로 표시</string>
+	<string name="details_series_marked_watched">시리즈 전체를 시청함으로 표시했어요</string>
+	<string name="details_series_marked_unwatched">시리즈 전체를 시청 안 함으로 표시했어요</string>
+	<string name="details_related">관련 영화</string>
 </resources>

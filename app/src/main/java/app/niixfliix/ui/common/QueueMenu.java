@@ -17,7 +17,9 @@ import app.niixfliix.addon.MetaFinder;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.app.AppGraph;
 import app.niixfliix.data.History;
+import app.niixfliix.data.SeriesWatched;
 import app.niixfliix.data.model.QueueItem;
+import app.niixfliix.ui.details.DetailsActivity;
 
 public final class QueueMenu {
 
@@ -56,6 +58,7 @@ public final class QueueMenu {
 				}
 			});
 		}
+		addDownloads(context, menu, poster);
 		if (extraLabel != null && extraAction != null) {
 			menu.add(extraLabel, extraAction);
 		}
@@ -63,10 +66,32 @@ public final class QueueMenu {
 	}
 
 	public static void showEpisode(@NonNull Context context, @NonNull QueueItem episode, boolean watched,
-			@NonNull Runnable toggleWatched) {
+			@NonNull Runnable toggleWatched, @Nullable Runnable download) {
 		Menu menu = new Menu(context, episode);
 		menu.add(watched ? R.string.details_mark_unwatched : R.string.details_mark_watched, toggleWatched);
+		if (download != null) {
+			menu.add(R.string.streams_download, download);
+		}
 		menu.show();
+	}
+
+	private static void addDownloads(Context context, Menu menu, PosterItem poster) {
+		if (poster.header || !QuickDownload.canDownload(poster.type)) {
+			return;
+		}
+		if (Meta.TYPE_SERIES.equals(poster.type)) {
+			menu.add(R.string.menu_download_season,
+					() -> QuickDownload.start(context, poster, QuickDownload.What.SEASON));
+			menu.add(R.string.menu_download_series,
+					() -> QuickDownload.start(context, poster, QuickDownload.What.SERIES));
+			menu.add(R.string.menu_download_pick, () -> {
+				Toast.makeText(context.getApplicationContext(), R.string.menu_download_pick_hint,
+						Toast.LENGTH_LONG).show();
+				DetailsActivity.start(context, poster);
+			});
+		} else {
+			menu.add(R.string.streams_download, () -> QuickDownload.start(context, poster, QuickDownload.What.TITLE));
+		}
 	}
 
 	private static void markSeriesWatched(Context context, PosterItem poster, @Nullable Runnable onDone) {
@@ -74,7 +99,8 @@ public final class QueueMenu {
 		Context app = context.getApplicationContext();
 		graph.io.execute(() -> {
 			Meta meta = MetaFinder.find(graph.addons, graph.addonClient, poster.type, poster.id);
-			List<String> ids = meta != null ? meta.episodeIds() : Collections.emptyList();
+			List<String> ids = meta != null ? SeriesWatched.out(meta, null, System.currentTimeMillis())
+					: Collections.emptyList();
 			graph.main.post(() -> {
 				if (ids.isEmpty()) {
 					Toast.makeText(app, R.string.queue_mark_failed, Toast.LENGTH_SHORT).show();

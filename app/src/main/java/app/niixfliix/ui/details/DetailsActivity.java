@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,9 +32,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import app.niixfliix.R;
 import app.niixfliix.addon.MetaFinder;
@@ -42,6 +46,7 @@ import app.niixfliix.addon.model.Catalog;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.addon.model.Video;
 import app.niixfliix.app.AppGraph;
+import app.niixfliix.data.SeriesWatched;
 import app.niixfliix.data.model.LibraryItem;
 import app.niixfliix.data.model.QueueItem;
 import app.niixfliix.download.DownloadFolder;
@@ -58,6 +63,8 @@ import app.niixfliix.ui.common.MoreLikeThis;
 import app.niixfliix.ui.common.PosterAdapter;
 import app.niixfliix.ui.common.PosterItem;
 import app.niixfliix.ui.common.QueueMenu;
+import app.niixfliix.ui.common.QuickDownload;
+import app.niixfliix.ui.common.RelatedTitles;
 import app.niixfliix.ui.common.TitleAbout;
 import app.niixfliix.ui.streams.StreamsSheet;
 import app.niixfliix.ui.web.TrailerActivity;
@@ -95,7 +102,15 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 	private View aboutSection;
 	private ViewGroup aboutFacts;
 	private MaterialButton imdb;
+	private View relatedSection;
+	private PosterAdapter related;
+	private final Set<String> relatedIds = new HashSet<>();
 	private View similarSection;
+	/** "More like this" as found, before the titles already in the related row are left out. */
+	private List<PosterItem> similarFound = new ArrayList<>();
+	private boolean similarDone;
+	private View similarPlaceholders;
+	private RecyclerView similarList;
 	private PosterAdapter similar;
 	private TextView notice;
 	private View seriesSection;
@@ -166,6 +181,8 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		aboutFacts = findViewById(R.id.about_facts);
 		imdb = findViewById(R.id.imdb);
 		similarSection = findViewById(R.id.similar_section);
+		relatedSection = findViewById(R.id.related_section);
+		similarPlaceholders = findViewById(R.id.similar_placeholders);
 		notice = findViewById(R.id.notice);
 		seriesSection = findViewById(R.id.series_section);
 		seasonInput = findViewById(R.id.season_input);
@@ -191,9 +208,11 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		play.setOnClickListener(v -> onPlay());
 		save.setOnClickListener(v -> toggleSaved());
 		watched.setOnClickListener(v -> toggleWatched());
+		backdrop.setOnLongClickListener(v -> toggleSeriesWatched());
+		logo.setOnLongClickListener(v -> toggleSeriesWatched());
 		findViewById(R.id.trailer_card).setOnClickListener(v -> openTrailer());
 		capTrailerWidth();
-		RecyclerView similarList = findViewById(R.id.similar);
+		similarList = findViewById(R.id.similar);
 		similarList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
 		similar = new PosterAdapter(false, new PosterAdapter.Listener() {
 			@Override
@@ -210,12 +229,30 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		similarList.setAdapter(similar);
 		HorizontalSwipe.attach(similarList);
 		Images.pauseWhileFlinging(similarList);
+		RecyclerView relatedList = findViewById(R.id.related);
+		relatedList.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+		related = new PosterAdapter(false, new PosterAdapter.Listener() {
+			@Override
+			public void onPosterClick(@NonNull PosterItem item) {
+				DetailsActivity.start(DetailsActivity.this, item);
+			}
+
+			@Override
+			public boolean onPosterLongClick(@NonNull PosterItem item) {
+				QueueMenu.show(DetailsActivity.this, item, null, null, () -> related.refreshWatched());
+				return true;
+			}
+		});
+		relatedList.setAdapter(related);
+		HorizontalSwipe.attach(relatedList);
+		Images.pauseWhileFlinging(relatedList);
 		findViewById(R.id.download_episodes).setOnClickListener(v -> downloadEpisodes());
 		seasonInput.setOnItemClickListener((parent, view, position, rowId) -> {
 			List<Integer> seasons = seasonNumbers();
 			if (position < seasons.size()) {
 				season = seasons.get(position);
 				showEpisodes();
+				showWatched();
 			}
 		});
 
@@ -264,6 +301,11 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 	}
 
 	private void load() {
+		// The Wikidata part of "More like this" is slow, so it starts now, next to the title's details,
+		// and the row shows as coming straight away
+		MoreLikeThis.lookUp(graph.addonClient, type, id, graph.translations.language());
+		showSimilarComing();
+		loadRelated();
 		graph.io.execute(() -> {
 			Meta found = MetaFinder.find(graph.addons, graph.addonClient, type, id);
 			List<String> genresForSimilar = found != null ? new ArrayList<>(found.allGenres()) : null;
@@ -406,16 +448,89 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		});
 	}
 
-	private void loadSimilar(@Nullable List<String> genres, long released) {
-		List<PosterItem> items = MoreLikeThis.find(graph.addons, graph.addonClient, type, id, genres, released,
-				graph.translations.language());
-		graph.main.post(() -> {
-			if (isDestroyed()) {
-				return;
+	private static final int SIMILAR_PLACEHOLDERS = 6;
+
+	/** The row with placeholder posters, until its titles are in. Not for live channels (no row there). */
+	private void showSimilarComing() {
+		if (type == null || Catalog.isLiveType(type)) {
+			return;
+		}
+		ViewGroup placeholders = (ViewGroup) similarPlaceholders;
+		if (placeholders.getChildCount() == 0) {
+			for (int i = 0; i < SIMILAR_PLACEHOLDERS; i++) {
+				getLayoutInflater().inflate(R.layout.item_poster_skeleton, placeholders, true);
 			}
-			similar.replace(items);
-			similarSection.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
+		}
+		similarPlaceholders.setVisibility(View.VISIBLE);
+		similarList.setVisibility(View.GONE);
+		similarSection.setVisibility(View.VISIBLE);
+	}
+
+	private void loadSimilar(@Nullable List<String> genres, long released) {
+		MoreLikeThis.find(graph.addons, graph.addonClient, type, id, genres, released,
+				graph.translations.language(), (items, last) -> graph.main.post(() -> showSimilar(items, last)));
+	}
+
+	/** Shows the titles; {@code last} is the final list, which may be empty (then the row goes away). */
+	private void showSimilar(@NonNull List<PosterItem> items, boolean last) {
+		if (isDestroyed()) {
+			return;
+		}
+		if (items.isEmpty() && !last) {
+			return;
+		}
+		if (!items.isEmpty() || similarFound.isEmpty()) {
+			similarFound = new ArrayList<>(items);
+		}
+		similarDone = similarDone || last;
+		showSimilarRow();
+	}
+
+	/** "More like this" without the titles the related row already shows. */
+	private void showSimilarRow() {
+		List<PosterItem> shown = new ArrayList<>();
+		for (PosterItem item : similarFound) {
+			if (!relatedIds.contains(item.id)) {
+				shown.add(item);
+			}
+		}
+		if (shown.isEmpty()) {
+			if (similarDone) {
+				similarSection.setVisibility(View.GONE);
+			}
+			return;
+		}
+		similar.replace(shown);
+		similarPlaceholders.setVisibility(View.GONE);
+		similarList.setVisibility(View.VISIBLE);
+		similarSection.setVisibility(View.VISIBLE);
+	}
+
+	/** The rest of a film's series and its other versions, in their own row. */
+	private void loadRelated() {
+		if (!RelatedTitles.applies(type, id)) {
+			return;
+		}
+		String language = graph.translations.language();
+		graph.io.execute(() -> {
+			List<PosterItem> found = RelatedTitles.find(graph.addonClient, type, id, language);
+			graph.main.post(() -> showRelated(found));
 		});
+	}
+
+	private void showRelated(@NonNull List<PosterItem> items) {
+		if (isDestroyed() || items.isEmpty()) {
+			return;
+		}
+		related.replace(items);
+		relatedSection.setVisibility(View.VISIBLE);
+		relatedIds.clear();
+		for (PosterItem item : items) {
+			relatedIds.add(item.id);
+		}
+		if (!similarFound.isEmpty()) {
+			showSimilarRow();
+		}
 	}
 
 	@NonNull
@@ -441,10 +556,6 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		boolean saved = graph.library.contains(id);
 		save.setIconResource(saved ? R.drawable.ic_bookmark : R.drawable.ic_bookmark_border);
 		save.setContentDescription(getString(saved ? R.string.details_unsave : R.string.details_save));
-		boolean isWatched = isAllWatched(m);
-		watched.setIconResource(isWatched ? R.drawable.ic_check_circle : R.drawable.ic_check);
-		watched.setContentDescription(getString(isWatched ? R.string.details_mark_unwatched : R.string.details_mark_watched));
-
 		List<Integer> seasons = seasonNumbers();
 		if (m.isSeries() && !seasons.isEmpty()) {
 			seriesSection.setVisibility(View.VISIBLE);
@@ -460,6 +571,7 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 			seasonInput.setSimpleItems(labels.toArray(new String[0]));
 			seasonInput.setText(seasonLabel(season), false);
 			showEpisodes();
+			showWatched();
 			if (next != null) {
 				long resume = graph.history.resumePosition(next.id);
 				String episode = getString(R.string.episode_number, next.seasonOrZero(), next.episodeOrZero());
@@ -470,6 +582,7 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 			}
 		} else {
 			seriesSection.setVisibility(View.GONE);
+			showWatched();
 			String videoId = m.playableVideoId();
 			graph.prepareToPlay(type, videoId, seriesId());
 			long resume = videoId != null ? graph.history.resumePosition(videoId) : 0;
@@ -501,20 +614,28 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		return number == 0 ? getString(R.string.details_specials) : getString(R.string.details_season_number, number);
 	}
 
-	private boolean isAllWatched(@NonNull Meta m) {
+	/** The button marks the season being looked at for a series, or the title itself. */
+	private void showWatched() {
+		Meta m = meta;
+		if (m == null) {
+			return;
+		}
+		boolean isWatched = isWatched(m);
+		boolean bySeason = m.isSeries();
+		watched.setIconResource(isWatched ? R.drawable.ic_check_circle : R.drawable.ic_check);
+		int label = bySeason
+				? isWatched ? R.string.details_mark_season_unwatched : R.string.details_mark_season_watched
+				: isWatched ? R.string.details_mark_unwatched : R.string.details_mark_watched;
+		watched.setContentDescription(getString(label));
+		TooltipCompat.setTooltipText(watched, getString(label));
+	}
+
+	private boolean isWatched(@NonNull Meta m) {
 		if (!m.isSeries()) {
 			String videoId = m.playableVideoId();
 			return videoId != null && graph.history.isWatched(videoId);
 		}
-		if (m.videosOrEmpty().isEmpty()) {
-			return false;
-		}
-		for (String episodeId : m.episodeIds()) {
-			if (!graph.history.isWatched(episodeId)) {
-				return false;
-			}
-		}
-		return true;
+		return season >= 0 && SeriesWatched.isWatched(graph.history, m, season, System.currentTimeMillis());
 	}
 
 	private void onPlay() {
@@ -559,7 +680,7 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		QueueMenu.showEpisode(this, item, watched, () -> {
 			graph.history.setWatched(videoId, !watched);
 			refreshState();
-		});
+		}, () -> requestDownloads(m, Collections.singletonList(video)));
 	}
 
 	private void toggleSaved() {
@@ -586,14 +707,30 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 		if (m == null) {
 			return;
 		}
-		boolean mark = !isAllWatched(m);
-		String videoId = m.playableVideoId();
 		if (m.isSeries()) {
-			graph.history.setWatched(m.episodeIds(), mark);
-		} else if (videoId != null) {
-			graph.history.setWatched(videoId, mark);
+			if (season >= 0) {
+				SeriesWatched.toggle(graph.history, m, season, System.currentTimeMillis());
+			}
+		} else {
+			String videoId = m.playableVideoId();
+			if (videoId != null) {
+				graph.history.setWatched(videoId, !graph.history.isWatched(videoId));
+			}
 		}
 		refreshState();
+	}
+
+	/** A long press on the main image marks the whole series, where the button marks one season. */
+	private boolean toggleSeriesWatched() {
+		Meta m = meta;
+		if (m == null || !m.isSeries() || m.videosOrEmpty().isEmpty()) {
+			return false;
+		}
+		boolean nowWatched = SeriesWatched.toggle(graph.history, m, null, System.currentTimeMillis());
+		Toast.makeText(this, nowWatched ? R.string.details_series_marked_watched
+				: R.string.details_series_marked_unwatched, Toast.LENGTH_SHORT).show();
+		refreshState();
+		return true;
 	}
 
 	@Nullable
@@ -658,21 +795,6 @@ public final class DetailsActivity extends BaseActivity implements StreamsSheet.
 
 	@NonNull
 	static String resultMessage(@NonNull Context context, @NonNull SeriesDownload.Result r) {
-		if (r.added == 0 && r.alreadyThere == 0) {
-			return context.getString(R.string.download_episodes_nothing);
-		}
-		List<String> parts = new ArrayList<>();
-		if (r.added > 0) {
-			parts.add(context.getResources().getQuantityString(R.plurals.download_episodes_added, r.added, r.added));
-		}
-		if (r.alreadyThere > 0) {
-			parts.add(context.getResources().getQuantityString(R.plurals.download_episodes_already, r.alreadyThere,
-					r.alreadyThere));
-		}
-		if (r.notDownloadable > 0) {
-			parts.add(context.getResources().getQuantityString(R.plurals.download_episodes_skipped,
-					r.notDownloadable, r.notDownloadable));
-		}
-		return String.join(" ", parts);
+		return QuickDownload.episodesMessage(context, r);
 	}
 }

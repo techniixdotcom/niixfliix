@@ -33,7 +33,7 @@ public final class PosterCard {
 
 	private final Picture poster = Picture.create(Picture.FIT_COVER);
 	private final Label fallback = Label.wrapping(null, "poster-fallback");
-	private final Label badge = Label.of(I18n.t("poster_new"), "new-badge");
+	private final Label badge = Label.of(I18n.t("poster_new"), "new-ribbon");
 	private final Progress progress = Progress.bar();
 	private final Label title = Label.of(null, "poster-title");
 	private final Box frame;
@@ -43,7 +43,8 @@ public final class PosterCard {
 	public PosterCard(@NonNull Listener listener) {
 		fallback.center();
 		fallback.halign(Widget.ALIGN_CENTER).valign(Widget.ALIGN_CENTER).margin(12);
-		badge.halign(Widget.ALIGN_END).valign(Widget.ALIGN_START).margin(6);
+		badge.halign(Widget.ALIGN_END).valign(Widget.ALIGN_START);
+		badge.canTarget(false);
 		badge.visible(false);
 		progress.addClass("poster-progress");
 		progress.valign(Widget.ALIGN_END);

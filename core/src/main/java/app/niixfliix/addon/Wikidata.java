@@ -82,7 +82,12 @@ final class Wikidata {
 		return parseSearch(run(http, query));
 	}
 
-	private static final long SIMILAR_TIMEOUT_MS = 15000;
+	/**
+	 * The similar-titles query is heavy and can take Wikidata most of its own 60-second limit. It runs
+	 * in the background (see MoreLikeThis), so it's given that long: a query cut off sooner is never
+	 * kept, and every later visit would wait for it again.
+	 */
+	private static final long SIMILAR_TIMEOUT_MS = 55_000;
 	private static final int SIMILAR_LIMIT = 120;
 	private static final String BROAD_GENRES = "wd:Q130232, wd:Q157443, wd:Q188473, wd:Q2484376, wd:Q200092, "
 			+ "wd:Q1054574, wd:Q471839, wd:Q157394, wd:Q959790, wd:Q319221, wd:Q93204, wd:Q202866, wd:Q1361932, "
@@ -101,7 +106,9 @@ final class Wikidata {
 		if (query == null) {
 			throw new IOException("Not an IMDb id");
 		}
-		return run(http, query, SIMILAR_TIMEOUT_MS);
+		// Wikidata sends nothing until the query is done, so the usual read timeout would cut it off
+		OkHttpClient patient = http.newBuilder().readTimeout(SIMILAR_TIMEOUT_MS, TimeUnit.MILLISECONDS).build();
+		return run(patient, query, SIMILAR_TIMEOUT_MS);
 	}
 
 	@VisibleForTesting
@@ -138,6 +145,51 @@ final class Wikidata {
 				+ "OPTIONAL { ?other wdt:P577 ?date } "
 				+ "BIND(IF(EXISTS { VALUES ?sk { " + STYLE_KINDS + " } ?other wdt:P31|wdt:P136 ?sk }, 1, 0) AS ?style) "
 				+ "} GROUP BY ?imdb ?score ORDER BY DESC(?score)";
+	}
+
+	/** Other films of the same film series, films after or before it, and other versions (remakes, adaptations). */
+	private static final long RELATED_TIMEOUT_MS = 25_000;
+	private static final int RELATED_LIMIT = 40;
+
+	@WorkerThread
+	@NonNull
+	static String relatedBody(@NonNull OkHttpClient http, @NonNull String imdbId, @NonNull List<String> languages)
+			throws IOException {
+		String query = relatedQuery(imdbId, languages);
+		if (query == null) {
+			throw new IOException("Not an IMDb id");
+		}
+		OkHttpClient patient = http.newBuilder().readTimeout(RELATED_TIMEOUT_MS, TimeUnit.MILLISECONDS).build();
+		return run(patient, query, RELATED_TIMEOUT_MS);
+	}
+
+	@VisibleForTesting
+	static String relatedQuery(@NonNull String imdbId, @NonNull List<String> languages) {
+		if (!IMDB_ID.matcher(imdbId).matches()) {
+			return null;
+		}
+		StringBuilder langs = new StringBuilder();
+		for (String language : languages) {
+			if (LANGUAGE.matcher(language).matches() && !"en".equals(language)) {
+				langs.append(langs.length() == 0 ? "" : ", ").append('"').append(language).append('"');
+			}
+		}
+		String local = langs.length() == 0 ? ""
+				: "OPTIONAL { ?other rdfs:label ?local . FILTER(LANG(?local) IN (" + langs + ")) } ";
+		return "SELECT ?imdb (MAX(?w) AS ?score) (SAMPLE(?label) AS ?name) (MIN(?date) AS ?released) WHERE { "
+				+ "?self wdt:P345 \"" + imdbId + "\" . "
+				+ "{ ?self wdt:P179 ?f . ?other wdt:P179 ?f . BIND(3 AS ?w) } "
+				+ "UNION { ?self wdt:P144 ?f . ?other wdt:P144 ?f . BIND(2 AS ?w) } "
+				+ "UNION { ?self wdt:P144|wdt:P4969|wdt:P155|wdt:P156 ?other . BIND(3 AS ?w) } "
+				+ "UNION { ?other wdt:P144|wdt:P4969|wdt:P155|wdt:P156 ?self . BIND(3 AS ?w) } "
+				+ "FILTER(?other != ?self) "
+				+ "FILTER EXISTS { VALUES ?kind { " + FILM_KINDS + " } ?other wdt:P31 ?kind } "
+				+ "?other wdt:P345 ?imdb . FILTER(STRSTARTS(?imdb, \"tt\")) "
+				+ local
+				+ "OPTIONAL { ?other rdfs:label ?english . FILTER(LANG(?english) = \"en\") } "
+				+ (local.isEmpty() ? "BIND(?english AS ?label) " : "BIND(COALESCE(?local, ?english) AS ?label) ")
+				+ "OPTIONAL { ?other wdt:P577 ?date } "
+				+ "} GROUP BY ?imdb LIMIT " + RELATED_LIMIT;
 	}
 
 	@VisibleForTesting

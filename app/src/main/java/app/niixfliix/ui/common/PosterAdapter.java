@@ -14,7 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.UnaryOperator;
 
 import app.niixfliix.R;
 import app.niixfliix.addon.Translations;
@@ -59,6 +62,15 @@ public final class PosterAdapter extends DiffAdapter<PosterItem, RecyclerView.Vi
 
 	public void refreshWatched() {
 		submit(items());
+	}
+
+	/** Shows each poster again as {@code mark} gives it back, such as with or without the "NEW" mark. */
+	public void refreshMarks(@NonNull UnaryOperator<PosterItem> mark) {
+		List<PosterItem> marked = new ArrayList<>();
+		for (PosterItem item : items()) {
+			marked.add(mark.apply(item));
+		}
+		submit(marked);
 	}
 
 	@Override

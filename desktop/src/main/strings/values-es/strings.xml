@@ -29,4 +29,7 @@
 	<string name="update_no_bundle_signature">La versión %1$s no tiene adjunto el archivo .flatpak.sig, así que no se puede comprobar la descarga. Adjunta todos los archivos de la carpeta dist a la versión de GitHub.</string>
 	<string name="update_failed_signature">La descarga no está firmada con la clave de esta app, así que se ha descartado.</string>
 	<string name="update_ready_desktop">La actualización se guardó como %1$s y se abrió con tu centro de software. Si no se abrió nada, instálala desde una terminal:\n\n%2$s\n\nDespués reinicia la aplicación.</string>
+	<string name="menu_download_pick_hint_desktop">Haz clic derecho en un episodio para descargarlo.</string>
+	<string name="details_poster_series_watched">Haz clic para marcar toda la serie como vista</string>
+	<string name="details_poster_series_unwatched">Haz clic para marcar toda la serie como no vista</string>
 </resources>

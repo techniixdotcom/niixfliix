@@ -228,6 +228,38 @@ public final class AddonClient {
 		}
 	}
 
+	/**
+	 * Films related to a film: the rest of its film series and its other versions, from Wikidata. Kept
+	 * on disk like {@link #similar}.
+	 */
+	@NonNull
+	@WorkerThread
+	public List<SimilarTitle> related(@NonNull String imdbId, @Nullable String language) throws IOException {
+		List<String> languages = language != null ? Wikidata.languages(language) : Collections.emptyList();
+		String key = "wikidata-related-v1|" + String.join(",", languages) + "|" + imdbId;
+		DiskCache kept = disk;
+		if (kept != null) {
+			List<SimilarTitle> fresh = similarFromDisk(kept, key, SIMILAR_FRESH_MS);
+			if (fresh != null) {
+				return fresh;
+			}
+		}
+		try {
+			String body = Wikidata.relatedBody(http, imdbId, languages);
+			List<SimilarTitle> result = Wikidata.parseSimilar(body);
+			if (kept != null) {
+				kept.write(key, body);
+			}
+			return result;
+		} catch (IOException | RuntimeException e) {
+			List<SimilarTitle> older = kept != null ? similarFromDisk(kept, key, SIMILAR_STALE_MS) : null;
+			if (older != null) {
+				return older;
+			}
+			throw e instanceof IOException ? (IOException) e : new IOException(e);
+		}
+	}
+
 	@Nullable
 	private static List<SimilarTitle> similarFromDisk(@NonNull DiskCache kept, @NonNull String key, long maxAgeMs) {
 		DiskCache.Entry entry = kept.read(key, SIMILAR_MAX_BYTES);

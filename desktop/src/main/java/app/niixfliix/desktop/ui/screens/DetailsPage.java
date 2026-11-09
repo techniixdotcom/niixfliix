@@ -4,14 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import app.niixfliix.addon.MetaFinder;
 import app.niixfliix.addon.ReleaseOrder;
 import app.niixfliix.addon.model.Catalog;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.addon.model.Video;
+import app.niixfliix.data.SeriesWatched;
 import app.niixfliix.data.model.HistoryEntry;
 import app.niixfliix.data.model.LibraryItem;
 import app.niixfliix.data.model.QueueItem;
@@ -40,10 +44,12 @@ import app.niixfliix.desktop.ui.Page;
 import app.niixfliix.desktop.ui.PosterCard;
 import app.niixfliix.desktop.ui.PosterMenu;
 import app.niixfliix.desktop.ui.PosterRow;
+import app.niixfliix.desktop.ui.QuickDownload;
 import app.niixfliix.desktop.ui.StreamsDialog;
 import app.niixfliix.desktop.ui.Toast;
 import app.niixfliix.ui.common.MoreLikeThis;
 import app.niixfliix.ui.common.PosterItem;
+import app.niixfliix.ui.common.RelatedTitles;
 import app.niixfliix.ui.common.TitleAbout;
 
 public final class DetailsPage implements Page {
@@ -98,7 +104,23 @@ public final class DetailsPage implements Page {
 	private final Button imdb = Button.text(I18n.t("details_imdb"), "flat", "link-button");
 	private final Box aboutSection = Box.column(10);
 	private final Box trailerAndAbout = Box.row(48);
+	private final Box relatedSection = Box.column(6);
+	private final PosterRow related = new PosterRow(new PosterCard.Listener() {
+		@Override
+		public void onPosterClick(@NonNull PosterItem item) {
+			MainWindow.get().openDetails(item);
+		}
+
+		@Override
+		public void onPosterMenu(@NonNull PosterItem item, @NonNull Widget card, double x, double y) {
+			PosterMenu.show(card, x, y, item, null, null, () -> DetailsPage.this.related.refresh());
+		}
+	});
+	private final Set<String> relatedIds = new HashSet<>();
 	private final Box similarSection = Box.column(6);
+	/** Placeholder posters, shown while the titles are looked up, so the row is seen to be coming. */
+	private final Box similarComing = Box.row(12);
+	private static final int SIMILAR_PLACEHOLDERS = 8;
 	private final PosterRow similar = new PosterRow(new PosterCard.Listener() {
 		@Override
 		public void onPosterClick(@NonNull PosterItem item) {
@@ -174,8 +196,17 @@ public final class DetailsPage implements Page {
 		aboutSection.visible(false);
 		Label similarTitle = Label.of(I18n.t("details_more_like_this"), "title-4");
 		similarTitle.halign(Widget.ALIGN_START);
-		similarSection.add(similarTitle, similar.widget());
+		for (int i = 0; i < SIMILAR_PLACEHOLDERS; i++) {
+			similarComing.add(Box.column(0).size(PosterCard.WIDTH, PosterCard.HEIGHT).addClass("skeleton"));
+		}
+		similarComing.margins(6, 0, PosterRow.HEIGHT - PosterCard.HEIGHT - 6, 18);
+		similar.widget().visible(false);
+		similarSection.add(similarTitle, similarComing, similar.widget());
 		similarSection.visible(false);
+		Label relatedTitle = Label.of(I18n.t("details_related"), "title-4");
+		relatedTitle.halign(Widget.ALIGN_START);
+		relatedSection.add(relatedTitle, related.widget());
+		relatedSection.visible(false);
 		notice.maxWidthChars(TEXT_CHARS);
 		notice.visible(false);
 
@@ -185,6 +216,7 @@ public final class DetailsPage implements Page {
 			if (position >= 0 && position < seasons.size()) {
 				season = seasons.get(position);
 				showEpisodes();
+				showWatched();
 			}
 		});
 		downloadEpisodes.valign(Widget.ALIGN_CENTER);
@@ -203,6 +235,14 @@ public final class DetailsPage implements Page {
 		posterFrame.addClass("details-poster", "skeleton");
 		posterFrame.clipChildren();
 		posterFrame.valign(Widget.ALIGN_START);
+		Controller posterClick = Controller.click(Controller.BUTTON_PRIMARY);
+		posterClick.onReleased((count, x, y) -> {
+			if (count == 1) {
+				toggleSeriesWatched();
+			}
+		});
+		posterFrame.addController(posterClick);
+		Controller.contextMenu(posterFrame, (x, y) -> toggleSeriesWatched());
 		Box facts = Box.column(16, logoBox, title, info, genres, actions, notice, loading, description, castSection);
 		facts.hexpand(true).valign(Widget.ALIGN_START);
 		facts.margins(POSTER_HEIGHT / 2, 0, 0, 0);
@@ -211,12 +251,13 @@ public final class DetailsPage implements Page {
 		aboutSection.valign(Widget.ALIGN_START).hexpand(true);
 		trailerAndAbout.add(trailerSection, aboutSection);
 		trailerAndAbout.visible(false);
-		Box details = Box.column(28, top, seriesSection, trailerAndAbout, similarSection);
+		Box details = Box.column(28, top, seriesSection, trailerAndAbout, relatedSection, similarSection);
 		details.margins(BACKDROP_HEIGHT - HERO_OVERLAP - POSTER_HEIGHT / 2, 40, 40, 40);
 		details.valign(Widget.ALIGN_START);
 		Layers content = Layers.overlay(Box.column(0, hero)).overMeasured(details);
 		Scroller scroll = Scroller.vertical(content);
 		similar.passWheelTo(scroll);
+		related.passWheelTo(scroll);
 
 		Button back = Button.icon(Icons.name("back"), I18n.t("action_back"));
 		back.addClass("osd", "circular", "details-back");
@@ -237,6 +278,13 @@ public final class DetailsPage implements Page {
 	}
 
 	private void load() {
+		// The Wikidata part of "More like this" is slow, so it starts now, next to the title's details,
+		// and the row shows as coming straight away (not for live channels: they have no row)
+		MoreLikeThis.lookUp(graph.addonClient, type, id, graph.translations.language());
+		if (!Catalog.isLiveType(type)) {
+			similarSection.visible(true);
+		}
+		loadRelated();
 		graph.io.execute(() -> {
 			Meta found = MetaFinder.find(graph.addons, graph.addonClient, type, id);
 			List<String> genresForSimilar = found != null ? new ArrayList<>(found.allGenres()) : null;
@@ -369,12 +417,71 @@ public final class DetailsPage implements Page {
 	}
 
 	private void loadSimilar(@Nullable List<String> genres, long released) {
-		List<PosterItem> items = MoreLikeThis.find(graph.addons, graph.addonClient, type, id, genres, released,
-				graph.translations.language());
-		graph.main.post(() -> {
-			similar.show(items);
-			similarSection.visible(!items.isEmpty());
+		MoreLikeThis.find(graph.addons, graph.addonClient, type, id, genres, released,
+				graph.translations.language(), (items, last) -> graph.main.post(() -> showSimilar(items, last)));
+	}
+
+	/** Shows the titles; {@code last} is the final list, which may be empty (then the row goes away). */
+	private void showSimilar(@NonNull List<PosterItem> items, boolean last) {
+		if (items.isEmpty() && !last) {
+			return;
+		}
+		if (!items.isEmpty() || similarFound.isEmpty()) {
+			similarFound = new ArrayList<>(items);
+		}
+		similarDone = similarDone || last;
+		showSimilarRow();
+	}
+
+	/** "More like this" without the titles the related row already shows. */
+	private void showSimilarRow() {
+		List<PosterItem> shown = new ArrayList<>();
+		for (PosterItem item : similarFound) {
+			if (!relatedIds.contains(item.id)) {
+				shown.add(item);
+			}
+		}
+		if (shown.isEmpty()) {
+			if (similarDone) {
+				similarSection.visible(false);
+			}
+			return;
+		}
+		similar.show(shown);
+		similarComing.visible(false);
+		similar.widget().visible(true);
+		similarSection.visible(true);
+	}
+
+	/** "More like this" as found, before the titles already in the related row are left out. */
+	private List<PosterItem> similarFound = new ArrayList<>();
+	private boolean similarDone;
+
+	/** The rest of a film's series and its other versions, in their own row. */
+	private void loadRelated() {
+		if (!RelatedTitles.applies(type, id)) {
+			return;
+		}
+		String language = graph.translations.language();
+		graph.io.execute(() -> {
+			List<PosterItem> found = RelatedTitles.find(graph.addonClient, type, id, language);
+			graph.main.post(() -> showRelated(found));
 		});
+	}
+
+	private void showRelated(@NonNull List<PosterItem> items) {
+		if (items.isEmpty()) {
+			return;
+		}
+		related.show(items);
+		relatedSection.visible(true);
+		relatedIds.clear();
+		for (PosterItem item : items) {
+			relatedIds.add(item.id);
+		}
+		if (!similarFound.isEmpty()) {
+			showSimilarRow();
+		}
 	}
 
 	private void showLogo() {
@@ -409,10 +516,7 @@ public final class DetailsPage implements Page {
 		save.iconName(Icons.name(saved ? "bookmark" : "bookmark_border")).tooltip(saveText);
 		save.accessibleLabel(saveText);
 		Meta m = meta;
-		boolean isWatched = m != null && isAllWatched(m);
-		String watchedText = I18n.t(isWatched ? "details_mark_unwatched" : "details_mark_watched");
-		watched.iconName(Icons.name(isWatched ? "check_circle" : "check")).tooltip(watchedText);
-		watched.accessibleLabel(watchedText);
+		showWatched();
 		if (m == null || !loaded) {
 			return;
 		}
@@ -430,6 +534,7 @@ public final class DetailsPage implements Page {
 			}
 			seasonInput.choices(labels, seasons.indexOf(season));
 			showEpisodes();
+			showWatched();
 			if (next != null) {
 				long resume = next.id != null ? graph.history.resumePosition(next.id) : 0;
 				String episode = I18n.t("episode_number", next.seasonOrZero(), next.episodeOrZero());
@@ -519,20 +624,29 @@ public final class DetailsPage implements Page {
 		return number == 0 ? I18n.t("details_specials") : I18n.t("details_season_number", number);
 	}
 
-	private boolean isAllWatched(@NonNull Meta m) {
+	/** The button marks the season being looked at for a series, or the title itself. */
+	private void showWatched() {
+		Meta m = meta;
+		boolean series = m != null && m.isSeries();
+		boolean isWatched = m != null && isWatched(m);
+		String watchedText = I18n.t(series
+				? isWatched ? "details_mark_season_unwatched" : "details_mark_season_watched"
+				: isWatched ? "details_mark_unwatched" : "details_mark_watched");
+		watched.iconName(Icons.name(isWatched ? "check_circle" : "check")).tooltip(watchedText);
+		watched.accessibleLabel(watchedText);
+		boolean wholeSeries = series && loaded && !m.videosOrEmpty().isEmpty();
+		posterFrame.tooltip(wholeSeries ? I18n.t(SeriesWatched.isWatched(graph.history, m, null,
+				System.currentTimeMillis()) ? "details_poster_series_unwatched" : "details_poster_series_watched")
+				: null);
+		posterFrame.cursor(wholeSeries ? "pointer" : null);
+	}
+
+	private boolean isWatched(@NonNull Meta m) {
 		if (!m.isSeries()) {
 			String videoId = m.playableVideoId();
 			return videoId != null && graph.history.isWatched(videoId);
 		}
-		if (m.videosOrEmpty().isEmpty()) {
-			return false;
-		}
-		for (String episodeId : m.episodeIds()) {
-			if (!graph.history.isWatched(episodeId)) {
-				return false;
-			}
-		}
-		return true;
+		return season >= 0 && SeriesWatched.isWatched(graph.history, m, season, System.currentTimeMillis());
 	}
 
 	private void onPlay() {
@@ -574,7 +688,7 @@ public final class DetailsPage implements Page {
 		PosterMenu.showEpisode(owner, x, y, item, isWatched, () -> {
 			graph.history.setWatched(videoId, !isWatched);
 			refreshState();
-		});
+		}, () -> QuickDownload.downloadEpisodes(m, Collections.singletonList(video)));
 	}
 
 	private void toggleSaved() {
@@ -601,13 +715,27 @@ public final class DetailsPage implements Page {
 		if (m == null) {
 			return;
 		}
-		boolean mark = !isAllWatched(m);
-		String videoId = m.playableVideoId();
 		if (m.isSeries()) {
-			graph.history.setWatched(m.episodeIds(), mark);
-		} else if (videoId != null) {
-			graph.history.setWatched(videoId, mark);
+			if (season >= 0) {
+				SeriesWatched.toggle(graph.history, m, season, System.currentTimeMillis());
+			}
+		} else {
+			String videoId = m.playableVideoId();
+			if (videoId != null) {
+				graph.history.setWatched(videoId, !graph.history.isWatched(videoId));
+			}
 		}
+		refreshState();
+	}
+
+	/** Clicking the main image marks the whole series, where the button marks one season. */
+	private void toggleSeriesWatched() {
+		Meta m = meta;
+		if (m == null || !loaded || !m.isSeries() || m.videosOrEmpty().isEmpty()) {
+			return;
+		}
+		boolean nowWatched = SeriesWatched.toggle(graph.history, m, null, System.currentTimeMillis());
+		Toast.show(I18n.t(nowWatched ? "details_series_marked_watched" : "details_series_marked_unwatched"));
 		refreshState();
 	}
 
@@ -638,31 +766,6 @@ public final class DetailsPage implements Page {
 	}
 
 	private void startDownloads(Meta m, List<Video> list) {
-		if (list.isEmpty()) {
-			Toast.show(I18n.t("download_episodes_none_out"));
-			return;
-		}
-		Toast.show(I18n.plural("download_episodes_looking", list.size(), list.size()));
-		String name = m.nameOrEmpty();
-		SeriesDownload.start(graph.streams, graph.downloads(), m, list, graph.playerPrefs.quality(m.id, true),
-				v -> name + " · " + Fmt.episode(v), result -> Toast.show(resultMessage(result)));
-	}
-
-	@NonNull
-	static String resultMessage(@NonNull SeriesDownload.Result r) {
-		if (r.added == 0 && r.alreadyThere == 0) {
-			return I18n.t("download_episodes_nothing");
-		}
-		List<String> parts = new ArrayList<>();
-		if (r.added > 0) {
-			parts.add(I18n.plural("download_episodes_added", r.added, r.added));
-		}
-		if (r.alreadyThere > 0) {
-			parts.add(I18n.plural("download_episodes_already", r.alreadyThere, r.alreadyThere));
-		}
-		if (r.notDownloadable > 0) {
-			parts.add(I18n.plural("download_episodes_skipped", r.notDownloadable, r.notDownloadable));
-		}
-		return String.join(" ", parts);
+		QuickDownload.downloadEpisodes(m, list);
 	}
 }

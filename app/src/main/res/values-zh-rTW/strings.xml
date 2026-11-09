@@ -348,4 +348,17 @@
 	<string name="web_desktop_site">電腦版網站</string>
 	<string name="web_unavailable">無法開啟播放器。請更新 Android System WebView 後再試一次。</string>
 	<string name="web_crashed">播放器已停止。請重新開啟。</string>
+	<string name="menu_download_season">下載本季</string>
+	<string name="menu_download_series">下載整部劇集</string>
+	<string name="menu_download_pick">選擇要下載的劇集</string>
+	<string name="menu_download_pick_hint">長按一集即可下載。</string>
+	<string name="download_allow_storage">請允許儲存空間存取權，然後再試一次。</string>
+	<string name="download_looking">正在尋找可下載的串流…</string>
+	<string name="download_already_there">已在下載清單中。</string>
+	<string name="download_title_nothing">無法下載：沒有含直接連結的串流。下載需要直接連結，例如來自 debrid 服務；種子只能播放。</string>
+	<string name="details_mark_season_watched">將本季標示為已觀看</string>
+	<string name="details_mark_season_unwatched">將本季標示為未觀看</string>
+	<string name="details_series_marked_watched">已將整部劇集標示為已觀看</string>
+	<string name="details_series_marked_unwatched">已將整部劇集標示為未觀看</string>
+	<string name="details_related">相關電影</string>
 </resources>

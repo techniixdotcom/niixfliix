@@ -35,6 +35,8 @@
 #   ./BUILD.sh --clean                    Delete all build output (dist/ included).
 #
 # Options that go with the builds:
+#   --version=X  the version to build, publish or push as, without being asked (otherwise the release
+#                builds, publishing and pushing the source ask, suggesting the next version)
 #   --install    after building, install it: the APK on the connected phone, the Flatpak for you
 #   --clean      delete earlier build output first (what's in dist/ stays)
 #   --verbose    show Gradle's whole output, not only the logs (build.log, build-linux.log)
@@ -109,6 +111,7 @@ INSTALL=0
 VERBOSE=0
 DEBUG=0
 BACKUP_DIR=""
+VERSION_ARG=""
 
 set_mode() {
 	if [ -n "$MODE" ] && [ "$MODE" != "$1" ]; then
@@ -162,6 +165,7 @@ for arg in "$@"; do
 		--new-linux-key) set_mode newlinuxkey ;;
 		--backup-keys) set_mode backupkeys ;;
 		--backup-keys=*) set_mode backupkeys; BACKUP_DIR="${arg#--backup-keys=}" ;;
+		--version=*) VERSION_ARG="${arg#--version=}" ;;
 		--install) INSTALL=1 ;;
 		--clean) CLEAN=1 ;;
 		--verbose) VERBOSE=1 ;;
@@ -358,8 +362,13 @@ published_version() {
 		| sed 's/^v//' | grep -E '^[0-9]+(\.[0-9]+)+$' | sort -V | tail -n1 || true
 }
 
-set_version() {
-	local current current_code published base suggested name code
+# Asks which version this build, release or source push is, suggesting the next version above both
+# gradle.properties and the newest release on GitHub, so Enter is almost always right. Typing the
+# current version keeps it (to rebuild it); anything else has to be newer. --version=X answers
+# without asking; without a terminal (CI) the version stays as it is.
+# $1 says what it's for: build, release, source or next (the "Set the version" option).
+choose_version() {
+	local purpose="${1:-build}" current current_code published base suggested name code what
 	current="$(version_name)"
 	current_code="$(version_code)"
 	[ -n "$current" ] && [ -n "$current_code" ] || die "Could not read versionName and versionCode from gradle.properties"
@@ -374,15 +383,37 @@ set_version() {
 	if [ -n "${c:-}" ]; then
 		suggested="$a.$b.$((10#$c + 1))"
 	fi
-	say "Current version: $current (code $current_code)"
-	ask "New version [$suggested]: " name
-	name="${name:-$suggested}"
+	if [ -n "$VERSION_ARG" ]; then
+		name="$VERSION_ARG"
+	elif has_tty; then
+		case "$purpose" in
+			release) what="this release" ;;
+			source) what="the source on GitHub" ;;
+			next) what="the next release" ;;
+			*) what="this build" ;;
+		esac
+		ask "Version for $what (now $current) [$suggested]: " name
+		name="${name:-$suggested}"
+	else
+		say "Version: $current (no terminal to ask; --version=X sets one)"
+		return 0
+	fi
 	name="${name#v}"
+	if [ "$name" = "$current" ]; then
+		if [ "$purpose" = release ] && [ -n "$published" ] && ! version_newer "$current" "$published"; then
+			die "$current is already on GitHub ($published is the newest there). Pick a higher version."
+		fi
+		say "Keeping version $current (code $current_code)"
+		return 0
+	fi
 	code="$(version_code_for "$name")"
 	[ -n "$code" ] || die "A version looks like 1.17.2: three numbers with dots, the last two below 100"
 	[ "$code" -gt "$current_code" ] || die "Version $name (code $code) isn't newer than $current (code $current_code). Android won't install it as an update."
 	if [ -n "$published" ] && ! version_newer "$name" "$published"; then
-		die "Version $name isn't newer than $published, which is already on GitHub. The apps wouldn't offer it."
+		if [ "$purpose" = release ]; then
+			die "Version $name isn't newer than $published, which is already on GitHub. The apps wouldn't offer it."
+		fi
+		warn "Version $name isn't newer than $published on GitHub; it can't be published as an update."
 	fi
 	sed -e "s/^versionName=.*/versionName=$name/" -e "s/^versionCode=.*/versionCode=$code/" \
 		"$ROOT/gradle.properties" > "$ROOT/gradle.properties.tmp"
@@ -632,16 +663,19 @@ trap '[ -n "$TMP" ] && rm -rf "$TMP"' EXIT
 case "$MODE" in
 	release)
 		ensure_tools "${ANDROID_TOOLS[@]}"
+		choose_version build
 		build_android
 		;;
 	linux)
 		needs_linux "The Linux app"
 		ensure_tools "${LINUX_TOOLS[@]}"
+		choose_version build
 		build_linux
 		;;
 	all)
 		needs_linux "Building both"
 		ensure_tools "${ANDROID_TOOLS[@]}" "${LINUX_TOOLS[@]}"
+		choose_version build
 		build_android
 		echo
 		build_linux
@@ -650,6 +684,11 @@ case "$MODE" in
 		needs_linux "Publishing"
 		ensure_tools "${ANDROID_TOOLS[@]}" "${LINUX_TOOLS[@]}"
 		ensure_gh
+		choose_version release
+		if [ -z "$(changelog_notes "$(version_name)" | tr -d '[:space:]')" ] && has_tty; then
+			warn "CHANGELOG.md has nothing under '## $(version_name)' yet: write it now (it becomes the release notes), then press Enter."
+			ask "" _
+		fi
 		build_android
 		echo
 		build_linux
@@ -691,10 +730,12 @@ case "$MODE" in
 		say "Recorded in gradle/verification-metadata.xml. Push it with the source; run this again after changing a library version."
 		;;
 	pushsource)
+		ensure_gh
+		choose_version source
 		push_source
 		;;
 	setversion)
-		set_version
+		choose_version next
 		;;
 	createkeys)
 		ensure_tools "${ANDROID_TOOLS[@]}"

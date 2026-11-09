@@ -34,6 +34,7 @@ import app.niixfliix.desktop.ui.Toast;
 import app.niixfliix.ui.common.CatalogSource;
 import app.niixfliix.ui.common.HomeHero;
 import app.niixfliix.ui.common.LibraryToggle;
+import app.niixfliix.ui.common.MoreLikeThis;
 import app.niixfliix.ui.common.PosterItem;
 
 public final class HomePage implements Page, PosterCard.Listener, AddonRepository.Listener, HeroBanner.Listener {
@@ -228,6 +229,8 @@ public final class HomePage implements Page, PosterCard.Listener, AddonRepositor
 		showHero();
 		scheduleRotate();
 		for (PosterItem p : picked) {
+			// The banner's titles are the likeliest to be opened: their "More like this" is looked up now
+			MoreLikeThis.warm(graph.addonClient, p.type, p.id, graph.translations.language());
 			graph.io.execute(() -> {
 				Meta found = MetaFinder.find(graph.addons, graph.addonClient, p.type, p.id);
 				Meta meta = found != null ? graph.translations.translate(found) : null;
@@ -326,6 +329,9 @@ public final class HomePage implements Page, PosterCard.Listener, AddonRepositor
 		return box;
 	}
 
+	/** How many Continue watching titles have their "More like this" looked up ahead. */
+	private static final int WARM_CONTINUE = 3;
+
 	@Nullable
 	private PosterRows.Row continueWatchingRow() {
 		List<HistoryEntry> entries = graph.history.continueWatching();
@@ -337,6 +343,11 @@ public final class HomePage implements Page, PosterCard.Listener, AddonRepositor
 		row.requested = true;
 		for (HistoryEntry e : entries) {
 			row.items.add(PosterItem.of(e, true));
+		}
+		// So are the first ones to continue watching
+		for (int i = 0; i < Math.min(WARM_CONTINUE, entries.size()); i++) {
+			MoreLikeThis.warm(graph.addonClient, entries.get(i).type, entries.get(i).metaId,
+					graph.translations.language());
 		}
 		return row;
 	}

@@ -102,4 +102,15 @@ public class SeriesDownloadTest {
 		assertSame(p1080, SeriesDownload.pick(Arrays.asList(p720, p1080), Quality.P1080));
 		assertSame(p720, SeriesDownload.pick(Arrays.asList(p720, p1080), Quality.P720));
 	}
+
+	@Test
+	public void theQuickSeasonIsTheNextEpisodesOrElseTheNewestOut() {
+		Video s1e1 = episode(1, 1, "2020-01-01T00:00:00.000Z");
+		Meta m = series(s1e1, episode(2, 1, "2021-01-01T00:00:00.000Z"), episode(3, 1, "2099-01-01T00:00:00.000Z"),
+				episode(0, 1, null));
+		assertEquals(Integer.valueOf(1), SeriesDownload.currentSeason(m, s1e1, NOW));
+		assertEquals(Integer.valueOf(2), SeriesDownload.currentSeason(m, null, NOW));
+		assertEquals(Integer.valueOf(0), SeriesDownload.currentSeason(series(episode(0, 1, null)), null, NOW));
+		assertNull(SeriesDownload.currentSeason(series(episode(1, 1, "2099-01-01T00:00:00.000Z")), null, NOW));
+	}
 }

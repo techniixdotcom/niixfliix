@@ -53,6 +53,7 @@ public final class SeriesDownload {
 	private final Function<Video, String> titleOf;
 	private final Quality preferred;
 	private final Callback callback;
+	private final boolean single;
 	private final StreamInfo[] picks;
 	private final boolean[] looked;
 	private int started;
@@ -62,7 +63,8 @@ public final class SeriesDownload {
 	private int notDownloadable;
 
 	private SeriesDownload(StreamCache streams, Downloads downloads, String type, String seriesName,
-			List<Video> episodes, Function<Video, String> titleOf, Quality preferred, Callback callback) {
+			List<Video> episodes, Function<Video, String> titleOf, Quality preferred, Callback callback,
+			boolean single) {
 		this.streams = streams;
 		this.downloads = downloads;
 		this.type = type;
@@ -71,6 +73,7 @@ public final class SeriesDownload {
 		this.titleOf = titleOf;
 		this.preferred = preferred;
 		this.callback = callback;
+		this.single = single;
 		picks = new StreamInfo[episodes.size()];
 		looked = new boolean[episodes.size()];
 	}
@@ -99,7 +102,7 @@ public final class SeriesDownload {
 			@NonNull Callback callback) {
 		String type = series.type != null ? series.type : Meta.TYPE_SERIES;
 		SeriesDownload run = new SeriesDownload(streams, downloads, type, series.nameOrEmpty(),
-				new ArrayList<>(episodes), titleOf, preferred, callback);
+				new ArrayList<>(episodes), titleOf, preferred, callback, false);
 		if (episodes.isEmpty()) {
 			callback.onFinished(new Result(0, 0, 0));
 			return;
@@ -107,6 +110,45 @@ public final class SeriesDownload {
 		for (int i = 0; i < PARALLEL; i++) {
 			run.lookUpNext();
 		}
+	}
+
+	/** Downloads one title (a movie), picking its stream the same way as for episodes. */
+	@MainThread
+	public static void startTitle(@NonNull StreamCache streams, @NonNull Downloads downloads, @NonNull Meta title,
+			@NonNull Quality preferred, @NonNull Callback callback) {
+		String videoId = title.playableVideoId();
+		if (videoId == null) {
+			callback.onFinished(new Result(0, 0, 1));
+			return;
+		}
+		Video video = new Video();
+		video.id = videoId;
+		String name = title.nameOrEmpty();
+		String type = title.type != null ? title.type : Meta.TYPE_MOVIE;
+		List<Video> one = new ArrayList<>();
+		one.add(video);
+		new SeriesDownload(streams, downloads, type, name, one, v -> name, preferred, callback, true).lookUpNext();
+	}
+
+	/**
+	 * The season a quick "download this season" means: the one with the next episode to watch, or, once
+	 * everything out is watched, the newest season that has episodes out. Null when nothing is out.
+	 */
+	@Nullable
+	public static Integer currentSeason(@NonNull Meta series, @Nullable Video nextUp, long nowMs) {
+		if (nextUp != null && nextUp.id != null) {
+			return nextUp.seasonOrZero();
+		}
+		Integer newest = null;
+		for (Integer number : series.seasons().keySet()) {
+			if (number != 0 && !episodes(series, number, nowMs).isEmpty() && (newest == null || number > newest)) {
+				newest = number;
+			}
+		}
+		if (newest == null && !episodes(series, 0, nowMs).isEmpty()) {
+			return 0;
+		}
+		return newest;
 	}
 
 	@NonNull
@@ -187,7 +229,8 @@ public final class SeriesDownload {
 			notDownloadable++;
 			return;
 		}
-		String name = fileName(seriesName, episode.seasonOrZero(), episode.episodeOrZero(), pick.downloadExtension());
+		String name = single ? pick.downloadFileName(seriesName)
+				: fileName(seriesName, episode.seasonOrZero(), episode.episodeOrZero(), pick.downloadExtension());
 		if (isAlreadyThere(name)) {
 			alreadyThere++;
 			return;

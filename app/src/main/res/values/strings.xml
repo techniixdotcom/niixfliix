@@ -356,4 +356,17 @@
 	<string name="web_desktop_site">Desktop site</string>
 	<string name="web_unavailable">Couldn\'t open the player. Update Android System WebView and try again.</string>
 	<string name="web_crashed">The player stopped. Open it again.</string>
+	<string name="menu_download_season">Download this season</string>
+	<string name="menu_download_series">Download whole series</string>
+	<string name="menu_download_pick">Pick episodes to download</string>
+	<string name="menu_download_pick_hint">Long-press an episode to download it.</string>
+	<string name="download_allow_storage">Allow storage access, then try again.</string>
+	<string name="download_looking">Looking for a stream to download…</string>
+	<string name="download_already_there">This is already in your downloads.</string>
+	<string name="download_title_nothing">This couldn’t be downloaded: no stream has a direct link. Downloads need one, such as from a debrid service; torrents can only be played.</string>
+	<string name="details_mark_season_watched">Mark season as watched</string>
+	<string name="details_mark_season_unwatched">Mark season as not watched</string>
+	<string name="details_series_marked_watched">Whole series marked as watched</string>
+	<string name="details_series_marked_unwatched">Whole series marked as not watched</string>
+	<string name="details_related">Related movies</string>
 </resources>

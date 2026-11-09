@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import app.niixfliix.addon.MetaFinder;
 import app.niixfliix.addon.ReleaseOrder;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.data.model.HistoryEntry;
@@ -230,7 +229,7 @@ public final class LibraryPage implements Page, PosterCard.Listener, Downloads.L
 			List<LibraryItem> saved = graph.library.all();
 			anyAtAll = !saved.isEmpty();
 			items = savedItems(saved);
-			refreshNewEpisodes(saved);
+			graph.refreshNewEpisodes(this::show);
 			graph.fillLibraryDates(this::show);
 		} else {
 			List<HistoryEntry> recent = graph.history.recent();
@@ -303,19 +302,7 @@ public final class LibraryPage implements Page, PosterCard.Listener, Downloads.L
 	}
 
 	private PosterItem withNewMark(PosterItem item) {
-		return Meta.TYPE_SERIES.equals(item.type) ? item.withNew(graph.newEpisodes.hasNew(item.id)) : item;
-	}
-
-	private void refreshNewEpisodes(List<LibraryItem> saved) {
-		List<String> series = new ArrayList<>();
-		for (LibraryItem item : saved) {
-			if (Meta.TYPE_SERIES.equals(item.type)) {
-				series.add(item.id);
-			}
-		}
-		graph.newEpisodes.refresh(series,
-				id -> MetaFinder.find(graph.addons, graph.addonClient, Meta.TYPE_SERIES, id),
-				this::show);
+		return graph.markNew(item);
 	}
 
 	private void setEmpty(boolean isEmpty, String text) {

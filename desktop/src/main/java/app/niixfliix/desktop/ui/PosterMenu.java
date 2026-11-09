@@ -9,6 +9,7 @@ import java.util.List;
 import app.niixfliix.addon.MetaFinder;
 import app.niixfliix.addon.model.Meta;
 import app.niixfliix.data.History;
+import app.niixfliix.data.SeriesWatched;
 import app.niixfliix.data.model.QueueItem;
 import app.niixfliix.desktop.DesktopGraph;
 import app.niixfliix.desktop.gtk.Menu;
@@ -54,6 +55,7 @@ public final class PosterMenu {
 				}
 			});
 		}
+		addDownloads(menu, poster);
 		if (extraLabel != null && extraAction != null) {
 			menu.item(extraLabel, extraAction);
 		}
@@ -61,10 +63,29 @@ public final class PosterMenu {
 	}
 
 	public static void showEpisode(@NonNull Widget owner, double x, double y, @NonNull QueueItem episode,
-			boolean watched, @NonNull Runnable toggleWatched) {
+			boolean watched, @NonNull Runnable toggleWatched, @Nullable Runnable download) {
 		Menu menu = base(episode);
 		menu.item(I18n.t(watched ? "details_mark_unwatched" : "details_mark_watched"), toggleWatched);
+		if (download != null) {
+			menu.item(I18n.t("streams_download"), download);
+		}
 		menu.showAt(owner, x, y);
+	}
+
+	private static void addDownloads(Menu menu, PosterItem poster) {
+		if (poster.header || !QuickDownload.canDownload(poster.type)) {
+			return;
+		}
+		if (Meta.TYPE_SERIES.equals(poster.type)) {
+			menu.item(I18n.t("menu_download_season"), () -> QuickDownload.start(poster, QuickDownload.What.SEASON));
+			menu.item(I18n.t("menu_download_series"), () -> QuickDownload.start(poster, QuickDownload.What.SERIES));
+			menu.item(I18n.t("menu_download_pick"), () -> {
+				Toast.show(I18n.t("menu_download_pick_hint_desktop"));
+				MainWindow.get().openDetails(poster);
+			});
+		} else {
+			menu.item(I18n.t("streams_download"), () -> QuickDownload.start(poster, QuickDownload.What.TITLE));
+		}
 	}
 
 	private static Menu base(QueueItem item) {
@@ -84,7 +105,8 @@ public final class PosterMenu {
 		DesktopGraph graph = DesktopGraph.get();
 		graph.io.execute(() -> {
 			Meta meta = MetaFinder.find(graph.addons, graph.addonClient, poster.type, poster.id);
-			List<String> ids = meta != null ? meta.episodeIds() : Collections.emptyList();
+			List<String> ids = meta != null ? SeriesWatched.out(meta, null, System.currentTimeMillis())
+					: Collections.emptyList();
 			graph.main.post(() -> {
 				if (ids.isEmpty()) {
 					Toast.show(I18n.t("queue_mark_failed"));

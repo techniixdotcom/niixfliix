@@ -103,13 +103,18 @@ button.poster-card:focus-visible .poster-frame {
 .poster-frame.whole-picture { background-color: #0e0e14; padding: 10px; }
 .poster-fallback { color: #a0a0ae; font-weight: bold; }
 .poster-title { font-size: 0.92em; }
-.new-badge {
+/* A band across the poster's top right corner: 96px long, its middle 30px in from both edges */
+.new-ribbon {
 	background-color: #ff0a6c;
 	color: white;
-	border-radius: 6px;
-	padding: 2px 6px;
-	font-size: 0.75em;
+	min-width: 96px;
+	min-height: 18px;
+	padding: 0;
+	font-size: 0.72em;
 	font-weight: bold;
+	letter-spacing: 1px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+	transform: translate(18px, 21px) rotate(45deg);
 }
 progressbar.poster-progress trough,
 progressbar.poster-progress progress {

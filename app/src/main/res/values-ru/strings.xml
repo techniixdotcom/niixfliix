@@ -372,4 +372,17 @@
 	<string name="web_desktop_site">Версия для ПК</string>
 	<string name="web_unavailable">Не удалось открыть плеер. Обновите Android System WebView и попробуйте снова.</string>
 	<string name="web_crashed">Плеер остановился. Откройте его снова.</string>
+	<string name="menu_download_season">Скачать этот сезон</string>
+	<string name="menu_download_series">Скачать весь сериал</string>
+	<string name="menu_download_pick">Выбрать серии для скачивания</string>
+	<string name="menu_download_pick_hint">Нажмите и удерживайте серию, чтобы скачать её.</string>
+	<string name="download_allow_storage">Разрешите доступ к хранилищу и попробуйте снова.</string>
+	<string name="download_looking">Ищем поток для загрузки…</string>
+	<string name="download_already_there">Это уже есть в загрузках.</string>
+	<string name="download_title_nothing">Не удалось скачать: ни у одного потока нет прямой ссылки. Для загрузки она нужна, например от debrid-сервиса; торренты можно только смотреть.</string>
+	<string name="details_mark_season_watched">Отметить сезон как просмотренный</string>
+	<string name="details_mark_season_unwatched">Отметить сезон как непросмотренный</string>
+	<string name="details_series_marked_watched">Весь сериал отмечен как просмотренный</string>
+	<string name="details_series_marked_unwatched">Весь сериал отмечен как непросмотренный</string>
+	<string name="details_related">Связанные фильмы</string>
 </resources>

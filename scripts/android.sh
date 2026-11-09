@@ -171,6 +171,17 @@ PY
 # Moves the key from where versions up to 1.17.0 kept it, checking every copy.
 migrate_key() {
 	[ -f "$LEGACY_KEY_DIR/$SLUG-release.jks" ] || return 0
+	if [ -f "$KEY_DIR/$SLUG-release.jks" ]; then
+		# The key moved here already. One in the old folder was made after that, by an older copy of
+		# the build scripts that didn't know about ~/.keys: it isn't the key the releases are signed
+		# with, so it's set aside (not deleted) where nothing picks it up again.
+		local aside
+		aside="$LEGACY_KEY_DIR-unused-$(date +%Y%m%d-%H%M%S)"
+		mv "$LEGACY_KEY_DIR" "$aside" || fail "Could not set aside $LEGACY_KEY_DIR"
+		warn "$LEGACY_KEY_DIR held a different key than $KEY_DIR, probably made by an older copy of"
+		warn "the build scripts. Your releases use the one in $KEY_DIR; the other was moved to $aside."
+		return 0
+	fi
 	ak_move_dir "$LEGACY_KEY_DIR" "$KEY_DIR" || fail "Could not move the signing key from $LEGACY_KEY_DIR to $KEY_DIR (it's still there)"
 	say "Moved the signing key from $LEGACY_KEY_DIR to $KEY_DIR"
 }

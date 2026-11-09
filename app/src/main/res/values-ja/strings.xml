@@ -348,4 +348,17 @@
 	<string name="web_desktop_site">PC 版サイト</string>
 	<string name="web_unavailable">プレーヤーを開けませんでした。Android System WebView を更新してもう一度お試しください。</string>
 	<string name="web_crashed">プレーヤーが停止しました。もう一度開いてください。</string>
+	<string name="menu_download_season">このシーズンをダウンロード</string>
+	<string name="menu_download_series">シリーズ全体をダウンロード</string>
+	<string name="menu_download_pick">ダウンロードするエピソードを選ぶ</string>
+	<string name="menu_download_pick_hint">エピソードを長押しするとダウンロードできます。</string>
+	<string name="download_allow_storage">ストレージへのアクセスを許可してから、もう一度お試しください。</string>
+	<string name="download_looking">ダウンロード用ストリームを探しています…</string>
+	<string name="download_already_there">すでにダウンロードにあります。</string>
+	<string name="download_title_nothing">ダウンロードできませんでした。直接リンクのあるストリームがありません。ダウンロードには debrid サービスなどの直接リンクが必要です（トレントは再生のみ）。</string>
+	<string name="details_mark_season_watched">シーズンを視聴済みにする</string>
+	<string name="details_mark_season_unwatched">シーズンを未視聴にする</string>
+	<string name="details_series_marked_watched">シリーズ全体を視聴済みにしました</string>
+	<string name="details_series_marked_unwatched">シリーズ全体を未視聴にしました</string>
+	<string name="details_related">関連する映画</string>
 </resources>

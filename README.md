@@ -1,5 +1,7 @@
 <h1 align="center">
-Niixfliix
+  <img src="docs/images/icon.png" height="72" alt="" />
+  <img src="docs/images/title.svg" height="72" alt="niixfliix" />
+  <img src="docs/images/icon.png" height="72" alt="" />
 </h1>
 
 <p align="center">
